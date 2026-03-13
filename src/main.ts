@@ -21,7 +21,9 @@ function applyTheme(value: string) {
   }
   localStorage.setItem("apdTheme", value);
 }
-themeSelect.addEventListener("change", (e) => applyTheme((e.target as HTMLSelectElement).value));
+themeSelect.addEventListener("change", (e) =>
+  applyTheme((e.target as HTMLSelectElement).value),
+);
 const savedTheme = localStorage.getItem("apdTheme") || "auto";
 themeSelect.value = savedTheme;
 applyTheme(savedTheme);
@@ -31,28 +33,33 @@ function buildFilters() {
   let fq = [];
 
   const modalidad = [
-    ...(document.getElementById("modalidad") as HTMLSelectElement).selectedOptions,
+    ...(document.getElementById("modalidad") as HTMLSelectElement)
+      .selectedOptions,
   ].map((o) => `"${o.value}"`);
   if (modalidad.length) {
     let q = `descnivelmodalidad:(${modalidad.join(" OR ")})`;
-    if ((document.getElementById("modalidadNot") as HTMLInputElement).checked) q = "-" + q;
+    if ((document.getElementById("modalidadNot") as HTMLInputElement).checked)
+      q = "-" + q;
     fq.push(q);
   }
-  const distrito = (document.getElementById("distrito") as HTMLInputElement).value;
+  const distrito = (document.getElementById("distrito") as HTMLInputElement)
+    .value;
   if (distrito) fq.push(`descdistrito:"${distrito}"`);
 
-  const cargo = [...(document.getElementById("cargo") as HTMLSelectElement).selectedOptions].map(
-    (o) => `"${o.value}"`,
-  );
+  const cargo = [
+    ...(document.getElementById("cargo") as HTMLSelectElement).selectedOptions,
+  ].map((o) => `"${o.value}"`);
   if (cargo.length) {
     let q = `cargo:(${cargo.join(" OR ")})`;
-    if ((document.getElementById("cargoNot") as HTMLInputElement).checked) q = "-" + q;
+    if ((document.getElementById("cargoNot") as HTMLInputElement).checked)
+      q = "-" + q;
     fq.push(q);
   }
 
   const estado = (document.getElementById("estado") as HTMLInputElement).value;
   if (estado) fq.push(`estado:${estado}`);
-  const escuela = (document.getElementById("escuela") as HTMLInputElement).value;
+  const escuela = (document.getElementById("escuela") as HTMLInputElement)
+    .value;
   if (escuela) fq.push(`escuela:${escuela}`);
   const ige = (document.getElementById("ige") as HTMLInputElement).value;
   if (ige) fq.push(`ige:${ige}`);
@@ -69,14 +76,17 @@ function buildURL() {
 
 function saveFilters() {
   const data = {
-    modalidad: [...(document.getElementById("modalidad") as HTMLSelectElement).selectedOptions].map(
-      (o) => o.value,
-    ),
-    modalidadNot: (document.getElementById("modalidadNot") as HTMLInputElement).checked,
+    modalidad: [
+      ...(document.getElementById("modalidad") as HTMLSelectElement)
+        .selectedOptions,
+    ].map((o) => o.value),
+    modalidadNot: (document.getElementById("modalidadNot") as HTMLInputElement)
+      .checked,
     distrito: (document.getElementById("distrito") as HTMLInputElement).value,
-    cargo: [...(document.getElementById("cargo") as HTMLSelectElement).selectedOptions].map(
-      (o) => o.value,
-    ),
+    cargo: [
+      ...(document.getElementById("cargo") as HTMLSelectElement)
+        .selectedOptions,
+    ].map((o) => o.value),
     cargoNot: (document.getElementById("cargoNot") as HTMLInputElement).checked,
     estado: (document.getElementById("estado") as HTMLInputElement).value,
     ige: (document.getElementById("ige") as HTMLInputElement).value,
@@ -89,33 +99,47 @@ function loadFilters() {
   const saved = localStorage.getItem("apdFilters");
   if (!saved) return;
   const data = JSON.parse(saved);
-  [...(document.getElementById("modalidad") as HTMLSelectElement).options].forEach((o) => {
+  [
+    ...(document.getElementById("modalidad") as HTMLSelectElement).options,
+  ].forEach((o) => {
     if (data.modalidad.includes(o.value)) o.selected = true;
   });
-  (document.getElementById("modalidadNot") as HTMLInputElement).checked = data.modalidadNot;
-  (document.getElementById("distrito") as HTMLInputElement).value = data.distrito;
-  [...(document.getElementById("cargo") as HTMLSelectElement).options].forEach((o) => {
-    if (data.cargo.includes(o.value)) o.selected = true;
-  });
-  (document.getElementById("cargoNot") as HTMLInputElement).checked = data.cargoNot;
+  (document.getElementById("modalidadNot") as HTMLInputElement).checked =
+    data.modalidadNot;
+  (document.getElementById("distrito") as HTMLInputElement).value =
+    data.distrito;
+  [...(document.getElementById("cargo") as HTMLSelectElement).options].forEach(
+    (o) => {
+      if (data.cargo.includes(o.value)) o.selected = true;
+    },
+  );
+  (document.getElementById("cargoNot") as HTMLInputElement).checked =
+    data.cargoNot;
   (document.getElementById("estado") as HTMLInputElement).value = data.estado;
   (document.getElementById("ige") as HTMLInputElement).value = data.ige;
   (document.getElementById("escuela") as HTMLInputElement).value = data.escuela;
 }
 
-function search() {
+async function search() {
   saveFilters();
   const url = buildURL();
-  fetch(url)
-    .then((r) => r.json())
-    .then((data: Response) => {
-      const docs = data.response.docs;
-      const total = data.response.numFound;
-      (document.getElementById("count") as HTMLInputElement).innerText = `Resultados: ${total}`;
-      const tbody = document.getElementById("results") as HTMLTableSectionElement;
-      tbody.innerHTML = "";
-      docs.forEach((d) => {
-        tbody.innerHTML += `
+  const res = await fetch(url);
+  const buffer = await res.arrayBuffer();
+
+  const decoder = new TextDecoder('iso-8859-1');
+  const text = decoder.decode(buffer);
+
+  const data = JSON.parse(text) as Response;
+
+  const docs = data.response.docs;
+  const total = data.response.numFound;
+
+  (document.getElementById("count") as HTMLInputElement).innerText =
+    `Resultados: ${total}`;
+  const tbody = document.getElementById("results") as HTMLTableSectionElement;
+  tbody.innerHTML = "";
+  docs.forEach((d) => {
+    tbody.innerHTML += `
         <tr class="${d.estado.toLowerCase().replace(/\s/g, "-")}">
           <td>${d.descdistrito || ""}</td>
           <td>${d.escuela || ""}</td>
@@ -124,8 +148,7 @@ function search() {
           <td>${d.descnivelmodalidad || ""}</td>
           <td>${d.finoferta || ""}</td>
         </tr>`;
-      });
-    });
+  });
 }
 
 function next() {
