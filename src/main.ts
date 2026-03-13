@@ -1,5 +1,5 @@
 import "./style.css";
-import type { Course, Response } from "./types";
+import type { Response } from "./types";
 
 const endpoint =
   "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select";
