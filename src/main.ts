@@ -43,9 +43,17 @@ function buildFilters() {
       q = "-" + q;
     fq.push(q);
   }
-  const distrito = (document.getElementById("distrito") as HTMLInputElement)
-    .value;
-  if (distrito) fq.push(`descdistrito:"${distrito}"`);
+
+  const distrito = [
+    ...(document.getElementById("distrito") as HTMLSelectElement)
+      .selectedOptions,
+  ].map((o) => `"${o.value}"`);
+  if (distrito.length) {
+    let q = `descdistrito:(${distrito.join(" OR ")})`;
+    if ((document.getElementById("distritoNot") as HTMLInputElement).checked)
+      q = "-" + q;
+    fq.push(q);
+  }
 
   const cargo = [
     ...(document.getElementById("cargo") as HTMLSelectElement).selectedOptions,
@@ -93,18 +101,27 @@ function saveFilters() {
     ].map((o) => o.value),
     modalidadNot: (document.getElementById("modalidadNot") as HTMLInputElement)
       .checked,
-    distrito: (document.getElementById("distrito") as HTMLInputElement).value,
+
+    distrito: [
+      ...(document.getElementById("distrito") as HTMLSelectElement)
+        .selectedOptions,
+    ].map((o) => o.value),
+    distritoNot: (document.getElementById("distritoNot") as HTMLInputElement)
+      .checked,
+
     cargo: [
       ...(document.getElementById("cargo") as HTMLSelectElement)
         .selectedOptions,
     ].map((o) => o.value),
     cargoNot: (document.getElementById("cargoNot") as HTMLInputElement).checked,
+
     estado: [
       ...(document.getElementById("estado") as HTMLSelectElement)
         .selectedOptions,
     ].map((o) => o.value),
     estadoNot: (document.getElementById("estadoNot") as HTMLInputElement)
       .checked,
+
     ige: (document.getElementById("ige") as HTMLInputElement).value,
     escuela: (document.getElementById("escuela") as HTMLInputElement).value,
   };
@@ -126,8 +143,13 @@ function loadFilters() {
   (document.getElementById("modalidadNot") as HTMLInputElement).checked =
     data.modalidadNot;
 
-  (document.getElementById("distrito") as HTMLInputElement).value =
-    data.distrito;
+  [
+    ...(document.getElementById("distrito") as HTMLSelectElement).options,
+  ].forEach((o) => {
+    if (data.distrito.includes(o.value)) o.selected = true;
+  });
+  (document.getElementById("distritoNot") as HTMLInputElement).checked =
+    data.distritoNot;
 
   [...(document.getElementById("cargo") as HTMLSelectElement).options].forEach(
     (o) => {
@@ -150,7 +172,6 @@ function loadFilters() {
 
 async function search() {
   saveFilters();
-  document.getElementById("results")!.style.display = "block";
 
   const url = buildURL();
   const res = await fetch(url);
@@ -166,19 +187,23 @@ async function search() {
 
   (document.getElementById("count") as HTMLInputElement).innerText =
     `Mostrando ${start + 1} a ${start + docs.length} de ${total}`;
-  const tbody = document.getElementById("table-results") as HTMLTableSectionElement;
+  const tbody = document.getElementById(
+    "table-results",
+  ) as HTMLTableSectionElement;
   tbody.innerHTML = "";
   docs.forEach((d) => {
     tbody.innerHTML += `
         <tr class="${d.estado.toLowerCase().replace(/\s/g, "-")}">
+          <td>${d.cargo || ""}</td>
           <td>${d.descdistrito || ""}</td>
           <td>${d.escuela || ""}</td>
-          <td>${d.cargo || ""}</td>
           <td>${d.estado || ""}</td>
           <td>${d.descnivelmodalidad || ""}</td>
           <td>${d.finoferta || ""}</td>
         </tr>`;
   });
+
+  document.getElementById("results")!.style.display = "block";
 }
 
 function next() {
@@ -190,6 +215,14 @@ function prev() {
   search();
 }
 
+function clearFilter(filter: string) {
+    [...(document.getElementById(filter) as HTMLSelectElement).options].forEach(
+      (o) => (o.selected = false),
+    );
+    (document.getElementById(`${filter}Not`) as HTMLInputElement).checked =
+      false;
+}
+
 function main() {
   loadFilters();
 
@@ -199,6 +232,13 @@ function main() {
   });
   document.getElementById("next")?.addEventListener("click", next);
   document.getElementById("prev")?.addEventListener("click", prev);
+  document
+    .querySelectorAll(".clear-filter")
+    .forEach((btn) =>
+      btn.addEventListener("click", (e) =>
+        clearFilter((e.target as HTMLButtonElement).value),
+      ),
+    );
 }
 
 document.addEventListener("DOMContentLoaded", () => main());

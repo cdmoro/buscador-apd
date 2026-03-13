@@ -74,12 +74,22 @@ h2 span {
   font-weight: normal;
 }
 
+#filters-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(300px, 1fr));
+  gap: 12px;
+}
+
 fieldset {
   margin-bottom: 12px;
 }
 input,
 select {
   margin: 4px;
+}
+
+select[multiple] {
+  width: 300px;
 }
 
 #results {
@@ -102,4 +112,10 @@ th {
 }
 button {
   margin: 4px;
+}
+
+@media (max-width: 600px) {
+  #filters-wrapper {
+    grid-template-columns: 1fr;
+  }
 }
