@@ -66,11 +66,11 @@ body {
 
 h2 {
   font-family: 'Encode Sans', sans-serif;
-  font-size: 5rem;
+  font-size: 2rem;
 }
 
 h2 span {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: normal;
 }
 
@@ -81,6 +81,11 @@ input,
 select {
   margin: 4px;
 }
+
+#results {
+  display: none;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;

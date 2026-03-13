@@ -36,6 +36,7 @@ function buildFilters() {
     ...(document.getElementById("modalidad") as HTMLSelectElement)
       .selectedOptions,
   ].map((o) => `"${o.value}"`);
+
   if (modalidad.length) {
     let q = `descnivelmodalidad:(${modalidad.join(" OR ")})`;
     if ((document.getElementById("modalidadNot") as HTMLInputElement).checked)
@@ -56,13 +57,23 @@ function buildFilters() {
     fq.push(q);
   }
 
-  const estado = (document.getElementById("estado") as HTMLInputElement).value;
-  if (estado) fq.push(`estado:${estado}`);
+  const estado = [
+    ...(document.getElementById("estado") as HTMLSelectElement).selectedOptions,
+  ].map((o) => `"${o.value}"`);
+  if (estado.length) {
+    let q = `estado:(${estado.join(" OR ")})`;
+    if ((document.getElementById("estadoNot") as HTMLInputElement).checked)
+      q = "-" + q;
+    fq.push(q);
+  }
+
   const escuela = (document.getElementById("escuela") as HTMLInputElement)
     .value;
   if (escuela) fq.push(`escuela:${escuela}`);
+
   const ige = (document.getElementById("ige") as HTMLInputElement).value;
   if (ige) fq.push(`ige:${ige}`);
+
   return fq;
 }
 
@@ -88,7 +99,12 @@ function saveFilters() {
         .selectedOptions,
     ].map((o) => o.value),
     cargoNot: (document.getElementById("cargoNot") as HTMLInputElement).checked,
-    estado: (document.getElementById("estado") as HTMLInputElement).value,
+    estado: [
+      ...(document.getElementById("estado") as HTMLSelectElement)
+        .selectedOptions,
+    ].map((o) => o.value),
+    estadoNot: (document.getElementById("estadoNot") as HTMLInputElement)
+      .checked,
     ige: (document.getElementById("ige") as HTMLInputElement).value,
     escuela: (document.getElementById("escuela") as HTMLInputElement).value,
   };
@@ -98,35 +114,49 @@ function saveFilters() {
 function loadFilters() {
   const saved = localStorage.getItem("apdFilters");
   if (!saved) return;
+
   const data = JSON.parse(saved);
+
   [
     ...(document.getElementById("modalidad") as HTMLSelectElement).options,
   ].forEach((o) => {
     if (data.modalidad.includes(o.value)) o.selected = true;
   });
+
   (document.getElementById("modalidadNot") as HTMLInputElement).checked =
     data.modalidadNot;
+
   (document.getElementById("distrito") as HTMLInputElement).value =
     data.distrito;
+
   [...(document.getElementById("cargo") as HTMLSelectElement).options].forEach(
     (o) => {
       if (data.cargo.includes(o.value)) o.selected = true;
     },
   );
+
   (document.getElementById("cargoNot") as HTMLInputElement).checked =
     data.cargoNot;
-  (document.getElementById("estado") as HTMLInputElement).value = data.estado;
+  [...(document.getElementById("estado") as HTMLSelectElement).options].forEach(
+    (o) => {
+      if (data.estado.includes(o.value)) o.selected = true;
+    },
+  );
+  (document.getElementById("estadoNot") as HTMLInputElement).checked =
+    data.estadoNot;
   (document.getElementById("ige") as HTMLInputElement).value = data.ige;
   (document.getElementById("escuela") as HTMLInputElement).value = data.escuela;
 }
 
 async function search() {
   saveFilters();
+  document.getElementById("results")!.style.display = "block";
+
   const url = buildURL();
   const res = await fetch(url);
   const buffer = await res.arrayBuffer();
 
-  const decoder = new TextDecoder('iso-8859-1');
+  const decoder = new TextDecoder("iso-8859-1");
   const text = decoder.decode(buffer);
 
   const data = JSON.parse(text) as Response;
@@ -135,8 +165,8 @@ async function search() {
   const total = data.response.numFound;
 
   (document.getElementById("count") as HTMLInputElement).innerText =
-    `Resultados: ${total}`;
-  const tbody = document.getElementById("results") as HTMLTableSectionElement;
+    `Mostrando ${start + 1} a ${start + docs.length} de ${total}`;
+  const tbody = document.getElementById("table-results") as HTMLTableSectionElement;
   tbody.innerHTML = "";
   docs.forEach((d) => {
     tbody.innerHTML += `

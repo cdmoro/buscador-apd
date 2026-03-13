@@ -1026,14 +1026,17 @@
       <fieldset>
         <legend>Estado</legend>
         <select id="estado" multiple size="6">
-          <option>anulada</option>
-          <option>cerrada</option>
-          <option>desierta</option>
-          <option>designada</option>
-          <option>finalizada</option>
-          <option>publicada</option>
-          <option>renunciada</option>
+          <option value="anulada">Anulada</option>
+          <option value="cerrada">Cerrada</option>
+          <option value="desierta">Desierta</option>
+          <option value="designada">Designada</option>
+          <option value="finalizada">Finalizada</option>
+          <option value="publicada">Publicada</option>
+          <option value="renunciada">Renunciada</option>
         </select>
+        <label
+          ><input type="checkbox" id="estadoNot" /> Excluir selección</label
+        >
       </fieldset>
 
       <fieldset>
@@ -1050,25 +1053,29 @@
       <button type="reset">Limpiar</button>
     </form>
 
-    <div>
-      <button id="prev">Prev</button>
-      <button id="next">Next</button>
-      <span id="count"></span>
-    </div>
+    <div id="results">
+      <h2>Resultados</h2>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Distrito</th>
-          <th>Escuela</th>
-          <th>Cargo</th>
-          <th>Estado</th>
-          <th>Modalidad</th>
-          <th>Cierre</th>
-        </tr>
-      </thead>
-      <tbody id="results"></tbody>
-    </table>
+      <div>
+        <button id="prev">Prev</button>
+        <button id="next">Next</button>
+        <span id="count"></span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Distrito</th>
+            <th>Escuela</th>
+            <th>Cargo</th>
+            <th>Estado</th>
+            <th>Modalidad</th>
+            <th>Cierre</th>
+          </tr>
+        </thead>
+        <tbody id="table-results"></tbody>
+      </table>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
