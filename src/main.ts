@@ -6,6 +6,16 @@ const endpoint =
 let start = 0;
 const rows = 20;
 
+const estadoSelect = document.querySelector<HTMLSelectElement>("#estado")!;
+const estadoNotCheckbox =
+  document.querySelector<HTMLInputElement>("#estadoNot")!;
+const distritoSelect = document.querySelector<HTMLSelectElement>("#distrito")!;
+const distritoNotCheckbox = document.querySelector<HTMLInputElement>("#distritoNot")!;
+const cargoSelect = document.querySelector<HTMLSelectElement>("#cargo")!;
+const cargoNotCheckbox = document.querySelector<HTMLInputElement>("#cargoNot")!;
+const modalidadSelect = document.querySelector<HTMLSelectElement>("#modalidad")!;
+const modalidadNotCheckbox = document.querySelector<HTMLInputElement>("#modalidadNot")!;
+
 // --- Theme ---
 const themeSelect = document.getElementById("theme") as HTMLSelectElement;
 function applyTheme(value: string) {
@@ -65,13 +75,10 @@ function buildFilters() {
     fq.push(q);
   }
 
-  const estado = [
-    ...(document.getElementById("estado") as HTMLSelectElement).selectedOptions,
-  ].map((o) => `"${o.value}"`);
+  const estado = [...estadoSelect.selectedOptions].map((o) => `"${o.value}"`);
   if (estado.length) {
     let q = `estado:(${estado.join(" OR ")})`;
-    if ((document.getElementById("estadoNot") as HTMLInputElement).checked)
-      q = "-" + q;
+    if (estadoNotCheckbox.checked) q = "-" + q;
     fq.push(q);
   }
 
@@ -115,12 +122,8 @@ function saveFilters() {
     ].map((o) => o.value),
     cargoNot: (document.getElementById("cargoNot") as HTMLInputElement).checked,
 
-    estado: [
-      ...(document.getElementById("estado") as HTMLSelectElement)
-        .selectedOptions,
-    ].map((o) => o.value),
-    estadoNot: (document.getElementById("estadoNot") as HTMLInputElement)
-      .checked,
+    estado: [...estadoSelect.selectedOptions].map((o) => o.value),
+    estadoNot: estadoNotCheckbox.checked,
 
     ige: (document.getElementById("ige") as HTMLInputElement).value,
     escuela: (document.getElementById("escuela") as HTMLInputElement).value,
@@ -159,13 +162,10 @@ function loadFilters() {
 
   (document.getElementById("cargoNot") as HTMLInputElement).checked =
     data.cargoNot;
-  [...(document.getElementById("estado") as HTMLSelectElement).options].forEach(
-    (o) => {
-      if (data.estado.includes(o.value)) o.selected = true;
-    },
-  );
-  (document.getElementById("estadoNot") as HTMLInputElement).checked =
-    data.estadoNot;
+  [...estadoSelect.options].forEach((o) => {
+    if (data.estado.includes(o.value)) o.selected = true;
+  });
+  estadoNotCheckbox.checked = data.estadoNot;
   (document.getElementById("ige") as HTMLInputElement).value = data.ige;
   (document.getElementById("escuela") as HTMLInputElement).value = data.escuela;
 }
@@ -184,9 +184,13 @@ async function search() {
 
   const docs = data.response.docs;
   const total = data.response.numFound;
+  const dateFormatter = new Intl.DateTimeFormat("es-AR", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 
   (document.getElementById("count") as HTMLInputElement).innerText =
-    `Mostrando ${start + 1} a ${start + docs.length} de ${total}`;
+    `Mostrando ${start + 1} a ${start + docs.length} de ${new Intl.NumberFormat("es-AR").format(total)} resultados`;
   const tbody = document.getElementById(
     "table-results",
   ) as HTMLTableSectionElement;
@@ -199,7 +203,7 @@ async function search() {
           <td>${d.escuela || ""}</td>
           <td>${d.estado || ""}</td>
           <td>${d.descnivelmodalidad || ""}</td>
-          <td>${d.finoferta || ""}</td>
+          <td>${d.finoferta ? dateFormatter.format(new Date(d.finoferta)) : ""}</td>
         </tr>`;
   });
 
@@ -216,16 +220,49 @@ function prev() {
 }
 
 function clearFilter(filter: string) {
-    [...(document.getElementById(filter) as HTMLSelectElement).options].forEach(
-      (o) => (o.selected = false),
-    );
-    (document.getElementById(`${filter}Not`) as HTMLInputElement).checked =
-      false;
+  [...(document.getElementById(filter) as HTMLSelectElement).options].forEach(
+    (o) => (o.selected = false),
+  );
+  (document.getElementById(`${filter}Not`) as HTMLInputElement).checked = false;
+  document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML = "<span class=\"filter-chip\">Todos</span>";
+}
+
+function updateActiveFilters(filter: string) {
+  const selected = [...(document.getElementById(filter) as HTMLSelectElement).selectedOptions].map(o => `<span class="filter-chip" title="${o.value}">${o.value}</span>`);
+  let text = "<span class=\"filter-chip\">Todos</span>";
+
+  if (selected.length > 0) {
+    if ((document.getElementById(`${filter}Not`) as HTMLInputElement).checked) {
+      text = "<span class=\"filter-chip\">Todos</span> excepto " + selected.join("");
+    } else {
+      text = selected.join("");
+    }
+  }
+  document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML = text;
+}
+
+function updateAllActiveFilters() {
+  ["modalidad", "distrito", "cargo", "estado"].forEach(updateActiveFilters);
 }
 
 function main() {
   loadFilters();
 
+  cargoSelect.addEventListener("change", () => updateActiveFilters("cargo"));
+  cargoNotCheckbox.addEventListener("change", () => updateActiveFilters("cargo"));
+  distritoSelect.addEventListener("change", () => updateActiveFilters("distrito"));
+  distritoNotCheckbox.addEventListener("change", () => updateActiveFilters("distrito"));
+  modalidadSelect.addEventListener("change", () => updateActiveFilters("modalidad"));
+  modalidadNotCheckbox.addEventListener("change", () => updateActiveFilters("modalidad"));
+  estadoSelect.addEventListener("change", () => updateActiveFilters("estado"));
+  estadoNotCheckbox.addEventListener("change", () => updateActiveFilters("estado"));
+
+  updateAllActiveFilters();
+
+  document.getElementById("reset-form")?.addEventListener("click", () => {
+    (document.getElementById("filters") as HTMLFormElement).reset();
+    updateAllActiveFilters();
+  });
   document.getElementById("search")?.addEventListener("click", () => {
     start = 0;
     search();
