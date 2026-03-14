@@ -201,6 +201,9 @@ async function search() {
     dateStyle: "medium",
     timeStyle: "short",
   });
+  const dateMediumFormatter = new Intl.DateTimeFormat("es-AR", {
+    dateStyle: "medium",
+  });
 
   (document.getElementById("count") as HTMLInputElement).innerText =
     `Mostrando ${start + 1} a ${start + docs.length} de ${new Intl.NumberFormat("es-AR").format(total)} resultados`;
@@ -234,6 +237,33 @@ async function search() {
             <h5 class="card-title">${d.cargo || ""}</h5>
             <h6 class="card-subtitle mb-2 text-muted">${d.descdistrito || ""} | ${d.descnivelmodalidad || ""}</h6>
             <p class="card-text">Cierre de oferta: ${d.finoferta ? dateFormatter.format(new Date(d.finoferta)) : ""}</p>
+            <div>
+              <details>
+                <summary>Detalles</summary>
+                <div><strong>Nivel</strong>: ${d.descnivelmodalidad || ""}</div>
+                <div><strong>Domicilio</strong>: ${d.domiciliodesempeno || ""}</div>
+                <div><strong>Área</strong>: ${d.areaincumbencia || ""}</div>
+                <div><strong>Dirección a cargo</strong>: ${d.acargodireccion || "No"}</div>
+                <div><strong>Curso/División</strong>: ${d.cursodivision || ""}</div>
+                <div><strong>Turno</strong>: ${d.turno || ""}</div>
+                <div><strong>Jornada</strong>: ${d.jornada || ""}</div>
+                <div><strong>Revista</strong>: ${d.supl_revista || ""}</div>
+                <div><strong>Infectocontagiosa en el establecimiento</strong>: ${d.infectocontagiosa || "No"}</div>
+                <hr>
+                <div><strong>Toma de posesión</strong>: ${d.tomaposesion ? dateFormatter.format(new Date(d.tomaposesion)) : ""}</div>
+                <div><strong>Inicio oferta</strong>: ${d.iniciooferta ? dateFormatter.format(new Date(d.iniciooferta)) : ""}</div>
+                <div><strong>Desde</strong>: ${d.supl_desde ? dateMediumFormatter.format(new Date(d.supl_desde)) : ""}</div>
+                <div><strong>Hasta</strong>: ${d.supl_hasta ? dateMediumFormatter.format(new Date(d.supl_hasta)) : ""}</div>
+                <hr>
+                <div><strong>Lunes</strong>: ${d.lunes || ""}</div>
+                <div><strong>Martes</strong>: ${d.martes || ""}</div>
+                <div><strong>Miércoles</strong>: ${d.miercoles || ""}</div>
+                <div><strong>Jueves</strong>: ${d.jueves || ""}</div>
+                <div><strong>Viernes</strong>: ${d.viernes || ""}</div>
+                <hr>
+                <div><strong>Observaciones</strong>: ${d.observaciones || ""}</div>
+              </details>
+            </div>
           </div>
         </div>
       </div>
