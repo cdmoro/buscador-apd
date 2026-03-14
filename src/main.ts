@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import "./style.css";
 import type { CourseStatus, Response } from "./types";
+import { DISTRITOS, MODALIDADES, ESTADOS, CARGOS } from './filters';
 
 const endpoint =
   "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select";
@@ -46,7 +47,7 @@ function buildFilters() {
   const modalidad = [
     ...(document.getElementById("modalidad") as HTMLSelectElement)
       .selectedOptions,
-  ].map((o) => `"${o.value}"`);
+  ].map((o) => `"${o.textContent}"`);
 
   if (modalidad.length) {
     let q = `descnivelmodalidad:(${modalidad.join(" OR ")})`;
@@ -58,7 +59,7 @@ function buildFilters() {
   const distrito = [
     ...(document.getElementById("distrito") as HTMLSelectElement)
       .selectedOptions,
-  ].map((o) => `"${o.value}"`);
+  ].map((o) => `"${o.textContent}"`);
   if (distrito.length) {
     let q = `descdistrito:(${distrito.join(" OR ")})`;
     if ((document.getElementById("distritoNot") as HTMLInputElement).checked)
@@ -68,7 +69,7 @@ function buildFilters() {
 
   const cargo = [
     ...(document.getElementById("cargo") as HTMLSelectElement).selectedOptions,
-  ].map((o) => `"${o.value}"`);
+  ].map((o) => `"${o.textContent}"`);
   if (cargo.length) {
     let q = `cargo:(${cargo.join(" OR ")})`;
     if ((document.getElementById("cargoNot") as HTMLInputElement).checked)
@@ -227,12 +228,12 @@ async function search() {
     cardResults.innerHTML += `
       <div class="col">
         <div class="card ${courseStatus} border-${courseStatus} h-100">
-          <div class="card-header bg-${courseStatus} text-bg-${courseStatus}">${d.estado || ""} <a href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}" target="_blank">Listar postulados</a></div>
+          <div class="card-header bg-${courseStatus} text-bg-${courseStatus} d-flex justify-content-between">${d.estado || ""} <a class="text-bg-${courseStatus}" href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}" target="_blank">Postulados</a></div>
           <div class="card-body">
             <div class="card-subtitle mb-2 text-muted">${d.escuela || ""}</div>
             <h5 class="card-title">${d.cargo || ""}</h5>
             <h6 class="card-subtitle mb-2 text-muted">${d.descdistrito || ""} | ${d.descnivelmodalidad || ""}</h6>
-            <p class="card-text">Fin de oferta: ${d.finoferta ? dateFormatter.format(new Date(d.finoferta)) : ""}</p>
+            <p class="card-text">Cierre de oferta: ${d.finoferta ? dateFormatter.format(new Date(d.finoferta)) : ""}</p>
           </div>
         </div>
       </div>
@@ -252,7 +253,7 @@ function clearFilter(filter: string) {
 }
 
 function updateActiveFilters(filter: string) {
-  const selected = [...(document.getElementById(filter) as HTMLSelectElement).selectedOptions].map(o => `<span class="badge text-bg-primary" title="${o.value}">${o.value}</span>`);
+  const selected = [...(document.getElementById(filter) as HTMLSelectElement).selectedOptions].map(o => `<span class="badge text-bg-primary" title="${o.textContent}">${o.textContent}</span>`);
   let text = "<span class=\"badge text-bg-primary\">Todos</span>";
 
   if (selected.length > 0) {
@@ -270,7 +271,6 @@ function updateAllActiveFilters() {
 }
 
 function renderPagination(total: number, rows: number, start: number) {
-
   const container = document.getElementById("pagination")!
   container.innerHTML = ""
 
@@ -336,7 +336,20 @@ function goToPage(page: number) {
   search();
 }
 
+function createFilters(el: HTMLElement, values: string[]) {
+  values.forEach((v, i) => {
+    const option = document.createElement("option");
+    option.value = i.toString();
+    option.textContent = v;
+    el.appendChild(option);
+  });
+}
+
 function main() {
+  createFilters(modalidadSelect, MODALIDADES);
+  createFilters(estadoSelect, ESTADOS);
+  createFilters(distritoSelect, DISTRITOS);
+  createFilters(cargoSelect, CARGOS);
   loadFilters();
 
   cargoSelect.addEventListener("change", () => updateActiveFilters("cargo"));
