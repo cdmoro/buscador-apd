@@ -1,30 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>buscador-apd</title>
+    <title>Buscador APD</title>
   </head>
   <body>
-    <header>
-      <h2>APD <span>Actos Públicos Digitales</span></h2>
-
-      <div class="actions">
-        <select class="form-select" id="theme">
-          <option value="auto">Auto</option>
-          <option value="light">Claro</option>
-          <option value="dark">Oscuro</option>
-        </select>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <h1>APD <span>Actos Públicos Digitales</span></h1>
+        <div class="actions">
+          <select class="form-select form-select-sm" id="theme">
+            <option value="auto">Auto</option>
+            <option value="light">Claro</option>
+            <option value="dark">Oscuro</option>
+          </select>
+        </div>
       </div>
-    </header>
+    </nav>
 
-    <main>
+    <main class="mt-4 container">
       <div class="card">
         <div class="card-body">
+          <h2 class="card-title">Filtros</h2>
           <form id="filters">
-            <div id="filters-wrapper">
-              <div class="form-control">
+            <div id="filters-wrapper" class="mb-3">
+              <div>
                 <label for="modalidad">Modalidad</label>
                 <div class="input-group">
                   <select class="form-select" id="modalidad" multiple size="1">
@@ -40,7 +42,7 @@
                     <option>superior</option>
                     <option>tecnico profesional</option>
                   </select>
-                  <button type="button" class="clear-filter" value="modalidad">
+                  <button type="button" class="btn btn-outline-secondary clear-filter" value="modalidad">
                     &times;
                   </button>
                 </div>
@@ -52,7 +54,7 @@
                   selección</label
                 >
               </div>
-              <div class="form-control">
+              <div>
                 <label for="distrito">Distrito</label>
                 <div class="input-group">
                   <select class="form-select" id="distrito" multiple size="1">
@@ -192,7 +194,7 @@
                     <option>villarino</option>
                     <option>zarate</option>
                   </select>
-                  <button type="button" class="clear-filter" value="distrito">
+                  <button type="button" class="btn btn-outline-secondary clear-filter" value="distrito">
                     &times;
                   </button>
                 </div>
@@ -204,7 +206,7 @@
                   selección</label
                 >
               </div>
-              <div class="form-control">
+              <div>
                 <label for="cargo">Cargo</label>
                 <div class="input-group">
                   <select class="form-select" id="cargo" multiple size="1">
@@ -1316,7 +1318,7 @@
                     <option>vivero (vvr)</option>
                     <option>ética y deontología profesional (edp)</option>
                   </select>
-                  <button type="button" class="clear-filter" value="cargo">
+                  <button type="button" class="btn btn-outline-secondary clear-filter" value="cargo">
                     &times;
                   </button>
                 </div>
@@ -1327,7 +1329,7 @@
                   ><input type="checkbox" id="cargoNot" /> Excluir selección</label
                 >
               </div>
-              <div class="form-control">
+              <div>
                 <label for="estado">Estado</label>
                 <div class="input-group">
                   <select class="form-select" id="estado" multiple size="1">
@@ -1339,7 +1341,7 @@
                     <option value="publicada">Publicada</option>
                     <option value="renunciada">Renunciada</option>
                   </select>
-                  <button type="button" class="clear-filter" value="estado">
+                  <button type="button" class="btn btn-outline-secondary clear-filter" value="estado">
                     &times;
                   </button>
                 </div>
@@ -1350,30 +1352,32 @@
                   ><input type="checkbox" id="estadoNot" /> Excluir selección</label
                 >
               </div>
-              <div class="form-control">
+              <div>
                 <label for="ige">IGE</label>
-                <input id="ige" type="text" />
+                <input class="form-control" id="ige" type="text" />
               </div>
-              <div class="form-control">
+              <div>
                 <label for="escuela">Escuela</label>
-                <input id="escuela" type="text" />
+                <input class="form-control" id="escuela" type="text" />
               </div>
             </div>
-            <button type="button" id="search">Buscar</button>
-            <button type="button" id="reset-form">Limpiar selección</button>
+            <button class="btn btn-primary" type="button" id="search">Buscar</button>
+            <button class="btn btn-secondary" type="button" id="reset-form">Limpiar selección</button>
           </form>
         </div>
       </div>
 
       <div id="results" class="card">
         <div class="card-body">
-          <h2>Resultados</h2>
-          <div>
-            <button id="prev">Prev</button>
-            <button id="next">Next</button>
-            <span id="count"></span>
+          <h2 class="card-title">Resultados</h2>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <button class="btn btn-secondary btn-sm" id="prev">Atrás</button>
+              <button class="btn btn-secondary btn-sm" id="next">Siguiente</button>
+            </div>
+            <span id="count" class="text-muted"></span>
           </div>
-          <table>
+          <table class="table table-striped table-hover">
             <thead>
               <tr>
                 <th>Cargo</th>

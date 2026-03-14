@@ -1,3 +1,4 @@
+import 'bootstrap/dist/css/bootstrap.min.css'
 import "./style.css";
 import type { Response } from "./types";
 
@@ -21,13 +22,13 @@ const themeSelect = document.getElementById("theme") as HTMLSelectElement;
 function applyTheme(value: string) {
   if (value === "auto") {
     document.documentElement.setAttribute(
-      "data-theme",
+      "data-bs-theme",
       window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light",
     );
   } else {
-    document.documentElement.setAttribute("data-theme", value);
+    document.documentElement.setAttribute("data-bs-theme", value);
   }
   localStorage.setItem("apdTheme", value);
 }
@@ -224,16 +225,16 @@ function clearFilter(filter: string) {
     (o) => (o.selected = false),
   );
   (document.getElementById(`${filter}Not`) as HTMLInputElement).checked = false;
-  document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML = "<span class=\"filter-chip\">Todos</span>";
+  document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML = "<span class=\"badge text-bg-primary\">Todos</span>";
 }
 
 function updateActiveFilters(filter: string) {
-  const selected = [...(document.getElementById(filter) as HTMLSelectElement).selectedOptions].map(o => `<span class="filter-chip" title="${o.value}">${o.value}</span>`);
-  let text = "<span class=\"filter-chip\">Todos</span>";
+  const selected = [...(document.getElementById(filter) as HTMLSelectElement).selectedOptions].map(o => `<span class="badge text-bg-primary" title="${o.value}">${o.value}</span>`);
+  let text = "<span class=\"badge text-bg-primary\">Todos</span>";
 
   if (selected.length > 0) {
     if ((document.getElementById(`${filter}Not`) as HTMLInputElement).checked) {
-      text = "<span class=\"filter-chip\">Todos</span> excepto " + selected.join("");
+      text = "<span class=\"badge text-bg-primary\">Todos</span> excepto " + selected.join("");
     } else {
       text = selected.join("");
     }
