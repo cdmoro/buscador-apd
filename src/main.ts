@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import "./style.css";
-import type { Response } from "./types";
+import type { CourseStatus, Response } from "./types";
 
 const endpoint =
   "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select";
@@ -171,6 +171,17 @@ function loadFilters() {
   (document.getElementById("escuela") as HTMLInputElement).value = data.escuela;
 }
 
+function getCourseVariant(status: CourseStatus) {
+  switch (status) {
+    case "Publicada":
+      return "success";
+    case "Anulada":
+      return "warning";
+    default:
+      return "secondary";
+  }
+}
+
 async function search() {
   saveFilters();
 
@@ -192,32 +203,44 @@ async function search() {
 
   (document.getElementById("count") as HTMLInputElement).innerText =
     `Mostrando ${start + 1} a ${start + docs.length} de ${new Intl.NumberFormat("es-AR").format(total)} resultados`;
-  const tbody = document.getElementById(
-    "table-results",
-  ) as HTMLTableSectionElement;
-  tbody.innerHTML = "";
+  // const tbody = document.getElementById(
+  //   "table-results",
+  // ) as HTMLTableSectionElement;
+  // tbody.innerHTML = "";
+
+  const cardResults = document.querySelector(".card-results") as HTMLDivElement;
+  cardResults.innerHTML = "";
+
   docs.forEach((d) => {
-    tbody.innerHTML += `
-        <tr class="${d.estado.toLowerCase().replace(/\s/g, "-")}">
-          <td>${d.cargo || ""}</td>
-          <td>${d.descdistrito || ""}</td>
-          <td>${d.escuela || ""}</td>
-          <td>${d.estado || ""}</td>
-          <td>${d.descnivelmodalidad || ""}</td>
-          <td>${d.finoferta ? dateFormatter.format(new Date(d.finoferta)) : ""}</td>
-        </tr>`;
+    const courseStatus = getCourseVariant(d.estado);
+
+    // tbody.innerHTML += `
+    //     <tr class="${courseStatus}">
+    //       <td><span class="badge text-bg-${courseStatus}">${d.estado || ""}</span></td>
+    //       <td>${d.cargo || ""}</td>
+    //       <td>${d.descdistrito || ""}</td>
+    //       <td>${d.escuela || ""}</td>
+    //       <td>${d.descnivelmodalidad || ""}</td>
+    //       <td>${d.finoferta ? dateFormatter.format(new Date(d.finoferta)) : ""}</td>
+    //     </tr>`;
+      
+    cardResults.innerHTML += `
+      <div class="col">
+        <div class="card ${courseStatus} border-${courseStatus} h-100">
+          <div class="card-header bg-${courseStatus} text-bg-${courseStatus}">${d.estado || ""} <a href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}" target="_blank">Listar postulados</a></div>
+          <div class="card-body">
+            <div class="card-subtitle mb-2 text-muted">${d.escuela || ""}</div>
+            <h5 class="card-title">${d.cargo || ""}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">${d.descdistrito || ""} | ${d.descnivelmodalidad || ""}</h6>
+            <p class="card-text">Fin de oferta: ${d.finoferta ? dateFormatter.format(new Date(d.finoferta)) : ""}</p>
+          </div>
+        </div>
+      </div>
+    `;
   });
 
+  renderPagination(total, rows, start);
   document.getElementById("results")!.style.display = "block";
-}
-
-function next() {
-  start += rows;
-  search();
-}
-function prev() {
-  start = Math.max(0, start - rows);
-  search();
 }
 
 function clearFilter(filter: string) {
@@ -246,6 +269,73 @@ function updateAllActiveFilters() {
   ["modalidad", "distrito", "cargo", "estado"].forEach(updateActiveFilters);
 }
 
+function renderPagination(total: number, rows: number, start: number) {
+
+  const container = document.getElementById("pagination")!
+  container.innerHTML = ""
+
+  const totalPages = Math.ceil(total / rows)
+  const currentPage = Math.floor(start / rows) + 1
+
+  function createItem(page: number, label?: string, disabled = false, active = false) {
+
+    const li = document.createElement("li")
+    li.className = "page-item"
+
+    if (disabled) li.classList.add("disabled")
+    if (active) li.classList.add("active")
+
+    const a = document.createElement("a")
+    a.className = "page-link"
+    a.href = "#"
+    a.textContent = label ?? page.toString()
+
+    a.onclick = (e) => {
+      e.preventDefault()
+      goToPage(page)
+    }
+
+    li.appendChild(a)
+    container.appendChild(li)
+  }
+
+  function createDots() {
+    const li = document.createElement("li")
+    li.className = "page-item disabled"
+    li.innerHTML = `<span class="page-link">...</span>`
+    container.appendChild(li)
+  }
+
+  createItem(currentPage - 1, "«", currentPage === 1)
+
+  const window = 2
+  let startPage = Math.max(1, currentPage - window)
+  let endPage = Math.min(totalPages, currentPage + window)
+
+  if (startPage > 1) {
+    createItem(1)
+
+    if (startPage > 2) createDots()
+  }
+
+  for (let p = startPage; p <= endPage; p++) {
+    createItem(p, undefined, false, p === currentPage)
+  }
+
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) createDots()
+
+    createItem(totalPages)
+  }
+
+  createItem(currentPage + 1, "»", currentPage === totalPages)
+}
+
+function goToPage(page: number) {
+  start = (page - 1) * rows;
+  search();
+}
+
 function main() {
   loadFilters();
 
@@ -268,8 +358,6 @@ function main() {
     start = 0;
     search();
   });
-  document.getElementById("next")?.addEventListener("click", next);
-  document.getElementById("prev")?.addEventListener("click", prev);
   document
     .querySelectorAll(".clear-filter")
     .forEach((btn) =>
