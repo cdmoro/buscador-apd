@@ -231,7 +231,14 @@ async function search() {
     cardResults.innerHTML += `
       <div class="col">
         <div class="card ${courseStatus} border-${courseStatus} h-100">
-          <div class="card-header bg-${courseStatus} text-bg-${courseStatus} d-flex justify-content-between">${d.estado || ""} <a class="text-bg-${courseStatus}" href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}" target="_blank">Postulados</a></div>
+          <div class="card-header bg-${courseStatus} text-bg-${courseStatus} d-flex justify-content-between">
+            ${d.estado || ""}
+            <a class="text-bg-${courseStatus}" href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}" target="_blank">
+              <svg class="icon" aria-hidden="true">
+                <use href="/icons.svg#documentation-icon"></use>
+              </svg>
+            </a>
+          </div>
           <div class="card-body">
             <div class="card-subtitle mb-2 text-muted">${d.escuela || ""}</div>
             <h5 class="card-title">${d.cargo || ""}</h5>

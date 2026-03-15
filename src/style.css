@@ -17,6 +17,16 @@ h1 span {
   font-weight: normal;
 }
 
+.icon {
+  width: 16px;
+  height: 16px;
+}
+
+body > nav .icon {
+  width: 24px;
+  height: 24px;
+}
+
 #filters-wrapper {
   display: grid;
   grid-template-columns: repeat(2, minmax(300px, 1fr));
