@@ -1,7 +1,7 @@
-import 'bootstrap/dist/css/bootstrap.min.css'
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
 import type { CourseStatus, Response } from "./types";
-import { DISTRITOS, MODALIDADES, ESTADOS, CARGOS } from './filters';
+import { DISTRITOS, MODALIDADES, ESTADOS, CARGOS } from "./filters";
 
 const endpoint =
   "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select";
@@ -12,11 +12,18 @@ const estadoSelect = document.querySelector<HTMLSelectElement>("#estado")!;
 const estadoNotCheckbox =
   document.querySelector<HTMLInputElement>("#estadoNot")!;
 const distritoSelect = document.querySelector<HTMLSelectElement>("#distrito")!;
-const distritoNotCheckbox = document.querySelector<HTMLInputElement>("#distritoNot")!;
+const distritoNotCheckbox =
+  document.querySelector<HTMLInputElement>("#distritoNot")!;
 const cargoSelect = document.querySelector<HTMLSelectElement>("#cargo")!;
 const cargoNotCheckbox = document.querySelector<HTMLInputElement>("#cargoNot")!;
-const modalidadSelect = document.querySelector<HTMLSelectElement>("#modalidad")!;
-const modalidadNotCheckbox = document.querySelector<HTMLInputElement>("#modalidadNot")!;
+const modalidadSelect =
+  document.querySelector<HTMLSelectElement>("#modalidad")!;
+const modalidadNotCheckbox =
+  document.querySelector<HTMLInputElement>("#modalidadNot")!;
+
+const cardResults = document.querySelector("#results") as HTMLDivElement;
+const filtersFormCard = document.querySelector("#filters-form") as HTMLFormElement;
+const filterCardGroup = document.querySelector("#filter-card-group") as HTMLDivElement;
 
 // --- Theme ---
 const themeSelect = document.getElementById("theme") as HTMLSelectElement;
@@ -212,30 +219,43 @@ async function search() {
   // ) as HTMLTableSectionElement;
   // tbody.innerHTML = "";
 
-  const cardResults = document.querySelector(".card-results") as HTMLDivElement;
-  cardResults.innerHTML = "";
+  cardResults.classList.remove("card-results-empty");
+  const cardResultsGrid = document.querySelector(
+    ".card-results",
+  ) as HTMLDivElement;
+  cardResultsGrid.innerHTML = "";
 
-  docs.forEach((d) => {
-    const courseStatus = getCourseVariant(d.estado);
+  // filtersFormCard.style.display = "none";
 
-    // tbody.innerHTML += `
-    //     <tr class="${courseStatus}">
-    //       <td><span class="badge text-bg-${courseStatus}">${d.estado || ""}</span></td>
-    //       <td>${d.cargo || ""}</td>
-    //       <td>${d.descdistrito || ""}</td>
-    //       <td>${d.escuela || ""}</td>
-    //       <td>${d.descnivelmodalidad || ""}</td>
-    //       <td>${d.finoferta ? dateFormatter.format(new Date(d.finoferta)) : ""}</td>
-    //     </tr>`;
-      
-    cardResults.innerHTML += `
+  if (docs.length === 0) {
+    cardResults.classList.add("card-results-empty");
+    cardResultsGrid.className = "card-results";
+    cardResultsGrid.innerHTML = `<div class="alert alert-info mb-0" role="alert">
+      No se encontraron resultados para los filtros seleccionados.
+    </div>`;
+  } else {
+    cardResultsGrid.className = "card-results row row-cols-1 row-cols-md-3 g-4";
+    docs.forEach((d) => {
+      const courseStatus = getCourseVariant(d.estado);
+
+      // tbody.innerHTML += `
+      //     <tr class="${courseStatus}">
+      //       <td><span class="badge text-bg-${courseStatus}">${d.estado || ""}</span></td>
+      //       <td>${d.cargo || ""}</td>
+      //       <td>${d.descdistrito || ""}</td>
+      //       <td>${d.escuela || ""}</td>
+      //       <td>${d.descnivelmodalidad || ""}</td>
+      //       <td>${d.finoferta ? dateFormatter.format(new Date(d.finoferta)) : ""}</td>
+      //     </tr>`;
+
+      cardResultsGrid.innerHTML += `
       <div class="col">
         <div class="card ${courseStatus} border-${courseStatus} h-100">
           <div class="card-header bg-${courseStatus} text-bg-${courseStatus} d-flex justify-content-between">
             ${d.estado || ""}
-            <a class="text-bg-${courseStatus}" href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}" target="_blank">
+            <a title="Listar postulados" class="text-bg-${courseStatus}" href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}" target="_blank">
               <svg class="icon" aria-hidden="true">
-                <use href="/icons.svg#documentation-icon"></use>
+                <use href="/icons.svg#list-icon"></use>
               </svg>
             </a>
           </div>
@@ -275,9 +295,10 @@ async function search() {
         </div>
       </div>
     `;
-  });
+    });
+    renderPagination(total, rows, start);
+  }
 
-  renderPagination(total, rows, start);
   document.getElementById("results")!.style.display = "block";
 }
 
@@ -286,21 +307,30 @@ function clearFilter(filter: string) {
     (o) => (o.selected = false),
   );
   (document.getElementById(`${filter}Not`) as HTMLInputElement).checked = false;
-  document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML = "<span class=\"badge text-bg-primary\">Todos</span>";
+  document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML =
+    '<span class="badge text-bg-primary">Todos</span>';
 }
 
 function updateActiveFilters(filter: string) {
-  const selected = [...(document.getElementById(filter) as HTMLSelectElement).selectedOptions].map(o => `<span class="badge text-bg-primary" title="${o.textContent}">${o.textContent}</span>`);
-  let text = "<span class=\"badge text-bg-primary\">Todos</span>";
+  const selected = [
+    ...(document.getElementById(filter) as HTMLSelectElement).selectedOptions,
+  ].map(
+    (o) =>
+      `<span class="badge text-bg-primary" title="${o.textContent}">${o.textContent}</span>`,
+  );
+  let text = '<span class="badge text-bg-primary">Todos</span>';
 
   if (selected.length > 0) {
     if ((document.getElementById(`${filter}Not`) as HTMLInputElement).checked) {
-      text = "<span class=\"badge text-bg-primary\">Todos</span> excepto " + selected.join("");
+      text =
+        '<span class="badge text-bg-primary">Todos</span> excepto ' +
+        selected.join("");
     } else {
       text = selected.join("");
     }
   }
-  document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML = text;
+  document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML =
+    text;
 }
 
 function updateAllActiveFilters() {
@@ -308,64 +338,68 @@ function updateAllActiveFilters() {
 }
 
 function renderPagination(total: number, rows: number, start: number) {
-  const container = document.getElementById("pagination")!
-  container.innerHTML = ""
+  const container = document.getElementById("pagination")!;
+  container.innerHTML = "";
 
-  const totalPages = Math.ceil(total / rows)
-  const currentPage = Math.floor(start / rows) + 1
+  const totalPages = Math.ceil(total / rows);
+  const currentPage = Math.floor(start / rows) + 1;
 
-  function createItem(page: number, label?: string, disabled = false, active = false) {
+  function createItem(
+    page: number,
+    label?: string,
+    disabled = false,
+    active = false,
+  ) {
+    const li = document.createElement("li");
+    li.className = "page-item";
 
-    const li = document.createElement("li")
-    li.className = "page-item"
+    if (disabled) li.classList.add("disabled");
+    if (active) li.classList.add("active");
 
-    if (disabled) li.classList.add("disabled")
-    if (active) li.classList.add("active")
-
-    const a = document.createElement("a")
-    a.className = "page-link"
-    a.href = "#"
-    a.textContent = label ?? page.toString()
+    const a = document.createElement("a");
+    a.className = "page-link";
+    a.href = "#";
+    a.textContent = label ?? page.toString();
 
     a.onclick = (e) => {
-      e.preventDefault()
-      goToPage(page)
-    }
+      e.preventDefault();
+      goToPage(page);
+    };
 
-    li.appendChild(a)
-    container.appendChild(li)
+    li.appendChild(a);
+    container.appendChild(li);
   }
 
   function createDots() {
-    const li = document.createElement("li")
-    li.className = "page-item disabled"
-    li.innerHTML = `<span class="page-link">...</span>`
-    container.appendChild(li)
+    const li = document.createElement("li");
+    li.className = "page-item disabled";
+    li.innerHTML = `<span class="page-link">...</span>`;
+    container.appendChild(li);
   }
 
-  createItem(currentPage - 1, "«", currentPage === 1)
+  createItem(currentPage - 1, "«", currentPage === 1);
 
-  const window = 2
-  let startPage = Math.max(1, currentPage - window)
-  let endPage = Math.min(totalPages, currentPage + window)
+  const window = 2;
+  let startPage = Math.max(1, currentPage - window);
+  let endPage = Math.min(totalPages, currentPage + window);
 
   if (startPage > 1) {
-    createItem(1)
+    createItem(1);
 
-    if (startPage > 2) createDots()
+    if (startPage > 2) createDots();
   }
 
   for (let p = startPage; p <= endPage; p++) {
-    createItem(p, undefined, false, p === currentPage)
+    createItem(p, undefined, false, p === currentPage);
   }
 
   if (endPage < totalPages) {
-    if (endPage < totalPages - 1) createDots()
+    if (endPage < totalPages - 1) createDots();
 
-    createItem(totalPages)
+    createItem(totalPages);
   }
 
-  createItem(currentPage + 1, "»", currentPage === totalPages)
+  createItem(currentPage + 1, "»", currentPage === totalPages);
 }
 
 function goToPage(page: number) {
@@ -390,13 +424,25 @@ function main() {
   loadFilters();
 
   cargoSelect.addEventListener("change", () => updateActiveFilters("cargo"));
-  cargoNotCheckbox.addEventListener("change", () => updateActiveFilters("cargo"));
-  distritoSelect.addEventListener("change", () => updateActiveFilters("distrito"));
-  distritoNotCheckbox.addEventListener("change", () => updateActiveFilters("distrito"));
-  modalidadSelect.addEventListener("change", () => updateActiveFilters("modalidad"));
-  modalidadNotCheckbox.addEventListener("change", () => updateActiveFilters("modalidad"));
+  cargoNotCheckbox.addEventListener("change", () =>
+    updateActiveFilters("cargo"),
+  );
+  distritoSelect.addEventListener("change", () =>
+    updateActiveFilters("distrito"),
+  );
+  distritoNotCheckbox.addEventListener("change", () =>
+    updateActiveFilters("distrito"),
+  );
+  modalidadSelect.addEventListener("change", () =>
+    updateActiveFilters("modalidad"),
+  );
+  modalidadNotCheckbox.addEventListener("change", () =>
+    updateActiveFilters("modalidad"),
+  );
   estadoSelect.addEventListener("change", () => updateActiveFilters("estado"));
-  estadoNotCheckbox.addEventListener("change", () => updateActiveFilters("estado"));
+  estadoNotCheckbox.addEventListener("change", () =>
+    updateActiveFilters("estado"),
+  );
 
   updateAllActiveFilters();
 

@@ -12,6 +12,10 @@ h1 {
   margin: 1rem 0;
 }
 
+h2, h3 {
+  font-family: "Encode Sans", sans-serif;
+}
+
 h1 span {
   font-size: 1rem;
   font-weight: normal;
@@ -61,6 +65,12 @@ fieldset {
 #results {
   display: none;
   margin-top: 1rem;
+}
+
+.card-results-empty {
+  .results-detail {
+    display: none !important;
+  }
 }
 
 @media (max-width: 600px) {
