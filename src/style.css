@@ -50,11 +50,7 @@ fieldset {
 }
 
 .active-filters .badge {
-  display: inline-block;
-    max-width: 100px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  max-width: 100px;
 }
 
 .hint {

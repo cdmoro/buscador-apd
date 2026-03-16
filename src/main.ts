@@ -20,10 +20,16 @@ const modalidadSelect =
   document.querySelector<HTMLSelectElement>("#modalidad")!;
 const modalidadNotCheckbox =
   document.querySelector<HTMLInputElement>("#modalidadNot")!;
+const escuelaInput = document.querySelector<HTMLInputElement>("#escuela")!;
+const igeInput = document.querySelector<HTMLInputElement>("#ige")!;
 
 const cardResults = document.querySelector("#results") as HTMLDivElement;
-const filtersFormCard = document.querySelector("#filters-form") as HTMLFormElement;
-const filterCardGroup = document.querySelector("#filter-card-group") as HTMLDivElement;
+const filtersFormCard = document.querySelector(
+  "#filters-form",
+) as HTMLFormElement;
+const filterCardGroup = document.querySelector(
+  "#filter-card-group",
+) as HTMLDivElement;
 
 // --- Theme ---
 const themeSelect = document.getElementById("theme") as HTMLSelectElement;
@@ -51,8 +57,8 @@ applyTheme(savedTheme);
 function buildFilters() {
   let fq = [];
   const activeFilters: {
-    title: string,
-    filters: string
+    title: string;
+    filters: string;
   }[] = [];
 
   const modalidad = [
@@ -62,14 +68,13 @@ function buildFilters() {
 
   if (modalidad.length) {
     let q = `descnivelmodalidad:(${modalidad.join(" OR ")})`;
-    if (modalidadNotCheckbox.checked)
-      q = "-" + q;
+    if (modalidadNotCheckbox.checked) q = "-" + q;
     fq.push(q);
   }
 
   activeFilters.push({
     title: "Modalidad",
-    filters: getActiveFiltersText("modalidad")
+    filters: getActiveFiltersText("modalidad"),
   });
 
   const distrito = [
@@ -85,7 +90,7 @@ function buildFilters() {
 
   activeFilters.push({
     title: "Distrito",
-    filters: getActiveFiltersText("distrito")
+    filters: getActiveFiltersText("distrito"),
   });
 
   const cargo = [
@@ -100,7 +105,7 @@ function buildFilters() {
 
   activeFilters.push({
     title: "Cargo",
-    filters: getActiveFiltersText("cargo")
+    filters: getActiveFiltersText("cargo"),
   });
 
   const estado = [...estadoSelect.selectedOptions].map((o) => `"${o.value}"`);
@@ -112,16 +117,16 @@ function buildFilters() {
 
   activeFilters.push({
     title: "Estado",
-    filters: getActiveFiltersText("estado")
+    filters: getActiveFiltersText("estado"),
   });
 
   const escuela = (document.getElementById("escuela") as HTMLInputElement)
     .value;
   if (escuela) {
-    fq.push(`escuela:${escuela}`)
+    fq.push(`escuela:${escuela}`);
     activeFilters.push({
       title: "Escuela",
-      filters: escuela
+      filters: escuela,
     });
   }
 
@@ -130,19 +135,23 @@ function buildFilters() {
     fq.push(`ige:${ige}`);
     activeFilters.push({
       title: "IGE",
-      filters: ige
+      filters: ige,
     });
-  };
+  }
 
-  filterCardGroup.innerHTML = activeFilters.map(af => `<div class="col">
-      ${af.title}:
-      <div class="active-filters">${af.filters}</div>
-  </div>`).join("");
+  filterCardGroup.innerHTML = `<tr>${activeFilters
+    .map(
+      (af) => `<td>
+      <small>${af.title}</small>
+      <div class="active-filters flex-nowrap">${af.filters}</div>
+  </td>`,
+    )
+    .join("")}</tr>`;
 
   return fq;
 }
 
-function buildURL() {
+function buildFetchURL() {
   const fq = buildFilters();
   let url =
     endpoint + `?q=*:*&rows=${rows}&start=${start}&sort=finoferta desc&wt=json`;
@@ -231,10 +240,55 @@ function getCourseVariant(status: CourseStatus) {
   }
 }
 
+function updateURL() {
+  const params = new URLSearchParams();
+
+  // params.set("rows", rows.toString());
+  params.set("start", start.toString());
+  // params.set("sort", sort)
+
+  const modalidad = [...modalidadSelect.selectedOptions].map((o) => o.value);
+  if (modalidad.length) {
+    params.set("modalidad", (modalidadNotCheckbox.checked ? "-" : "") + modalidad.join(","));
+  }
+
+  const distrito = [...distritoSelect.selectedOptions].map((o) => o.value);
+  if (distrito.length) {
+    params.set("distrito", (distritoNotCheckbox.checked ? "-" : "") + distrito.join(","));
+  }
+
+  const cargo = [...cargoSelect.selectedOptions].map((o) => o.value);
+  if (cargo.length) {
+    params.set("cargo", (cargoNotCheckbox.checked ? "-" : "") + cargo.join(","));
+  }
+
+  const estado = [...estadoSelect.selectedOptions].map((o) => o.value);
+  if (estado.length) {
+    params.set("estado", (estadoNotCheckbox.checked ? "-" : "") + estado.join(","));
+  }
+
+  const escuela = escuelaInput.value;
+  if (escuela) {
+    params.set("escuela", escuela);
+  }
+
+  const ige = igeInput.value;
+  if (ige) {
+    params.set("ige", ige);
+  }
+
+  history.replaceState(null, "", "?" + params.toString());
+}
+
 async function search() {
+  updateURL();
   saveFilters();
 
-  const url = buildURL();
+  document
+    .querySelectorAll(".card input, .card select, .card button")
+    .forEach((el) => ((el as HTMLInputElement).disabled = true));
+
+  const url = buildFetchURL();
   const res = await fetch(url);
   const buffer = await res.arrayBuffer();
 
@@ -266,7 +320,7 @@ async function search() {
   ) as HTMLDivElement;
   cardResultsGrid.innerHTML = "";
 
-  // filtersFormCard.style.display = "none";
+  filtersFormCard.style.display = "none";
 
   if (docs.length === 0) {
     cardResults.classList.add("card-results-empty");
@@ -295,9 +349,12 @@ async function search() {
         Miércoles: d.miercoles,
         Jueves: d.jueves,
         Viernes: d.viernes,
-      }
+      };
 
-      const daysFiltered = Object.entries(days).filter(([_k, v]) => !!v).map(([k, v]) => `<div><strong>${k}</strong>: ${v}</div>`).join("");
+      const daysFiltered = Object.entries(days)
+        .filter(([_k, v]) => !!v)
+        .map(([k, v]) => `<div><strong>${k}</strong>: ${v}</div>`)
+        .join("");
 
       cardResultsGrid.innerHTML += `
       <div class="col">
@@ -344,7 +401,11 @@ async function search() {
     renderPagination(total, rows, start);
   }
 
-  document.getElementById("results")!.style.display = "block";
+  document
+    .querySelectorAll(".card input, .card select, .card button")
+    .forEach((el) => ((el as HTMLInputElement).disabled = false));
+
+  cardResults.style.display = "block";
 }
 
 function clearFilter(filter: string) {
@@ -356,12 +417,20 @@ function clearFilter(filter: string) {
     '<span class="badge text-bg-primary">Todos</span>';
 }
 
+function formatActiveFilterLabel(label: string) {
+  if (label.length <= 13) {
+    return label;
+  }
+
+  return label.slice(0, 6) + "…" + label.slice(label.length - 6);
+}
+
 function getActiveFiltersText(filter: string) {
   const selected = [
     ...(document.getElementById(filter) as HTMLSelectElement).selectedOptions,
   ].map(
     (o) =>
-      `<span class="badge text-bg-primary" title="${o.textContent}">${o.textContent}</span>`,
+      `<span class="badge text-bg-primary" title="${o.textContent}">${formatActiveFilterLabel(o.textContent)}</span>`,
   );
   let text = '<span class="badge text-bg-primary">Todos</span>';
 
@@ -379,7 +448,8 @@ function getActiveFiltersText(filter: string) {
 }
 
 function updateActiveFilters(filter: string) {
-  document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML = getActiveFiltersText(filter);
+  document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML =
+    getActiveFiltersText(filter);
 }
 
 function updateAllActiveFilters() {
@@ -494,6 +564,11 @@ function main() {
   );
 
   updateAllActiveFilters();
+
+  document.getElementById("new-search")?.addEventListener("click", () => {
+    filtersFormCard.style.display = "block";
+    cardResults.style.display = "none";
+  });
 
   document.getElementById("reset-form")?.addEventListener("click", () => {
     (document.getElementById("filters") as HTMLFormElement).reset();
