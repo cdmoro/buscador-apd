@@ -41,25 +41,25 @@ fieldset {
   margin-bottom: 12px;
 }
 
-.hint {
-  margin-top: 5px;
-  color: var(--text);
+.active-filters {
+  display: flex;
+  gap: 0.25rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+  line-height: 1;
+}
 
-  .badge {
-    display: inline-block;
+.active-filters .badge {
+  display: inline-block;
     max-width: 100px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
+}
 
-  .active-filters {
-    display: flex;
-    gap: 0.25rem;
-    align-items: baseline;
-    flex-wrap: wrap;
-    line-height: 1;
-  }
+.hint {
+  margin-top: 5px;
+  color: var(--text);
 }
 
 #results {

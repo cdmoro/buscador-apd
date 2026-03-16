@@ -50,6 +50,10 @@ applyTheme(savedTheme);
 // --- Filters ---
 function buildFilters() {
   let fq = [];
+  const activeFilters: {
+    title: string,
+    filters: string
+  }[] = [];
 
   const modalidad = [
     ...(document.getElementById("modalidad") as HTMLSelectElement)
@@ -58,10 +62,15 @@ function buildFilters() {
 
   if (modalidad.length) {
     let q = `descnivelmodalidad:(${modalidad.join(" OR ")})`;
-    if ((document.getElementById("modalidadNot") as HTMLInputElement).checked)
+    if (modalidadNotCheckbox.checked)
       q = "-" + q;
     fq.push(q);
   }
+
+  activeFilters.push({
+    title: "Modalidad",
+    filters: getActiveFiltersText("modalidad")
+  });
 
   const distrito = [
     ...(document.getElementById("distrito") as HTMLSelectElement)
@@ -74,6 +83,11 @@ function buildFilters() {
     fq.push(q);
   }
 
+  activeFilters.push({
+    title: "Distrito",
+    filters: getActiveFiltersText("distrito")
+  });
+
   const cargo = [
     ...(document.getElementById("cargo") as HTMLSelectElement).selectedOptions,
   ].map((o) => `"${o.textContent}"`);
@@ -84,6 +98,11 @@ function buildFilters() {
     fq.push(q);
   }
 
+  activeFilters.push({
+    title: "Cargo",
+    filters: getActiveFiltersText("cargo")
+  });
+
   const estado = [...estadoSelect.selectedOptions].map((o) => `"${o.value}"`);
   if (estado.length) {
     let q = `estado:(${estado.join(" OR ")})`;
@@ -91,12 +110,34 @@ function buildFilters() {
     fq.push(q);
   }
 
+  activeFilters.push({
+    title: "Estado",
+    filters: getActiveFiltersText("estado")
+  });
+
   const escuela = (document.getElementById("escuela") as HTMLInputElement)
     .value;
-  if (escuela) fq.push(`escuela:${escuela}`);
+  if (escuela) {
+    fq.push(`escuela:${escuela}`)
+    activeFilters.push({
+      title: "Escuela",
+      filters: escuela
+    });
+  }
 
   const ige = (document.getElementById("ige") as HTMLInputElement).value;
-  if (ige) fq.push(`ige:${ige}`);
+  if (ige) {
+    fq.push(`ige:${ige}`);
+    activeFilters.push({
+      title: "IGE",
+      filters: ige
+    });
+  };
+
+  filterCardGroup.innerHTML = activeFilters.map(af => `<div class="col">
+      ${af.title}:
+      <div class="active-filters">${af.filters}</div>
+  </div>`).join("");
 
   return fq;
 }
@@ -248,6 +289,16 @@ async function search() {
       //       <td>${d.finoferta ? dateFormatter.format(new Date(d.finoferta)) : ""}</td>
       //     </tr>`;
 
+      const days = {
+        Lunes: d.lunes,
+        Martes: d.martes,
+        Miércoles: d.miercoles,
+        Jueves: d.jueves,
+        Viernes: d.viernes,
+      }
+
+      const daysFiltered = Object.entries(days).filter(([_k, v]) => !!v).map(([k, v]) => `<div><strong>${k}</strong>: ${v}</div>`).join("");
+
       cardResultsGrid.innerHTML += `
       <div class="col">
         <div class="card ${courseStatus} border-${courseStatus} h-100">
@@ -281,14 +332,8 @@ async function search() {
                 <div><strong>Inicio oferta</strong>: ${d.iniciooferta ? dateFormatter.format(new Date(d.iniciooferta)) : ""}</div>
                 <div><strong>Desde</strong>: ${d.supl_desde ? dateMediumFormatter.format(new Date(d.supl_desde)) : ""}</div>
                 <div><strong>Hasta</strong>: ${d.supl_hasta ? dateMediumFormatter.format(new Date(d.supl_hasta)) : ""}</div>
-                <hr>
-                <div><strong>Lunes</strong>: ${d.lunes || ""}</div>
-                <div><strong>Martes</strong>: ${d.martes || ""}</div>
-                <div><strong>Miércoles</strong>: ${d.miercoles || ""}</div>
-                <div><strong>Jueves</strong>: ${d.jueves || ""}</div>
-                <div><strong>Viernes</strong>: ${d.viernes || ""}</div>
-                <hr>
-                <div><strong>Observaciones</strong>: ${d.observaciones || ""}</div>
+                ${daysFiltered && `<hr>${daysFiltered}`}
+                ${d.observaciones && `<hr><div><strong>Observaciones</strong>: ${d.observaciones}</div>`}
               </details>
             </div>
           </div>
@@ -311,7 +356,7 @@ function clearFilter(filter: string) {
     '<span class="badge text-bg-primary">Todos</span>';
 }
 
-function updateActiveFilters(filter: string) {
+function getActiveFiltersText(filter: string) {
   const selected = [
     ...(document.getElementById(filter) as HTMLSelectElement).selectedOptions,
   ].map(
@@ -329,8 +374,12 @@ function updateActiveFilters(filter: string) {
       text = selected.join("");
     }
   }
-  document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML =
-    text;
+
+  return text;
+}
+
+function updateActiveFilters(filter: string) {
+  document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML = getActiveFiltersText(filter);
 }
 
 function updateAllActiveFilters() {
