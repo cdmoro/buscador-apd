@@ -183,7 +183,7 @@
               </div>
               <div class="form-text" id="basic-addon4">Si no se especifica la hora se tomará el día completo.</div>
             </div>
-            <button class="btn btn-info" type="button" id="search">
+            <button class="btn btn-info" type="submit" id="search">
               <svg class="icon" aria-hidden="true">
                 <use href="/icons.svg#search-icon"></use>
               </svg>
@@ -211,13 +211,13 @@
                 <svg class="icon" aria-hidden="true">
                   <use href="/icons.svg#copy-icon"></use>
                 </svg>
-                Compartir búsqueda
+                Copiar búsqueda
               </button>
             </div>
           </h2>
-          <div id="active-filters" class="mb-3 table-responsive">
+          <div id="active-filters" class="mb-3 border rounded p-1 table-responsive">
             <!-- <div class="d-flex flex-nowrap overflow-x-auto gap-3 justify-content-between" id="filter-card-group"></div> -->
-              <table class="table table-striped-columns table-bordered mb-0" id="filter-card-group"></table>
+              <table class="table table-borderless mb-0" id="filter-card-group"></table>
           </div>
           <div class="results-detail d-flex justify-content-between align-items-center flex-md-row flex-column">
             <nav>
@@ -226,6 +226,9 @@
             <span id="count" class="text-muted"></span>
           </div>
           <div class="card-results"></div>
+          <nav class="mt-3">
+            <ul id="pagination-bottom" class="pagination justify-content-center mb-0"></ul>
+          </nav>
           <!-- <table class="table table-striped table-hover">
             <thead>
               <tr>

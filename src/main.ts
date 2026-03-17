@@ -1,7 +1,14 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
 import type { CourseStatus, Response } from "./types";
-import { DISTRITO_KEYS, DISTRITO_LABELS, MODALIDAD_KEYS, MODALIDAD_LABELS, ESTADOS, CARGOS } from "./filters";
+import {
+  DISTRITO_KEYS,
+  DISTRITO_LABELS,
+  MODALIDAD_KEYS,
+  MODALIDAD_LABELS,
+  ESTADOS,
+  CARGOS,
+} from "./filters";
 
 const endpoint =
   "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select";
@@ -191,9 +198,9 @@ function buildFilters() {
 
   filterCardGroup.innerHTML = `<tr>${activeFilters
     .map(
-      (af) => `<td>
-      <small>${af.title}</small>
-      <div class="active-filters flex-nowrap">${af.filters}</div>
+      (af) => `<td class="bg-transparent">
+      <small class="text-muted">${af.title}</small>
+      <div class="active-filters flex-nowrap text-nowrap">${af.filters}</div>
   </td>`,
     )
     .join("")}</tr>`;
@@ -361,6 +368,18 @@ async function search() {
 
   const data = JSON.parse(text) as Response;
 
+  if (data.error) {
+    console.error("Error:", data.error.msg);
+    filtersFormCard.style.display = "block";
+    document
+      .querySelectorAll(".card input, .card select, .card button")
+      .forEach((el) => ((el as HTMLInputElement).disabled = false));
+    alert(
+      "Hubo un error al obtener los datos. Por favor, revisá que el formulario esté completo y correcto.",
+    );
+    return;
+  }
+
   const docs = data.response.docs;
   const total = data.response.numFound;
 
@@ -467,7 +486,8 @@ async function search() {
       </div>
     `;
     });
-    renderPagination(total, rows, start);
+    renderPagination("pagination", total, rows, start);
+    renderPagination("pagination-bottom", total, rows, start);
   }
 
   document
@@ -486,12 +506,12 @@ function clearFilter(filter: string) {
     '<span class="badge text-bg-info">Todos</span>';
 }
 
-function formatActiveFilterLabel(label: string) {
-  if (label.length <= 13) {
+function truncateActiveFilterLabel(label: string) {
+  if (label.length <= 20) {
     return label;
   }
 
-  return label.slice(0, 6) + "…" + label.slice(label.length - 6);
+  return label.slice(0, 10) + "…" + label.slice(label.length - 10);
 }
 
 function getActiveFiltersText(filter: string) {
@@ -499,7 +519,7 @@ function getActiveFiltersText(filter: string) {
     ...(document.getElementById(filter) as HTMLSelectElement).selectedOptions,
   ].map(
     (o) =>
-      `<span class="badge text-bg-info" title="${o.textContent}">${formatActiveFilterLabel(o.textContent)}</span>`,
+      `<span class="badge text-bg-info" title="${o.textContent}">${truncateActiveFilterLabel(o.textContent)}</span>`,
   );
   let text = '<span class="badge text-bg-info">Todos</span>';
 
@@ -525,8 +545,13 @@ function updateAllActiveFilters() {
   ["modalidad", "distrito", "cargo", "estado"].forEach(updateActiveFilters);
 }
 
-function renderPagination(total: number, rows: number, start: number) {
-  const container = document.getElementById("pagination")!;
+function renderPagination(
+  id: string,
+  total: number,
+  rows: number,
+  start: number,
+) {
+  const container = document.getElementById(id)!;
   container.innerHTML = "";
 
   const totalPages = Math.ceil(total / rows);
@@ -556,6 +581,7 @@ function renderPagination(total: number, rows: number, start: number) {
 
     a.onclick = (e) => {
       e.preventDefault();
+      scrollTo({ top: 0, behavior: "smooth" });
       goToPage(page);
     };
 
@@ -572,7 +598,7 @@ function renderPagination(total: number, rows: number, start: number) {
 
   createItem(currentPage - 1, "«", currentPage === 1);
 
-  const window = 2;
+  const window = 1;
   let startPage = Math.max(1, currentPage - window);
   let endPage = Math.min(totalPages, currentPage + window);
 
@@ -737,7 +763,8 @@ function main() {
     (document.getElementById("filters") as HTMLFormElement).reset();
     updateAllActiveFilters();
   });
-  document.getElementById("search")?.addEventListener("click", () => {
+  document.getElementById("search")?.addEventListener("click", (e) => {
+    e.preventDefault();
     start = 0;
     search();
   });

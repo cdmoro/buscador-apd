@@ -49,9 +49,9 @@ fieldset {
   line-height: 1;
 }
 
-.active-filters .badge {
+/* .active-filters .badge {
   max-width: 100px;
-}
+} */
 
 .hint {
   margin-top: 5px;
@@ -65,6 +65,10 @@ fieldset {
 
 .card-results-empty {
   .results-detail {
+    display: none !important;
+  }
+
+  nav {
     display: none !important;
   }
 }

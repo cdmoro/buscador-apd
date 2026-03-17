@@ -77,4 +77,9 @@ export type Response = {
     start: number;
     docs: Course[];
   };
+  error: {
+    metadata: string[];
+    msg: string;
+    code: number;
+  }
 };
