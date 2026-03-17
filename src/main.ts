@@ -15,6 +15,7 @@ const endpoint =
 let start = 0;
 const rows = 20;
 
+const filtersForm = document.getElementById("filters") as HTMLFormElement;
 const estadoSelect = document.querySelector<HTMLSelectElement>("#estado")!;
 const estadoNotCheckbox =
   document.querySelector<HTMLInputElement>("#estadoNot")!;
@@ -37,6 +38,9 @@ const cierreTimeInput =
   document.querySelector<HTMLInputElement>("#cierre-time")!;
 
 const cardResults = document.querySelector("#results") as HTMLDivElement;
+  const cardResultsGrid = document.querySelector(
+    ".card-results",
+  ) as HTMLDivElement;
 const filtersFormCard = document.querySelector(
   "#filters-form",
 ) as HTMLFormElement;
@@ -146,7 +150,7 @@ function buildFilters() {
     fq.push(`escuela:${escuela}`);
     activeFilters.push({
       title: "Escuela",
-      filters: escuela,
+      filters: `<span class="badge text-bg-info">${escuela}</span>`,
     });
   }
 
@@ -155,7 +159,7 @@ function buildFilters() {
     fq.push(`ige:${ige}`);
     activeFilters.push({
       title: "IGE",
-      filters: ige,
+      filters: `<span class="badge text-bg-info">${ige}</span>`,
     });
   }
 
@@ -192,7 +196,7 @@ function buildFilters() {
 
     activeFilters.push({
       title: "Cierre de Oferta",
-      filters: text,
+      filters: `<span class="badge text-bg-info">${text}</span>`,
     });
   }
 
@@ -291,7 +295,6 @@ function getCourseVariant(status: CourseStatus) {
 function updateURL() {
   const params = new URLSearchParams();
 
-  params.set("start", start.toString());
   // params.set("rows", rows.toString());
   // params.set("sort", sort)
 
@@ -348,10 +351,24 @@ function updateURL() {
     }
   }
 
-  history.replaceState(null, "", "?" + params.toString());
+  if (params.size > 0) {
+    params.set("start", start.toString());
+    history.replaceState(null, "", "?" + params.toString());
+  } else {
+    history.replaceState(null, "", location.pathname);
+  }
 }
 
 async function search() {
+  document.body.classList.add("loading");
+  filtersFormCard.style.display = "none";
+  cardResults.style.display = "block";
+  cardResultsGrid.innerHTML = `<div class="d-flex justify-content-center mt-5 mb-4 w-100">
+    <div class="spinner-border text-info" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>`;
+
   updateURL();
   saveFilters();
 
@@ -367,6 +384,8 @@ async function search() {
   const text = decoder.decode(buffer);
 
   const data = JSON.parse(text) as Response;
+
+  document.body.classList.remove("loading");
 
   if (data.error) {
     console.error("Error:", data.error.msg);
@@ -391,12 +410,7 @@ async function search() {
   // tbody.innerHTML = "";
 
   cardResults.classList.remove("card-results-empty");
-  const cardResultsGrid = document.querySelector(
-    ".card-results",
-  ) as HTMLDivElement;
   cardResultsGrid.innerHTML = "";
-
-  filtersFormCard.style.display = "none";
 
   if (docs.length === 0) {
     cardResults.classList.add("card-results-empty");
@@ -486,6 +500,7 @@ async function search() {
       </div>
     `;
     });
+
     renderPagination("pagination", total, rows, start);
     renderPagination("pagination-bottom", total, rows, start);
   }
@@ -493,8 +508,6 @@ async function search() {
   document
     .querySelectorAll(".card input, .card select, .card button")
     .forEach((el) => ((el as HTMLInputElement).disabled = false));
-
-  cardResults.style.display = "block";
 }
 
 function clearFilter(filter: string) {
@@ -763,7 +776,12 @@ function main() {
     (document.getElementById("filters") as HTMLFormElement).reset();
     updateAllActiveFilters();
   });
-  document.getElementById("search")?.addEventListener("click", (e) => {
+  // document.getElementById("search")?.addEventListener("click", (e) => {
+  //   e.preventDefault();
+  //   start = 0;
+  //   search();
+  // });
+  filtersForm.addEventListener("submit", (e) => {
     e.preventDefault();
     start = 0;
     search();

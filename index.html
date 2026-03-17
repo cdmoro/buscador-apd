@@ -10,7 +10,7 @@
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
         <h1>APD <span>Actos Públicos Digitales</span></h1>
-        <div class="d-flex gap-2 align-items-center">
+        <div class="d-flex gap-3 align-items-center">
           <a href="http://servicios.abc.gob.ar/servaddo/puntaje.ingreso.docencia/" target="_blank" class="btn btn-sm btn-info text-nowrap align-self-start">Consultar oblea</a>
           <select class="form-select form-select-sm" id="theme">
             <option value="auto">Auto</option>
@@ -36,7 +36,7 @@
         <div class="card-body">
           <h2 class="card-title">Filtros</h2>
           <form id="filters">
-            <div id="filters-wrapper" class="mb-3">
+            <div id="filters-wrapper" class="mb-3 d-grid gap-3">
               <div>
                 <label for="modalidad" class="d-flex justify-content-between">
                   Niveles o Modalidades
@@ -149,16 +149,16 @@
               </div>
               <div>
                 <label for="ige">IGE</label>
-                <input class="form-control" id="ige" type="text" placeholder="Ej.: 3846779" />
+                <input class="form-control" id="ige" type="text" pattern="[0-9]+" placeholder="Ej.: 3846779" />
               </div>
               <div>
                 <label for="escuela">Escuela</label>
-                <input class="form-control" id="escuela" type="text" placeholder="Ej.: 0055JI0946" />
+                <input class="form-control" id="escuela" type="text" pattern="[0-9A-Za-z]+" placeholder="Ej.: 0055JI0946" />
               </div>
             </div>
             <div class="mb-3">
               <label for="cierre-date">Cierre de Oferta</label>
-              <div class="d-flex gap-2 justify-content-between flex-column flex-md-row">
+              <div class="d-flex gap-3 justify-content-between flex-column flex-md-row">
                 <div class="flex-shrink-1 cierre-mode-select">
                   <select class="form-select" id="cierre-mode">
                     <option value="0" selected>Exacta</option>
@@ -183,15 +183,17 @@
               </div>
               <div class="form-text" id="basic-addon4">Si no se especifica la hora se tomará el día completo.</div>
             </div>
-            <button class="btn btn-info" type="submit" id="search">
-              <svg class="icon" aria-hidden="true">
-                <use href="/icons.svg#search-icon"></use>
-              </svg>
-              Buscar
-            </button>
-            <button class="btn btn-secondary" type="button" id="reset-form">
-              Limpiar filtros
-            </button>
+            <div class="d-flex gap-3">
+              <button class="btn btn-info" type="submit" id="search">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/icons.svg#search-icon"></use>
+                </svg>
+                Buscar
+              </button>
+              <button class="btn btn-secondary" type="button" id="reset-form">
+                Limpiar filtros
+              </button>
+            </div>
           </form>
         </div>
       </div>
@@ -216,12 +218,11 @@
             </div>
           </h2>
           <div id="active-filters" class="mb-3 border rounded p-1 table-responsive">
-            <!-- <div class="d-flex flex-nowrap overflow-x-auto gap-3 justify-content-between" id="filter-card-group"></div> -->
-              <table class="table table-borderless mb-0" id="filter-card-group"></table>
+              <table class="table table-borderless mb-0 w-auto" id="filter-card-group"></table>
           </div>
-          <div class="results-detail d-flex justify-content-between align-items-center flex-md-row flex-column">
+          <div class="results-detail d-flex justify-content-between align-items-center flex-md-row flex-column mb-3">
             <nav>
-              <ul id="pagination" class="pagination"></ul>
+              <ul id="pagination" class="pagination mb-0"></ul>
             </nav>
             <span id="count" class="text-muted"></span>
           </div>
