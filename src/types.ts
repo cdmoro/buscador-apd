@@ -1,6 +1,6 @@
-export type CourseStatus = "Anulada" | "Cerrada" | "Desierta" | "Designada" | "Finalizada" | "Publicada" | "Renunciada";
+export type CourseStatus = "Anulada" | "Cerrada" | "Desierta" | "DESIGNADA" | "Finalizada" | "Publicada" | "RENUNCIADA";
 
-export type Course = {
+export type BaseCourse = {
   estado: CourseStatus;
   tipooferta: string;
   jornada: string;
@@ -16,7 +16,6 @@ export type Course = {
   id: string;
   iddetalle: number;
   cargo: string;
-  tomaposesion: string;
   supl_revista: string;
   postulacion_idganador: number;
   domiciliodesempeno: string;
@@ -47,7 +46,19 @@ export type Course = {
   ult_movimiento: string;
   _version_: number;
   timestamp: string;
+  tomaposesion: string;
 };
+
+export type DesignadaCourse = BaseCourse & {
+  estado: "DESIGNADA";
+  nombreganador: string;
+  puntajeganador: string;
+  vuelta: number;
+  listadoorigenganador: string;
+  cuilganador: string;
+}
+
+export type Course = BaseCourse & DesignadaCourse;
 
 export type Response = {
   responseHeader: {

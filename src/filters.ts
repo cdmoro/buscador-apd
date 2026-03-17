@@ -905,13 +905,13 @@ export const DISTRITOS = [
 ];
 
 export const ESTADOS = [
-  "anulada",
-  "cerrada",
-  "desierta",
-  "designada",
-  "finalizada",
-  "publicada",
-  "renunciada",
+  "Anulada",
+  "Cerrada",
+  "Desierta",
+  "Designada",
+  "Finalizada",
+  "Publicada",
+  "Renunciada",
 ];
 
 export const MODALIDADES = [

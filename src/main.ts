@@ -22,6 +22,12 @@ const modalidadNotCheckbox =
   document.querySelector<HTMLInputElement>("#modalidadNot")!;
 const escuelaInput = document.querySelector<HTMLInputElement>("#escuela")!;
 const igeInput = document.querySelector<HTMLInputElement>("#ige")!;
+const cierreModeSelect =
+  document.querySelector<HTMLSelectElement>("#cierre-mode")!;
+const cierreDateInput =
+  document.querySelector<HTMLInputElement>("#cierre-date")!;
+const cierreTimeInput =
+  document.querySelector<HTMLInputElement>("#cierre-time")!;
 
 const cardResults = document.querySelector("#results") as HTMLDivElement;
 const filtersFormCard = document.querySelector(
@@ -30,6 +36,14 @@ const filtersFormCard = document.querySelector(
 const filterCardGroup = document.querySelector(
   "#filter-card-group",
 ) as HTMLDivElement;
+
+const dateFormatter = new Intl.DateTimeFormat("es-AR", {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+const dateMediumFormatter = new Intl.DateTimeFormat("es-AR", {
+  dateStyle: "medium",
+});
 
 // --- Theme ---
 const themeSelect = document.getElementById("theme") as HTMLSelectElement;
@@ -61,10 +75,9 @@ function buildFilters() {
     filters: string;
   }[] = [];
 
-  const modalidad = [
-    ...(document.getElementById("modalidad") as HTMLSelectElement)
-      .selectedOptions,
-  ].map((o) => `"${o.textContent}"`);
+  const modalidad = [...modalidadSelect.selectedOptions].map(
+    (o) => `"${o.textContent}"`,
+  );
 
   if (modalidad.length) {
     let q = `descnivelmodalidad:(${modalidad.join(" OR ")})`;
@@ -77,14 +90,12 @@ function buildFilters() {
     filters: getActiveFiltersText("modalidad"),
   });
 
-  const distrito = [
-    ...(document.getElementById("distrito") as HTMLSelectElement)
-      .selectedOptions,
-  ].map((o) => `"${o.textContent}"`);
+  const distrito = [...distritoSelect.selectedOptions].map(
+    (o) => `"${o.textContent}"`,
+  );
   if (distrito.length) {
     let q = `descdistrito:(${distrito.join(" OR ")})`;
-    if ((document.getElementById("distritoNot") as HTMLInputElement).checked)
-      q = "-" + q;
+    if (distritoNotCheckbox.checked) q = "-" + q;
     fq.push(q);
   }
 
@@ -93,13 +104,12 @@ function buildFilters() {
     filters: getActiveFiltersText("distrito"),
   });
 
-  const cargo = [
-    ...(document.getElementById("cargo") as HTMLSelectElement).selectedOptions,
-  ].map((o) => `"${o.textContent}"`);
+  const cargo = [...cargoSelect.selectedOptions].map(
+    (o) => `"${o.textContent}"`,
+  );
   if (cargo.length) {
     let q = `cargo:(${cargo.join(" OR ")})`;
-    if ((document.getElementById("cargoNot") as HTMLInputElement).checked)
-      q = "-" + q;
+    if (cargoNotCheckbox.checked) q = "-" + q;
     fq.push(q);
   }
 
@@ -108,7 +118,9 @@ function buildFilters() {
     filters: getActiveFiltersText("cargo"),
   });
 
-  const estado = [...estadoSelect.selectedOptions].map((o) => `"${o.value}"`);
+  const estado = [...estadoSelect.selectedOptions].map(
+    (o) => `"${o.textContent}"`,
+  );
   if (estado.length) {
     let q = `estado:(${estado.join(" OR ")})`;
     if (estadoNotCheckbox.checked) q = "-" + q;
@@ -120,8 +132,7 @@ function buildFilters() {
     filters: getActiveFiltersText("estado"),
   });
 
-  const escuela = (document.getElementById("escuela") as HTMLInputElement)
-    .value;
+  const escuela = escuelaInput.value;
   if (escuela) {
     fq.push(`escuela:${escuela}`);
     activeFilters.push({
@@ -130,12 +141,30 @@ function buildFilters() {
     });
   }
 
-  const ige = (document.getElementById("ige") as HTMLInputElement).value;
+  const ige = igeInput.value;
   if (ige) {
     fq.push(`ige:${ige}`);
     activeFilters.push({
       title: "IGE",
       filters: ige,
+    });
+  }
+
+  const cierreDate = cierreDateInput.value;
+  if (cierreDate) {
+    const cierreModeLabels = ["Exacta", "Desde", "Hasta"];
+    let text = "";
+
+    const cierreMode = parseInt(cierreModeSelect.value);
+    if (cierreMode !== 0) {
+      text = cierreModeLabels[cierreMode];
+    }
+
+    text += ` ${dateFormatter.format(new Date(cierreDate + (cierreTimeInput.value ? ` ${cierreTimeInput.value}` : "")))}`;
+
+    activeFilters.push({
+      title: "Cierre de Oferta",
+      filters: text,
     });
   }
 
@@ -161,31 +190,23 @@ function buildFetchURL() {
 
 function saveFilters() {
   const data = {
-    modalidad: [
-      ...(document.getElementById("modalidad") as HTMLSelectElement)
-        .selectedOptions,
-    ].map((o) => o.value),
-    modalidadNot: (document.getElementById("modalidadNot") as HTMLInputElement)
-      .checked,
+    modalidad: [...modalidadSelect.selectedOptions].map((o) => o.value),
+    modalidadNot: modalidadNotCheckbox.checked,
 
-    distrito: [
-      ...(document.getElementById("distrito") as HTMLSelectElement)
-        .selectedOptions,
-    ].map((o) => o.value),
-    distritoNot: (document.getElementById("distritoNot") as HTMLInputElement)
-      .checked,
+    distrito: [...distritoSelect.selectedOptions].map((o) => o.value),
+    distritoNot: distritoNotCheckbox.checked,
 
-    cargo: [
-      ...(document.getElementById("cargo") as HTMLSelectElement)
-        .selectedOptions,
-    ].map((o) => o.value),
-    cargoNot: (document.getElementById("cargoNot") as HTMLInputElement).checked,
+    cargo: [...cargoSelect.selectedOptions].map((o) => o.value),
+    cargoNot: cargoNotCheckbox.checked,
 
     estado: [...estadoSelect.selectedOptions].map((o) => o.value),
     estadoNot: estadoNotCheckbox.checked,
 
-    ige: (document.getElementById("ige") as HTMLInputElement).value,
-    escuela: (document.getElementById("escuela") as HTMLInputElement).value,
+    ige: igeInput.value,
+    escuela: escuelaInput.value,
+    cierreMode: cierreModeSelect.value,
+    cierreDate: cierreDateInput.value,
+    cierreTime: cierreTimeInput.value,
   };
   localStorage.setItem("apdFilters", JSON.stringify(data));
 }
@@ -196,45 +217,44 @@ function loadFilters() {
 
   const data = JSON.parse(saved);
 
-  [
-    ...(document.getElementById("modalidad") as HTMLSelectElement).options,
-  ].forEach((o) => {
+  [...modalidadSelect.options].forEach((o) => {
     if (data.modalidad.includes(o.value)) o.selected = true;
   });
 
-  (document.getElementById("modalidadNot") as HTMLInputElement).checked =
-    data.modalidadNot;
+  modalidadNotCheckbox.checked = data.modalidadNot;
 
-  [
-    ...(document.getElementById("distrito") as HTMLSelectElement).options,
-  ].forEach((o) => {
+  [...distritoSelect.options].forEach((o) => {
     if (data.distrito.includes(o.value)) o.selected = true;
   });
-  (document.getElementById("distritoNot") as HTMLInputElement).checked =
-    data.distritoNot;
+  distritoNotCheckbox.checked = data.distritoNot;
 
-  [...(document.getElementById("cargo") as HTMLSelectElement).options].forEach(
-    (o) => {
-      if (data.cargo.includes(o.value)) o.selected = true;
-    },
-  );
+  [...cargoSelect.options].forEach((o) => {
+    if (data.cargo.includes(o.value)) o.selected = true;
+  });
+  cargoNotCheckbox.checked = data.cargoNot;
 
-  (document.getElementById("cargoNot") as HTMLInputElement).checked =
-    data.cargoNot;
   [...estadoSelect.options].forEach((o) => {
     if (data.estado.includes(o.value)) o.selected = true;
   });
   estadoNotCheckbox.checked = data.estadoNot;
-  (document.getElementById("ige") as HTMLInputElement).value = data.ige;
-  (document.getElementById("escuela") as HTMLInputElement).value = data.escuela;
+
+  igeInput.value = data.ige;
+  escuelaInput.value = data.escuela;
+  cierreModeSelect.value = data.cierreMode;
+  cierreDateInput.value = data.cierreDate;
+  cierreTimeInput.value = data.cierreTime;
 }
 
 function getCourseVariant(status: CourseStatus) {
-  switch (status) {
-    case "Publicada":
+  switch (status.toLowerCase()) {
+    case "publicada":
       return "success";
-    case "Anulada":
+    case "anulada":
       return "warning";
+    case "renunciada":
+      return "danger";
+    case "designada":
+      return "dark";
     default:
       return "secondary";
   }
@@ -243,28 +263,40 @@ function getCourseVariant(status: CourseStatus) {
 function updateURL() {
   const params = new URLSearchParams();
 
-  // params.set("rows", rows.toString());
   params.set("start", start.toString());
+  // params.set("rows", rows.toString());
   // params.set("sort", sort)
 
   const modalidad = [...modalidadSelect.selectedOptions].map((o) => o.value);
   if (modalidad.length) {
-    params.set("modalidad", (modalidadNotCheckbox.checked ? "-" : "") + modalidad.join(","));
+    params.set(
+      "modalidad",
+      (modalidadNotCheckbox.checked ? "-" : "") + modalidad.join(","),
+    );
   }
 
   const distrito = [...distritoSelect.selectedOptions].map((o) => o.value);
   if (distrito.length) {
-    params.set("distrito", (distritoNotCheckbox.checked ? "-" : "") + distrito.join(","));
+    params.set(
+      "distrito",
+      (distritoNotCheckbox.checked ? "-" : "") + distrito.join(","),
+    );
   }
 
   const cargo = [...cargoSelect.selectedOptions].map((o) => o.value);
   if (cargo.length) {
-    params.set("cargo", (cargoNotCheckbox.checked ? "-" : "") + cargo.join(","));
+    params.set(
+      "cargo",
+      (cargoNotCheckbox.checked ? "-" : "") + cargo.join(","),
+    );
   }
 
   const estado = [...estadoSelect.selectedOptions].map((o) => o.value);
   if (estado.length) {
-    params.set("estado", (estadoNotCheckbox.checked ? "-" : "") + estado.join(","));
+    params.set(
+      "estado",
+      (estadoNotCheckbox.checked ? "-" : "") + estado.join(","),
+    );
   }
 
   const escuela = escuelaInput.value;
@@ -275,6 +307,17 @@ function updateURL() {
   const ige = igeInput.value;
   if (ige) {
     params.set("ige", ige);
+  }
+
+  const cierreDate = cierreDateInput.value;
+  if (cierreDate) {
+    params.set("cmode", cierreModeSelect.value);
+    params.set("cfecha", cierreDate);
+
+    const cierreTime = cierreTimeInput.value;
+    if (cierreTime) {
+      params.set("chora", cierreTime);
+    }
   }
 
   history.replaceState(null, "", "?" + params.toString());
@@ -299,13 +342,6 @@ async function search() {
 
   const docs = data.response.docs;
   const total = data.response.numFound;
-  const dateFormatter = new Intl.DateTimeFormat("es-AR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-  const dateMediumFormatter = new Intl.DateTimeFormat("es-AR", {
-    dateStyle: "medium",
-  });
 
   (document.getElementById("count") as HTMLInputElement).innerText =
     `Mostrando ${start + 1} a ${start + docs.length} de ${new Intl.NumberFormat("es-AR").format(total)} resultados`;
@@ -358,7 +394,7 @@ async function search() {
 
       cardResultsGrid.innerHTML += `
       <div class="col">
-        <div class="card ${courseStatus} border-${courseStatus} h-100">
+        <div class="card ${courseStatus} border-${courseStatus === "dark" ? "secondary-subtle" : courseStatus} h-100">
           <div class="card-header bg-${courseStatus} text-bg-${courseStatus} d-flex justify-content-between">
             ${d.estado || ""}
             <a title="Listar postulados" class="text-bg-${courseStatus}" href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}" target="_blank">
@@ -368,6 +404,18 @@ async function search() {
             </a>
           </div>
           <div class="card-body">
+            ${
+              d.estado === "DESIGNADA"
+                ? `<div class="alert alert-warning">
+              <div class="fw-bold">Adjudicado a ${d.nombreganador}</div>
+              <div>CUIL: ${d.cuilganador}</div>
+              <div>Toma posesión: ${d.tomaposesion ? dateMediumFormatter.format(new Date(d.tomaposesion)) : "-"}</div>
+              <div>Listado origen: ${d.listadoorigenganador}</div>
+              <div>Puntaje: ${d.puntajeganador}</div>
+              <div>Vuelta: ${d.vuelta}</div>
+            </div>`
+                : ""
+            }
             <div class="card-subtitle mb-2 text-muted">${d.escuela || ""}</div>
             <h5 class="card-title">${d.cargo || ""}</h5>
             <h6 class="card-subtitle mb-2 text-muted">${d.descdistrito || ""} | ${d.descnivelmodalidad || ""}</h6>
@@ -414,7 +462,7 @@ function clearFilter(filter: string) {
   );
   (document.getElementById(`${filter}Not`) as HTMLInputElement).checked = false;
   document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML =
-    '<span class="badge text-bg-primary">Todos</span>';
+    '<span class="badge text-bg-info">Todos</span>';
 }
 
 function formatActiveFilterLabel(label: string) {
@@ -430,14 +478,14 @@ function getActiveFiltersText(filter: string) {
     ...(document.getElementById(filter) as HTMLSelectElement).selectedOptions,
   ].map(
     (o) =>
-      `<span class="badge text-bg-primary" title="${o.textContent}">${formatActiveFilterLabel(o.textContent)}</span>`,
+      `<span class="badge text-bg-info" title="${o.textContent}">${formatActiveFilterLabel(o.textContent)}</span>`,
   );
-  let text = '<span class="badge text-bg-primary">Todos</span>';
+  let text = '<span class="badge text-bg-info">Todos</span>';
 
   if (selected.length > 0) {
     if ((document.getElementById(`${filter}Not`) as HTMLInputElement).checked) {
       text =
-        '<span class="badge text-bg-primary">Todos</span> excepto ' +
+        '<span class="badge text-bg-info">Todos</span> excepto ' +
         selected.join("");
     } else {
       text = selected.join("");
@@ -472,13 +520,18 @@ function renderPagination(total: number, rows: number, start: number) {
     const li = document.createElement("li");
     li.className = "page-item";
 
-    if (disabled) li.classList.add("disabled");
-    if (active) li.classList.add("active");
-
     const a = document.createElement("a");
     a.className = "page-link";
     a.href = "#";
     a.textContent = label ?? page.toString();
+
+    if (disabled) li.classList.add("disabled");
+    else if (active) {
+      li.classList.add("active");
+      a.classList.add("bg-info", "text-bg-info", "border-info");
+    } else {
+      a.classList.add("text-info");
+    }
 
     a.onclick = (e) => {
       e.preventDefault();
@@ -526,6 +579,86 @@ function goToPage(page: number) {
   search();
 }
 
+function applyFiltersFromURL(params: URLSearchParams) {
+  const startParam = params.get("start");
+  if (startParam) {
+    start = parseInt(startParam);
+  }
+
+  const modalidad = params.get("modalidad");
+  if (modalidad) {
+    modalidad.split(",").forEach((m) => {
+      const option = [...modalidadSelect.options].find(
+        (o) => o.value === m.replace("-", ""),
+      );
+      if (option) option.selected = true;
+    });
+    modalidadNotCheckbox.checked = modalidad.startsWith("-");
+  }
+
+  const distrito = params.get("distrito");
+  if (distrito) {
+    distrito.split(",").forEach((d) => {
+      const option = [...distritoSelect.options].find(
+        (o) => o.value === d.replace("-", ""),
+      );
+      if (option) option.selected = true;
+    });
+    distritoNotCheckbox.checked = distrito.startsWith("-");
+  }
+
+  const cargo = params.get("cargo");
+  if (cargo) {
+    cargo.split(",").forEach((c) => {
+      const option = [...cargoSelect.options].find(
+        (o) => o.value === c.replace("-", ""),
+      );
+      if (option) option.selected = true;
+    });
+    cargoNotCheckbox.checked = cargo.startsWith("-");
+  }
+
+  const estado = params.get("estado");
+  if (estado) {
+    estado.split(",").forEach((e) => {
+      const option = [...estadoSelect.options].find(
+        (o) => o.value === e.replace("-", ""),
+      );
+      if (option) option.selected = true;
+    });
+    estadoNotCheckbox.checked = estado.startsWith("-");
+  }
+
+  const escuela = params.get("escuela");
+  if (escuela) {
+    escuelaInput.value = escuela;
+  }
+
+  const ige = params.get("ige");
+  if (ige) {
+    igeInput.value = ige;
+  }
+
+  const cierreMode = params.get("cmode");
+  if (cierreMode) {
+    cierreModeSelect.value = parseInt(cierreMode);
+  }
+
+  const cierreDate = params.get("cfecha");
+  if (cierreDate) {
+    cierreDateInput.value = cierreDate;
+  }
+
+  const cierreTime = params.get("chora");
+  if (cierreTime) {
+    cierreTimeInput.value = cierreTime;
+  }
+
+  saveFilters();
+  filtersFormCard.style.display = "none";
+  search();
+}
+
 function createFilters(el: HTMLElement, values: string[]) {
   values.forEach((v, i) => {
     const option = document.createElement("option");
@@ -540,7 +673,15 @@ function main() {
   createFilters(estadoSelect, ESTADOS);
   createFilters(distritoSelect, DISTRITOS);
   createFilters(cargoSelect, CARGOS);
-  loadFilters();
+
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.size > 0) {
+    applyFiltersFromURL(params);
+  }
+  {
+    loadFilters();
+  }
 
   cargoSelect.addEventListener("change", () => updateActiveFilters("cargo"));
   cargoNotCheckbox.addEventListener("change", () =>
@@ -585,6 +726,25 @@ function main() {
         clearFilter((e.target as HTMLButtonElement).value),
       ),
     );
+
+  document.querySelector("#clear-date-input")?.addEventListener("click", () => {
+    cierreModeSelect.value = "0";
+    cierreDateInput.value = "";
+    cierreTimeInput.value = "";
+  });
+
+  document.querySelector("#share-search")?.addEventListener("click", (e) => {
+    const url = new URL(window.location.href);
+    navigator.clipboard.writeText(url.toString());
+    (e.target as HTMLButtonElement).innerText = "Búsqueda copiada!";
+
+    setTimeout(() => {
+      (e.target as HTMLButtonElement).innerHTML =
+        `<svg class="icon" aria-hidden="true">
+          <use href="/icons.svg#copy-icon"></use>
+        </svg> Compartir búsqueda`;
+    }, 1000);
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => main());

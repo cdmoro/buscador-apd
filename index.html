@@ -11,17 +11,18 @@
       <div class="container-fluid">
         <h1>APD <span>Actos Públicos Digitales</span></h1>
         <div class="d-flex gap-2 align-items-center">
+          <a href="http://servicios.abc.gob.ar/servaddo/puntaje.ingreso.docencia/" target="_blank" class="btn btn-sm btn-info text-nowrap align-self-start">Consultar oblea</a>
           <select class="form-select form-select-sm" id="theme">
             <option value="auto">Auto</option>
             <option value="light">Claro</option>
             <option value="dark">Oscuro</option>
           </select>
-          <a href="https://github.com/cdmoro/buscador-apd" target="_blank">
+          <a class="text-info" href="https://github.com/cdmoro/buscador-apd" target="_blank">
             <svg class="icon" aria-hidden="true">
               <use href="/icons.svg#github-icon"></use>
             </svg>
           </a>
-          <a href="https://x.com/CarlosBonadeo" target="_blank">
+          <a class="text-info" href="https://x.com/CarlosBonadeo" target="_blank">
             <svg class="icon" aria-hidden="true">
               <use href="/icons.svg#x-icon"></use>
             </svg>
@@ -38,7 +39,7 @@
             <div id="filters-wrapper" class="mb-3">
               <div>
                 <label for="modalidad" class="d-flex justify-content-between">
-                  Modalidad
+                  Niveles o Modalidades
                   <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="modalidadNot">
                     <label class="form-check-label" for="modalidadNot">Invertir</label>
@@ -155,7 +156,37 @@
                 <input class="form-control" id="escuela" type="text" placeholder="Ej.: 0055JI0946" />
               </div>
             </div>
-            <button class="btn btn-primary" type="button" id="search">
+            <div class="mb-3 d-none">
+              <label for="cierre-date">Cierre de Oferta</label>
+              <div class="d-flex gap-2 justify-content-between flex-column flex-md-row">
+                <div class="flex-shrink-1 cierre-mode-select">
+                  <select class="form-select" id="cierre-mode">
+                    <option value="0">Exacta</option>
+                    <option value="1">Desde</option>
+                    <option value="2">Hasta</option>
+                  </select>
+                </div>
+                <div class="input-group w-100">
+                  <input class="form-control" id="cierre-date" type="date" />
+                  <input class="form-control" id="cierre-time" type="time" />
+                  <button
+                      id="clear-date-input"
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      placeholder="Limpiar filtro"
+                    >
+                      <svg class="icon" aria-hidden="true">
+                        <use href="/icons.svg#clear-filter-icon"></use>
+                      </svg>
+                    </button>
+                </div>
+              </div>
+              <div class="form-text" id="basic-addon4">Si no se especifica la hora se tomará el día completo.</div>
+            </div>
+            <button class="btn btn-info" type="button" id="search">
+              <svg class="icon" aria-hidden="true">
+                <use href="/icons.svg#search-icon"></use>
+              </svg>
               Buscar
             </button>
             <button class="btn btn-secondary" type="button" id="reset-form">
@@ -167,11 +198,22 @@
 
       <div class="card" id="results">
         <div class="card-body">
-          <h2 class="card-title">
+          <h2 class="card-title d-flex justify-content-between mb-4 flex-column flex-md-row">
             Resultados
-            <button type="button" class="btn btn-sm btn-outline-secondary" id="new-search">
-              Nueva búsqueda
-            </button>
+            <div>
+              <button type="button" class="btn btn-sm btn-secondary" id="new-search">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/icons.svg#search-icon"></use>
+                </svg>
+                Nueva búsqueda
+              </button>
+              <button type="button" class="btn btn-sm btn-info" id="share-search">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/icons.svg#copy-icon"></use>
+                </svg>
+                Compartir búsqueda
+              </button>
+            </div>
           </h2>
           <div id="active-filters" class="mb-3 table-responsive">
             <!-- <div class="d-flex flex-nowrap overflow-x-auto gap-3 justify-content-between" id="filter-card-group"></div> -->

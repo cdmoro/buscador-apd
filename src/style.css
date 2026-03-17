@@ -69,6 +69,10 @@ fieldset {
   }
 }
 
+.cierre-mode-select {
+  min-width: 100px;
+}
+
 @media (max-width: 600px) {
   #filters-wrapper {
     grid-template-columns: 1fr;
