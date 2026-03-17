@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
 import type { CourseStatus, Response } from "./types";
-import { DISTRITOS, MODALIDADES, ESTADOS, CARGOS } from "./filters";
+import { DISTRITO_KEYS, DISTRITO_LABELS, MODALIDAD_KEYS, MODALIDAD_LABELS, ESTADOS, CARGOS } from "./filters";
 
 const endpoint =
   "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select";
@@ -38,6 +38,9 @@ const filterCardGroup = document.querySelector(
 ) as HTMLDivElement;
 
 const dateFormatter = new Intl.DateTimeFormat("es-AR", {
+  dateStyle: "medium",
+});
+const dateTimeFormatter = new Intl.DateTimeFormat("es-AR", {
   dateStyle: "medium",
   timeStyle: "short",
 });
@@ -76,9 +79,8 @@ function buildFilters() {
   }[] = [];
 
   const modalidad = [...modalidadSelect.selectedOptions].map(
-    (o) => `"${o.textContent}"`,
+    (o) => `"${o.dataset.key || o.textContent}"`,
   );
-
   if (modalidad.length) {
     let q = `descnivelmodalidad:(${modalidad.join(" OR ")})`;
     if (modalidadNotCheckbox.checked) q = "-" + q;
@@ -91,7 +93,7 @@ function buildFilters() {
   });
 
   const distrito = [...distritoSelect.selectedOptions].map(
-    (o) => `"${o.textContent}"`,
+    (o) => `"${o.dataset.key || o.textContent}"`,
   );
   if (distrito.length) {
     let q = `descdistrito:(${distrito.join(" OR ")})`;
@@ -152,15 +154,34 @@ function buildFilters() {
 
   const cierreDate = cierreDateInput.value;
   if (cierreDate) {
-    const cierreModeLabels = ["Exacta", "Desde", "Hasta"];
-    let text = "";
-
     const cierreMode = parseInt(cierreModeSelect.value);
-    if (cierreMode !== 0) {
-      text = cierreModeLabels[cierreMode];
+    const cierreTime = cierreTimeInput.value;
+    const cierreModeLabels = ["Exacta", "Desde", "Hasta"];
+    const finOfertaDateFrom = `${cierreDate}${cierreTime ? `T${cierreTime}:00` : "T00:00:00"}Z`;
+    const finOfertaDateTo = `${cierreDate}${cierreTime ? `T${cierreTime}:00` : "T23:59:59"}Z`;
+    let finoferta = `["${finOfertaDateFrom}" TO "${finOfertaDateTo}"]`;
+
+    if (cierreMode === 1) {
+      finoferta = `["${finOfertaDateFrom}" TO *]`;
     }
 
-    text += ` ${dateFormatter.format(new Date(cierreDate + (cierreTimeInput.value ? ` ${cierreTimeInput.value}` : "")))}`;
+    if (cierreMode === 2) {
+      finoferta = `[* TO "${finOfertaDateTo}"]`;
+    }
+
+    fq.push(`finoferta:${finoferta}`);
+
+    let text = "";
+
+    if (cierreMode !== 0) {
+      text = `${cierreModeLabels[cierreMode]} el `;
+    }
+
+    if (cierreTime) {
+      text += `${dateTimeFormatter.format(new Date(`${cierreDate} ${cierreTime}`))}`;
+    } else {
+      text += `${dateFormatter.format(new Date(cierreDate))} (${cierreMode !== 0 ? "incluido" : "todo el día"})`;
+    }
 
     activeFilters.push({
       title: "Cierre de Oferta",
@@ -419,7 +440,7 @@ async function search() {
             <div class="card-subtitle mb-2 text-muted">${d.escuela || ""}</div>
             <h5 class="card-title">${d.cargo || ""}</h5>
             <h6 class="card-subtitle mb-2 text-muted">${d.descdistrito || ""} | ${d.descnivelmodalidad || ""}</h6>
-            <p class="card-text">Cierre de oferta: ${d.finoferta ? dateFormatter.format(new Date(d.finoferta)) : ""}</p>
+            <p class="card-text">Cierre de oferta: ${d.finoferta ? dateTimeFormatter.format(new Date(d.finoferta)) : ""}</p>
             <div>
               <details>
                 <summary>Detalles</summary>
@@ -433,8 +454,8 @@ async function search() {
                 <div><strong>Revista</strong>: ${d.supl_revista || ""}</div>
                 <div><strong>Infectocontagiosa en el establecimiento</strong>: ${d.infectocontagiosa || "No"}</div>
                 <hr>
-                <div><strong>Toma de posesión</strong>: ${d.tomaposesion ? dateFormatter.format(new Date(d.tomaposesion)) : ""}</div>
-                <div><strong>Inicio oferta</strong>: ${d.iniciooferta ? dateFormatter.format(new Date(d.iniciooferta)) : ""}</div>
+                <div><strong>Toma de posesión</strong>: ${d.tomaposesion ? dateTimeFormatter.format(new Date(d.tomaposesion)) : ""}</div>
+                <div><strong>Inicio oferta</strong>: ${d.iniciooferta ? dateTimeFormatter.format(new Date(d.iniciooferta)) : ""}</div>
                 <div><strong>Desde</strong>: ${d.supl_desde ? dateMediumFormatter.format(new Date(d.supl_desde)) : ""}</div>
                 <div><strong>Hasta</strong>: ${d.supl_hasta ? dateMediumFormatter.format(new Date(d.supl_hasta)) : ""}</div>
                 ${daysFiltered && `<hr>${daysFiltered}`}
@@ -641,7 +662,7 @@ function applyFiltersFromURL(params: URLSearchParams) {
 
   const cierreMode = params.get("cmode");
   if (cierreMode) {
-    cierreModeSelect.value = parseInt(cierreMode);
+    cierreModeSelect.value = cierreMode;
   }
 
   const cierreDate = params.get("cfecha");
@@ -659,19 +680,20 @@ function applyFiltersFromURL(params: URLSearchParams) {
   search();
 }
 
-function createFilters(el: HTMLElement, values: string[]) {
+function createFilters(el: HTMLElement, values: string[], labels?: string[]) {
   values.forEach((v, i) => {
     const option = document.createElement("option");
     option.value = i.toString();
-    option.textContent = v;
+    option.dataset.key = v;
+    option.textContent = labels ? labels[i] : v;
     el.appendChild(option);
   });
 }
 
 function main() {
-  createFilters(modalidadSelect, MODALIDADES);
+  createFilters(modalidadSelect, MODALIDAD_KEYS, MODALIDAD_LABELS);
   createFilters(estadoSelect, ESTADOS);
-  createFilters(distritoSelect, DISTRITOS);
+  createFilters(distritoSelect, DISTRITO_KEYS, DISTRITO_LABELS);
   createFilters(cargoSelect, CARGOS);
 
   const params = new URLSearchParams(window.location.search);
