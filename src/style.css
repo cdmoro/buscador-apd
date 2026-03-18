@@ -61,6 +61,18 @@ fieldset {
   margin-top: 1rem;
 }
 
+.alert-designada {
+  background-color: color-mix(in srgb, var(--bs-warning-bg-subtle) 95%, transparent 5%);
+}
+
+.card-course {
+  min-height: 250px;
+}
+
+.card-course:hover .alert-designada {
+  display: none !important;
+}
+
 .card-results-empty {
   .results-detail {
     display: none !important;

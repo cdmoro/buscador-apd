@@ -7,10 +7,11 @@ import {
   MODALIDAD_KEYS,
   MODALIDAD_LABELS,
   ESTADOS,
-  CARGOS,
+  CARGO_KEYS,
+  CARGO_LABELS,
 } from "./filters";
 
-const endpoint =
+const ENDPOINT =
   "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select";
 let start = 0;
 const rows = 20;
@@ -74,12 +75,12 @@ function applyTheme(value: string) {
   }
   localStorage.setItem("apdTheme", value);
 }
-themeSelect.addEventListener("change", (e) =>
-  applyTheme((e.target as HTMLSelectElement).value),
-);
-const savedTheme = localStorage.getItem("apdTheme") || "auto";
-themeSelect.value = savedTheme;
-applyTheme(savedTheme);
+
+function cuitFormatter(cuit: string) {
+  if (cuit.length !== 11) return cuit;
+
+  return `${cuit.slice(0, 2)}-${cuit.slice(2, 10)}-${cuit.slice(10)}`;
+}
 
 // --- Filters ---
 function buildFilters() {
@@ -90,7 +91,7 @@ function buildFilters() {
   }[] = [];
 
   const modalidad = [...modalidadSelect.selectedOptions].map(
-    (o) => `"${o.dataset.key || o.textContent}"`,
+    (o) => `"${o.dataset.key}"`,
   );
   if (modalidad.length) {
     let q = `descnivelmodalidad:(${modalidad.join(" OR ")})`;
@@ -104,7 +105,7 @@ function buildFilters() {
   });
 
   const distrito = [...distritoSelect.selectedOptions].map(
-    (o) => `"${o.dataset.key || o.textContent}"`,
+    (o) => `"${o.dataset.key}"`,
   );
   if (distrito.length) {
     let q = `descdistrito:(${distrito.join(" OR ")})`;
@@ -118,7 +119,7 @@ function buildFilters() {
   });
 
   const cargo = [...cargoSelect.selectedOptions].map(
-    (o) => `"${o.textContent}"`,
+    (o) => `"${o.dataset.key}"`,
   );
   if (cargo.length) {
     let q = `cargo:(${cargo.join(" OR ")})`;
@@ -132,7 +133,7 @@ function buildFilters() {
   });
 
   const estado = [...estadoSelect.selectedOptions].map(
-    (o) => `"${o.textContent}"`,
+    (o) => `"${o.dataset.key}"`,
   );
   if (estado.length) {
     let q = `estado:(${estado.join(" OR ")})`;
@@ -215,7 +216,7 @@ function buildFilters() {
 function buildFetchURL() {
   const fq = buildFilters();
   let url =
-    endpoint + `?q=*:*&rows=${rows}&start=${start}&sort=finoferta desc&wt=json`;
+    ENDPOINT + `?q=*:*&rows=${rows}&start=${start}&sort=finoferta desc&wt=json`;
   fq.forEach((f) => (url += "&fq=" + encodeURIComponent(f)));
   return url;
 }
@@ -448,7 +449,7 @@ async function search() {
 
       cardResultsGrid.innerHTML += `
       <div class="col">
-        <div class="card ${courseStatus} border-${courseStatus === "dark" ? "secondary-subtle" : courseStatus} h-100">
+        <div class="card card-course ${courseStatus} border-${courseStatus === "dark" ? "secondary-subtle" : courseStatus} h-100">
           <div class="card-header bg-${courseStatus} text-bg-${courseStatus} d-flex justify-content-between">
             ${d.estado || ""}
             <a title="Listar postulados" class="text-bg-${courseStatus}" href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}" target="_blank">
@@ -460,13 +461,15 @@ async function search() {
           <div class="card-body">
             ${
               d.estado === "DESIGNADA"
-                ? `<div class="alert alert-warning">
-              <div class="fw-bold">Adjudicado a ${d.nombreganador}</div>
-              <div>CUIL: ${d.cuilganador}</div>
+                ? `<div class="alert alert-warning alert-designada position-absolute top-0 start-0 end-0 bottom-0 text-center justify-content-center mb-0 d-flex flex-column" role="alert">
+              <h5>Adjudicado a<br>${d.nombreganador}</h5>
+              <div>CUIL: ${cuitFormatter(d.cuilganador)}</div>
+              <small class="mt-2">
               <div>Toma posesión: ${d.tomaposesion ? dateMediumFormatter.format(new Date(d.tomaposesion)) : "-"}</div>
               <div>Listado origen: ${d.listadoorigenganador}</div>
               <div>Puntaje: ${d.puntajeganador}</div>
               <div>Vuelta: ${d.vuelta}</div>
+              </small>
             </div>`
                 : ""
             }
@@ -716,7 +719,7 @@ function applyFiltersFromURL(params: URLSearchParams) {
 
   saveFilters();
   filtersFormCard.style.display = "none";
-  search();
+  // search();
 }
 
 function createFilters(el: HTMLElement, values: string[], labels?: string[]) {
@@ -730,17 +733,23 @@ function createFilters(el: HTMLElement, values: string[], labels?: string[]) {
 }
 
 function main() {
+  themeSelect.addEventListener("change", (e) =>
+    applyTheme((e.target as HTMLSelectElement).value),
+  );
+  const savedTheme = localStorage.getItem("apdTheme") || "auto";
+  themeSelect.value = savedTheme;
+  applyTheme(savedTheme);
+
   createFilters(modalidadSelect, MODALIDAD_KEYS, MODALIDAD_LABELS);
   createFilters(estadoSelect, ESTADOS);
   createFilters(distritoSelect, DISTRITO_KEYS, DISTRITO_LABELS);
-  createFilters(cargoSelect, CARGOS);
+  createFilters(cargoSelect, CARGO_KEYS, CARGO_LABELS);
 
   const params = new URLSearchParams(window.location.search);
 
   if (params.size > 0) {
     applyFiltersFromURL(params);
-  }
-  {
+  } else {
     loadFilters();
   }
 
@@ -766,6 +775,7 @@ function main() {
   );
 
   updateAllActiveFilters();
+  search();
 
   document.getElementById("new-search")?.addEventListener("click", () => {
     filtersFormCard.style.display = "block";
@@ -776,11 +786,6 @@ function main() {
     (document.getElementById("filters") as HTMLFormElement).reset();
     updateAllActiveFilters();
   });
-  // document.getElementById("search")?.addEventListener("click", (e) => {
-  //   e.preventDefault();
-  //   start = 0;
-  //   search();
-  // });
   filtersForm.addEventListener("submit", (e) => {
     e.preventDefault();
     start = 0;
