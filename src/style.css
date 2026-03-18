@@ -62,7 +62,7 @@ fieldset {
 }
 
 .alert-designada {
-  background-color: color-mix(in srgb, var(--bs-warning-bg-subtle) 95%, transparent 5%);
+  background-color: color-mix(in srgb, var(--bs-secondary-bg-subtle) 95%, transparent 5%);
 }
 
 .card-course {

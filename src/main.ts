@@ -286,8 +286,6 @@ function getCourseVariant(status: CourseStatus) {
       return "warning";
     case "renunciada":
       return "danger";
-    case "designada":
-      return "dark";
     default:
       return "secondary";
   }
@@ -449,7 +447,7 @@ async function search() {
 
       cardResultsGrid.innerHTML += `
       <div class="col">
-        <div class="card card-course ${courseStatus} border-${courseStatus === "dark" ? "secondary-subtle" : courseStatus} h-100">
+        <div class="card card-course ${courseStatus} border-${courseStatus} h-100">
           <div class="card-header bg-${courseStatus} text-bg-${courseStatus} d-flex justify-content-between">
             ${d.estado || ""}
             <a title="Listar postulados" class="text-bg-${courseStatus}" href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}" target="_blank">
@@ -461,7 +459,7 @@ async function search() {
           <div class="card-body">
             ${
               d.estado === "DESIGNADA"
-                ? `<div class="alert alert-warning alert-designada position-absolute top-0 start-0 end-0 bottom-0 text-center justify-content-center mb-0 d-flex flex-column" role="alert">
+                ? `<div class="alert alert-secondary alert-designada position-absolute top-0 start-0 end-0 bottom-0 text-center text-light justify-content-center mb-0 d-flex flex-column" role="alert">
               <h5>Adjudicado a<br>${d.nombreganador}</h5>
               <div>CUIL: ${cuitFormatter(d.cuilganador)}</div>
               <small class="mt-2">
@@ -513,13 +511,21 @@ async function search() {
     .forEach((el) => ((el as HTMLInputElement).disabled = false));
 }
 
+function getAllText(filter: string) {
+  if (filter === "modalidad") {
+    return "Todas";
+  }
+
+  return "Todos";
+}
+
 function clearFilter(filter: string) {
   [...(document.getElementById(filter) as HTMLSelectElement).options].forEach(
     (o) => (o.selected = false),
   );
   (document.getElementById(`${filter}Not`) as HTMLInputElement).checked = false;
   document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML =
-    '<span class="badge text-bg-info">Todos</span>';
+    `<span class="badge text-bg-info">${getAllText(filter)}</span>`;
 }
 
 function truncateActiveFilterLabel(label: string) {
@@ -535,14 +541,14 @@ function getActiveFiltersText(filter: string) {
     ...(document.getElementById(filter) as HTMLSelectElement).selectedOptions,
   ].map(
     (o) =>
-      `<span class="badge text-bg-info" title="${o.textContent}">${truncateActiveFilterLabel(o.textContent)}</span>`,
+      `<span class="badge text-bg-${filter === 'estado' ? getCourseVariant(o.textContent as CourseStatus) : 'info'}" title="${o.textContent}">${truncateActiveFilterLabel(o.textContent)}</span>`,
   );
-  let text = '<span class="badge text-bg-info">Todos</span>';
+  let text = `<span class="badge text-bg-info">${getAllText(filter)}</span>`;
 
   if (selected.length > 0) {
     if ((document.getElementById(`${filter}Not`) as HTMLInputElement).checked) {
       text =
-        '<span class="badge text-bg-info">Todos</span> excepto ' +
+        `<span class="badge text-bg-info">${getAllText(filter)}</span> excepto ` +
         selected.join("");
     } else {
       text = selected.join("");
