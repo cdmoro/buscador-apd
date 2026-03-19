@@ -1,85 +1,96 @@
 export type CourseStatus = "Anulada" | "Cerrada" | "Desierta" | "DESIGNADA" | "Finalizada" | "Publicada" | "RENUNCIADA";
 
 export type BaseCourse = {
-  estado: CourseStatus;
-  tipooferta: string;
-  jornada: string;
-  ige: number;
-  miercoles: string;
-  martes: string;
+  _version_: number;
   acargodireccion: string;
-  cuilautor: string;
-  supl_hasta: string;
-  turno: string;
-  idoferta: number;
-  sabado: string;
-  id: string;
-  iddetalle: number;
-  cargo: string;
-  supl_revista: string;
-  postulacion_idganador: number;
-  domiciliodesempeno: string;
-  reemp_apeynom: string;
-  numdistrito: number;
   areaincumbencia: string;
-  finoferta: string;
-  observaciones: string;
+  cargo: string;
+  cuilautor: string;
   cupof: number;
-  tipooferta_id: number;
-  supl_desde: string;
-  reemp_cuil: string;
-  escuela: string;
-  iniciooferta: string;
-  hsmodulos: number;
   cursodivision: string;
-  idsuna: number;
-  descnivelmodalidad: string;
-  lunes: string;
-  infectocontagiosa: boolean;
-  reemp_motivo: string;
   descdistrito: string;
-  jueves: string;
-  nivelmodalidad: string;
-  viernes: string;
+  descnivelmodalidad: string;
   descripcionarea: string;
   descripcioncargo: string;
-  ult_movimiento: string;
-  _version_: number;
+  domiciliodesempeno: string;
+  escuela: string;
+  estado: CourseStatus;
+  finoferta: string;
+  hsmodulos: number;
+  id: string;
+  iddetalle: number;
+  idoferta: number;
+  idsuna: number;
+  ige: number;
+  infectocontagiosa: boolean;
+  iniciooferta: string;
+  jornada: string;
+  jueves: string;
+  lunes: string;
+  martes: string;
+  miercoles: string;
+  nivelmodalidad: string;
+  numdistrito: number;
+  observaciones: string;
+  postulacion_idganador: number;
+  reemp_apeynom: string;
+  reemp_cuil: string;
+  reemp_motivo: string;
+  sabado: string;
+  supl_desde: string;
+  supl_hasta: string;
+  supl_revista: string;
   timestamp: string;
+  tipooferta: string;
+  tipooferta_id: number;
   tomaposesion: string;
+  turno: string;
+  ult_movimiento: string;
+  viernes: string;
 };
 
 export type DesignadaCourse = BaseCourse & {
+  cuilganador: string;
   estado: "DESIGNADA";
+  listadoorigenganador: string;
   nombreganador: string;
   puntajeganador: string;
   vuelta: number;
-  listadoorigenganador: string;
-  cuilganador: string;
 }
 
 export type Course = BaseCourse & DesignadaCourse;
 
 export type Response = {
-  responseHeader: {
-    status: number;
-    QTime: number;
-    params: {
-      q: string;
-      wt: string;
-      fq?: string[];
-      start: number;
-      rows: number;
-    };
-  };
-  response: {
-    numFound: number;
-    start: number;
-    docs: Course[];
-  };
   error: {
+    code: number;
     metadata: string[];
     msg: string;
-    code: number;
-  }
+  };
+  response: {
+    docs: Course[];
+    numFound: number;
+    start: number;
+  };
+  responseHeader: {
+    params: {
+      fq?: string[];
+      q: string;
+      rows: number;
+      start: number;
+      wt: string;
+    };
+    QTime: number;
+    status: number;
+  };
 };
+
+export type FacetResponse = Response & {
+  facet_counts: {
+    facet_fields: {
+      cargo:  Record<string, number>,
+      descdistrito: Record<string, number>,
+      descnivelmodalidad: Record<string, number>,
+      estado: Record<string, number>,
+    }
+  }
+}

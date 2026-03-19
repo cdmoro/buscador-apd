@@ -1,20 +1,23 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
-import type { CourseStatus, Response } from "./types";
+import type { CourseStatus, FacetResponse, Response } from "./types";
 import {
   DISTRITO_KEYS,
   DISTRITO_LABELS,
   MODALIDAD_KEYS,
   MODALIDAD_LABELS,
-  ESTADOS,
+  ESTADO_KEYS,
+  ESTADO_LABELS,
   CARGO_KEYS,
   CARGO_LABELS,
 } from "./filters";
 
-const ENDPOINT =
+const SERVICE_URL =
   "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select";
+const FACET_URL =
+  "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select?rows=0&facet=true&facet.limit=-1&facet.mincount=1&json.nl=map&facet.field=cargo&facet.field=estado&facet.field=descnivelmodalidad&facet.field=descdistrito&q=*:*&wt=json";
 let start = 0;
-const rows = 20;
+const rows = 18;
 
 const filtersForm = document.getElementById("filters") as HTMLFormElement;
 const estadoSelect = document.querySelector<HTMLSelectElement>("#estado")!;
@@ -39,9 +42,9 @@ const cierreTimeInput =
   document.querySelector<HTMLInputElement>("#cierre-time")!;
 
 const cardResults = document.querySelector("#results") as HTMLDivElement;
-  const cardResultsGrid = document.querySelector(
-    ".card-results",
-  ) as HTMLDivElement;
+const cardResultsGrid = document.querySelector(
+  ".card-results",
+) as HTMLDivElement;
 const filtersFormCard = document.querySelector(
   "#filters-form",
 ) as HTMLFormElement;
@@ -59,6 +62,7 @@ const dateTimeFormatter = new Intl.DateTimeFormat("es-AR", {
 const dateMediumFormatter = new Intl.DateTimeFormat("es-AR", {
   dateStyle: "medium",
 });
+const numberFormatter = new Intl.NumberFormat("es-AR");
 
 // --- Theme ---
 const themeSelect = document.getElementById("theme") as HTMLSelectElement;
@@ -100,7 +104,7 @@ function buildFilters() {
   }
 
   activeFilters.push({
-    title: "Modalidad",
+    title: "Niveles o Modalidades",
     filters: getActiveFiltersText("modalidad"),
   });
 
@@ -204,7 +208,7 @@ function buildFilters() {
   filterCardGroup.innerHTML = `<tr>${activeFilters
     .map(
       (af) => `<td class="bg-transparent">
-      <small class="text-muted">${af.title}</small>
+      <small class="text-muted text-nowrap">${af.title}</small>
       <div class="active-filters flex-nowrap text-nowrap">${af.filters}</div>
   </td>`,
     )
@@ -216,7 +220,7 @@ function buildFilters() {
 function buildFetchURL() {
   const fq = buildFilters();
   let url =
-    ENDPOINT + `?q=*:*&rows=${rows}&start=${start}&sort=finoferta desc&wt=json`;
+    SERVICE_URL + `?q=*:*&rows=${rows}&start=${start}&sort=finoferta desc&wt=json`;
   fq.forEach((f) => (url += "&fq=" + encodeURIComponent(f)));
   return url;
 }
@@ -358,6 +362,21 @@ function updateURL() {
   }
 }
 
+function resolveTomaDePosesion(tomaPosesion: string) {
+  if (!tomaPosesion) return "No especificada";
+  const date = new Date(tomaPosesion);
+
+  if (date <= new Date()) {
+    return "INMEDIATA";
+  }
+
+  if (isNaN(date.getTime())) {
+    return tomaPosesion;
+  }
+  
+  return dateTimeFormatter.format(date);
+}
+
 async function search() {
   document.body.classList.add("loading");
   filtersFormCard.style.display = "none";
@@ -376,13 +395,31 @@ async function search() {
     .forEach((el) => ((el as HTMLInputElement).disabled = true));
 
   const url = buildFetchURL();
+
+  document.querySelectorAll<HTMLElement>("#active-filters .clear-active-filter-button-container").forEach((el) => {
+    const link = document.createElement("a");
+    link.className = "link-info";
+    link.href = "#";
+    link.title = "Limpiar filtro";
+    link.innerHTML = `<svg class="icon" aria-hidden="true">
+      <use href="/icons.svg#clear-filter-icon"></use>
+    </svg>`;
+    link.onclick = (e) => {
+      e.preventDefault();
+      if (document.body.classList.contains("loading")) return;
+      clearFilter(el.dataset.filter!);
+      search();
+    };
+    el.appendChild(link);
+  });
+
   const res = await fetch(url);
   const buffer = await res.arrayBuffer();
 
   const decoder = new TextDecoder("iso-8859-1");
   const text = decoder.decode(buffer);
 
-  const data = JSON.parse(text) as Response;
+  const data = JSON.parse(text) as Response;      
 
   document.body.classList.remove("loading");
 
@@ -402,7 +439,7 @@ async function search() {
   const total = data.response.numFound;
 
   (document.getElementById("count") as HTMLInputElement).innerText =
-    `Mostrando ${start + 1} a ${start + docs.length} de ${new Intl.NumberFormat("es-AR").format(total)} resultados`;
+    `Mostrando ${start + 1} a ${start + docs.length} de ${numberFormatter.format(total)} resultados`;
   // const tbody = document.getElementById(
   //   "table-results",
   // ) as HTMLTableSectionElement;
@@ -472,9 +509,12 @@ async function search() {
                 : ""
             }
             <div class="card-subtitle mb-2 text-muted">${d.escuela || ""}</div>
-            <h5 class="card-title">${d.cargo || ""}</h5>
+            <h5 class="card-title text-info">${d.cargo || ""}</h5>
             <h6 class="card-subtitle mb-2 text-muted">${d.descdistrito || ""} | ${d.descnivelmodalidad || ""}</h6>
-            <p class="card-text">Cierre de oferta: ${d.finoferta ? dateTimeFormatter.format(new Date(d.finoferta)) : ""}</p>
+            <p class="card-text">
+              <div>Cierre de Oferta: <span class="text-info">${d.finoferta ? dateTimeFormatter.format(new Date(d.finoferta)) : ""}</span></div>
+              <div>IGE: <span class="text-info">${d.ige || ""}</span> — Área: <span class="text-info">${d.areaincumbencia || ""}</span></div>
+            </p>
             <div>
               <details>
                 <summary>Detalles</summary>
@@ -488,7 +528,7 @@ async function search() {
                 <div><strong>Revista</strong>: ${d.supl_revista || ""}</div>
                 <div><strong>Infectocontagiosa en el establecimiento</strong>: ${d.infectocontagiosa || "No"}</div>
                 <hr>
-                <div><strong>Toma de posesión</strong>: ${d.tomaposesion ? dateTimeFormatter.format(new Date(d.tomaposesion)) : ""}</div>
+                <div><strong>Toma de posesión</strong>: ${resolveTomaDePosesion(d.tomaposesion)}</div>
                 <div><strong>Inicio oferta</strong>: ${d.iniciooferta ? dateTimeFormatter.format(new Date(d.iniciooferta)) : ""}</div>
                 <div><strong>Desde</strong>: ${d.supl_desde ? dateMediumFormatter.format(new Date(d.supl_desde)) : ""}</div>
                 <div><strong>Hasta</strong>: ${d.supl_hasta ? dateMediumFormatter.format(new Date(d.supl_hasta)) : ""}</div>
@@ -541,7 +581,7 @@ function getActiveFiltersText(filter: string) {
     ...(document.getElementById(filter) as HTMLSelectElement).selectedOptions,
   ].map(
     (o) =>
-      `<span class="badge text-bg-${filter === 'estado' ? getCourseVariant(o.textContent as CourseStatus) : 'info'}" title="${o.textContent}">${truncateActiveFilterLabel(o.textContent)}</span>`,
+      `<span class="badge text-bg-${filter === "estado" ? getCourseVariant(o.dataset.label as CourseStatus) : "info"}" title="${o.dataset.label!}">${truncateActiveFilterLabel(o.dataset.label!)}</span>`,
   );
   let text = `<span class="badge text-bg-info">${getAllText(filter)}</span>`;
 
@@ -553,6 +593,7 @@ function getActiveFiltersText(filter: string) {
     } else {
       text = selected.join("");
     }
+    text += `<span class="clear-active-filter-button-container" data-filter="${filter}"></span>`;
   }
 
   return text;
@@ -733,9 +774,42 @@ function createFilters(el: HTMLElement, values: string[], labels?: string[]) {
     const option = document.createElement("option");
     option.value = i.toString();
     option.dataset.key = v;
+    option.dataset.label = labels ? labels[i] : v;
     option.textContent = labels ? labels[i] : v;
     el.appendChild(option);
   });
+}
+
+function applyFacet(filter: string, facetData: Record<string, number>) {
+  const select = document.getElementById(filter) as HTMLSelectElement;
+  const options = [...select.options];
+
+  Object.entries(facetData).forEach(([key, count]) => {
+    const option = options.find((o) => o.dataset.key === key);
+    if (option) {
+      option.textContent = `${option.dataset.label} — ${numberFormatter.format(count)}`;
+      option.disabled = false;
+    }
+  });
+}
+
+async function fetchFacets() {
+  try {
+    const res = await fetch(FACET_URL);
+    const buffer = await res.arrayBuffer();
+
+    const decoder = new TextDecoder("iso-8859-1");
+    const text = decoder.decode(buffer);
+
+    const data = JSON.parse(text) as FacetResponse;
+
+    applyFacet("modalidad", data.facet_counts.facet_fields.descnivelmodalidad);
+    applyFacet("distrito", data.facet_counts.facet_fields.descdistrito);
+    applyFacet("cargo", data.facet_counts.facet_fields.cargo);
+    applyFacet("estado", data.facet_counts.facet_fields.estado);
+  } catch {
+    return;
+  }
 }
 
 function main() {
@@ -747,9 +821,11 @@ function main() {
   applyTheme(savedTheme);
 
   createFilters(modalidadSelect, MODALIDAD_KEYS, MODALIDAD_LABELS);
-  createFilters(estadoSelect, ESTADOS);
+  createFilters(estadoSelect, ESTADO_KEYS, ESTADO_LABELS);
   createFilters(distritoSelect, DISTRITO_KEYS, DISTRITO_LABELS);
   createFilters(cargoSelect, CARGO_KEYS, CARGO_LABELS);
+
+  fetchFacets();
 
   const params = new URLSearchParams(window.location.search);
 
@@ -759,7 +835,9 @@ function main() {
     loadFilters();
   }
 
-  cargoSelect.addEventListener("change", () => updateActiveFilters("cargo"));
+  cargoSelect.addEventListener("change", () => 
+    updateActiveFilters("cargo")
+  );
   cargoNotCheckbox.addEventListener("change", () =>
     updateActiveFilters("cargo"),
   );
@@ -784,6 +862,7 @@ function main() {
   search();
 
   document.getElementById("new-search")?.addEventListener("click", () => {
+    scrollTo({ top: 0, behavior: "smooth" });
     filtersFormCard.style.display = "block";
     cardResults.style.display = "none";
   });

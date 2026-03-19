@@ -1890,7 +1890,17 @@ export const DISTRITO_LABELS = [
   "Zarate",
 ];
 
-export const ESTADOS = [
+export const ESTADO_KEYS = [
+  "anulada",
+  "cerrada",
+  "desierta",
+  "designada",
+  "finalizada",
+  "publicada",
+  "renunciada",
+];
+
+export const ESTADO_LABELS = [
   "Anulada",
   "Cerrada",
   "Desierta",
