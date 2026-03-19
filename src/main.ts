@@ -440,34 +440,18 @@ async function search() {
 
   (document.getElementById("count") as HTMLInputElement).innerText =
     `Mostrando ${start + 1} a ${start + docs.length} de ${numberFormatter.format(total)} resultados`;
-  // const tbody = document.getElementById(
-  //   "table-results",
-  // ) as HTMLTableSectionElement;
-  // tbody.innerHTML = "";
 
   cardResults.classList.remove("card-results-empty");
   cardResultsGrid.innerHTML = "";
 
   if (docs.length === 0) {
     cardResults.classList.add("card-results-empty");
-    cardResultsGrid.className = "card-results";
-    cardResultsGrid.innerHTML = `<div class="alert alert-info mb-0" role="alert">
+    cardResultsGrid.innerHTML = `<div class="w-100"><div class="alert alert-info mb-0" role="alert">
       No se encontraron resultados para los filtros seleccionados.
-    </div>`;
+    </div></div>`;
   } else {
-    cardResultsGrid.className = "card-results row row-cols-1 row-cols-md-3 g-4";
     docs.forEach((d) => {
       const courseStatus = getCourseVariant(d.estado);
-
-      // tbody.innerHTML += `
-      //     <tr class="${courseStatus}">
-      //       <td><span class="badge text-bg-${courseStatus}">${d.estado || ""}</span></td>
-      //       <td>${d.cargo || ""}</td>
-      //       <td>${d.descdistrito || ""}</td>
-      //       <td>${d.escuela || ""}</td>
-      //       <td>${d.descnivelmodalidad || ""}</td>
-      //       <td>${d.finoferta ? dateFormatter.format(new Date(d.finoferta)) : ""}</td>
-      //     </tr>`;
 
       const days = {
         Lunes: d.lunes,
@@ -519,6 +503,7 @@ async function search() {
               <details>
                 <summary>Detalles</summary>
                 <div><strong>Nivel</strong>: ${d.descnivelmodalidad || ""}</div>
+                <div><strong>Distrito</strong>: ${d.descdistrito || ""}</div>
                 <div><strong>Domicilio</strong>: ${d.domiciliodesempeno || ""}</div>
                 <div><strong>Área</strong>: ${d.areaincumbencia || ""}</div>
                 <div><strong>Dirección a cargo</strong>: ${d.acargodireccion || "No"}</div>
