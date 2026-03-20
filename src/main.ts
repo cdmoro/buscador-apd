@@ -875,17 +875,23 @@ function main() {
     cierreTimeInput.value = "";
   });
 
-  document.querySelector("#share-search")?.addEventListener("click", (e) => {
-    const url = new URL(window.location.href);
-    navigator.clipboard.writeText(url.toString());
-    (e.target as HTMLButtonElement).innerText = "Búsqueda copiada!";
+  function updateButtonLabel(btn: HTMLButtonElement, msg: string) {
+    const prevText = btn.innerHTML;
+    btn.innerText = msg;
 
     setTimeout(() => {
-      (e.target as HTMLButtonElement).innerHTML =
-        `<svg class="icon" aria-hidden="true">
-          <use href="/icons.svg#copy-icon"></use>
-        </svg> Compartir búsqueda`;
+      btn.innerHTML = prevText;
     }, 1000);
+  }
+
+  document.querySelector("#copy-search")?.addEventListener("click", (e) => {
+    const url = new URL(window.location.href);
+    navigator.clipboard.writeText(url.toString());;
+    updateButtonLabel(e.target as HTMLButtonElement, "¡Búsqueda copiada!");
+  });
+  document.querySelector("#copy-url")?.addEventListener("click", (e) => {
+    navigator.clipboard.writeText(buildFetchURL());
+    updateButtonLabel(e.target as HTMLButtonElement, "¡URL copiada!");
   });
 }
 
