@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
-import type { CourseStatus, FacetResponse, Response } from "./types";
+import type { APDSearchParams, Course, CourseStatus, FacetResponse, Response } from "./types";
 import {
   DISTRITO_KEYS,
   DISTRITO_LABELS,
@@ -14,10 +14,11 @@ import {
 
 const SERVICE_URL =
   "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select";
-const FACET_URL =
-  "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select?rows=0&facet=true&facet.limit=-1&facet.mincount=1&json.nl=map&facet.field=cargo&facet.field=estado&facet.field=descnivelmodalidad&facet.field=descdistrito&q=*:*&wt=json";
+const FACET_PARAMS =
+  "rows=0&facet=true&facet.limit=-1&facet.mincount=1&json.nl=map&facet.field=cargo&facet.field=estado&facet.field=descnivelmodalidad&facet.field=descdistrito&q=*:*&wt=json";
 let start = 0;
 const rows = 18;
+let sort = "ult_movimiento desc";
 
 const filtersForm = document.getElementById("filters") as HTMLFormElement;
 const estadoSelect = document.querySelector<HTMLSelectElement>("#estado")!;
@@ -34,12 +35,14 @@ const modalidadNotCheckbox =
   document.querySelector<HTMLInputElement>("#modalidadNot")!;
 const escuelaInput = document.querySelector<HTMLInputElement>("#escuela")!;
 const igeInput = document.querySelector<HTMLInputElement>("#ige")!;
+const idInput = document.querySelector<HTMLInputElement>("#id")!;
 const cierreModeSelect =
   document.querySelector<HTMLSelectElement>("#cierre-mode")!;
 const cierreDateInput =
   document.querySelector<HTMLInputElement>("#cierre-date")!;
 const cierreTimeInput =
   document.querySelector<HTMLInputElement>("#cierre-time")!;
+const copyShareSearchBtn = document.querySelector<HTMLButtonElement>("#copy-search")!;
 
 const cardResults = document.querySelector("#results") as HTMLDivElement;
 const cardResultsGrid = document.querySelector(
@@ -58,9 +61,6 @@ const dateFormatter = new Intl.DateTimeFormat("es-AR", {
 const dateTimeFormatter = new Intl.DateTimeFormat("es-AR", {
   dateStyle: "medium",
   timeStyle: "short",
-});
-const dateMediumFormatter = new Intl.DateTimeFormat("es-AR", {
-  dateStyle: "medium",
 });
 const numberFormatter = new Intl.NumberFormat("es-AR");
 
@@ -168,6 +168,15 @@ function buildFilters() {
     });
   }
 
+  const id = idInput.value;
+  if (id) {
+    fq.push(`id:${id}`);
+    activeFilters.push({
+      title: "ID",
+      filters: `<span class="badge text-bg-info">${id}</span>`,
+    });
+  }
+
   const cierreDate = cierreDateInput.value;
   if (cierreDate) {
     const cierreMode = parseInt(cierreModeSelect.value);
@@ -217,13 +226,20 @@ function buildFilters() {
   return fq;
 }
 
-function buildFetchURL(): string {
+function buildFetchURL(apdSearchParams: Partial<APDSearchParams> = {}): string {
   const url = new URL(SERVICE_URL);
+  const searchParams: APDSearchParams = {
+    q: "*:*",
+    rows,
+    start,
+    sort,
+    ...apdSearchParams,
+  };
 
-  url.searchParams.set("q", "*:*");
-  url.searchParams.set("rows", String(rows));
-  url.searchParams.set("start", String(start));
-  url.searchParams.set("sort", "finoferta desc");
+  url.searchParams.set("q", searchParams.q);
+  url.searchParams.set("rows", searchParams.rows.toString());
+  url.searchParams.set("start", searchParams.start.toString());
+  url.searchParams.set("sort", searchParams.sort);
   url.searchParams.set("wt", "json");
 
   for (const filter of buildFilters()) {
@@ -249,6 +265,7 @@ function saveFilters() {
 
     ige: igeInput.value,
     escuela: escuelaInput.value,
+    id: idInput.value,
     cierreMode: cierreModeSelect.value,
     cierreDate: cierreDateInput.value,
     cierreTime: cierreTimeInput.value,
@@ -285,6 +302,7 @@ function loadFilters() {
 
   igeInput.value = data.ige;
   escuelaInput.value = data.escuela;
+  idInput.value = data.id;
   cierreModeSelect.value = data.cierreMode;
   cierreDateInput.value = data.cierreDate;
   cierreTimeInput.value = data.cierreTime;
@@ -349,6 +367,11 @@ function updateURL() {
   const ige = igeInput.value;
   if (ige) {
     params.set("ige", ige);
+  }
+
+  const id = idInput.value;
+  if (id) {
+    params.set("id", id);
   }
 
   const cierreDate = cierreDateInput.value;
@@ -419,7 +442,7 @@ async function search() {
       link.onclick = (e) => {
         e.preventDefault();
         if (document.body.classList.contains("loading")) return;
-        clearFilter(el.dataset.filter!);
+        clearSelectFilter(el.dataset.filter!);
         search();
       };
       el.appendChild(link);
@@ -474,7 +497,7 @@ async function search() {
       };
 
       const daysFiltered = Object.entries(days)
-        .filter(([_k, v]) => !!v)
+        .filter(([_, v]) => !!v)
         .map(([k, v]) => `<div><strong>${k}</strong>: ${v}</div>`)
         .join("");
 
@@ -496,7 +519,7 @@ async function search() {
               <h5>Adjudicado a<br>${d.nombreganador}</h5>
               <div>CUIL: ${cuitFormatter(d.cuilganador)}</div>
               <small class="mt-2">
-              <div>Toma posesión: ${d.tomaposesion ? dateMediumFormatter.format(new Date(d.tomaposesion)) : "-"}</div>
+              <div>Toma posesión: ${d.tomaposesion ? dateFormatter.format(new Date(d.tomaposesion)) : "-"}</div>
               <div>Listado origen: ${d.listadoorigenganador}</div>
               <div>Puntaje: ${d.puntajeganador}</div>
               <div>Vuelta: ${d.vuelta}</div>
@@ -510,30 +533,33 @@ async function search() {
             <p class="card-text">
               <div>Cierre de Oferta: <span class="text-info">${d.finoferta ? dateTimeFormatter.format(new Date(d.finoferta)) : ""}</span></div>
               <div>IGE: <span class="text-info">${d.ige || ""}</span> — Área: <span class="text-info">${d.areaincumbencia || ""}</span></div>
+              ${d.observaciones && `<div class="text-muted">Observaciones: ${d.observaciones}</div>`}
             </p>
             <div>
-              <details>
+              <details${document.body.classList.contains("preview") ? " open" : ""}>
                 <summary>Detalles</summary>
-                <div><strong>Nivel</strong>: ${d.descnivelmodalidad || ""}</div>
-                <div><strong>Distrito</strong>: ${d.descdistrito || ""}</div>
-                <div><strong>Domicilio</strong>: ${d.domiciliodesempeno || ""}</div>
-                <div><strong>Área</strong>: ${d.areaincumbencia || ""}</div>
-                <div><strong>Dirección a cargo</strong>: ${d.acargodireccion || "No"}</div>
-                <div><strong>Curso/División</strong>: ${d.cursodivision || ""}</div>
-                <div><strong>Turno</strong>: ${d.turno || ""}</div>
-                <div><strong>Jornada</strong>: ${d.jornada || ""}</div>
-                <div><strong>Revista</strong>: ${d.supl_revista || ""}</div>
-                <div><strong>Infectocontagiosa en el establecimiento</strong>: ${d.infectocontagiosa || "No"}</div>
+                ${d.id && `<div><strong>ID</strong>: ${d.id}</div>`}
+                ${d.descnivelmodalidad && `<div><strong>Nivel</strong>: ${d.descnivelmodalidad}</div>`}
+                ${d.descdistrito && `<div><strong>Distrito</strong>: ${d.descdistrito}</div>`}
+                ${d.domiciliodesempeno && `<div><strong>Domicilio</strong>: ${d.domiciliodesempeno}</div>`}
                 <hr>
-                <div><strong>Toma de posesión</strong>: ${resolveTomaDePosesion(d.tomaposesion)}</div>
-                <div><strong>Inicio oferta</strong>: ${d.iniciooferta ? dateTimeFormatter.format(new Date(d.iniciooferta)) : ""}</div>
-                <div><strong>Desde</strong>: ${d.supl_desde ? dateMediumFormatter.format(new Date(d.supl_desde)) : ""}</div>
-                <div><strong>Hasta</strong>: ${d.supl_hasta ? dateMediumFormatter.format(new Date(d.supl_hasta)) : ""}</div>
-                ${daysFiltered && `<hr>${daysFiltered}`}
-                ${d.observaciones && `<hr><div><strong>Observaciones</strong>: ${d.observaciones}</div>`}
+                ${d.areaincumbencia && `<div><strong>Área</strong>: ${d.areaincumbencia}</div>`}
+                ${d.acargodireccion && `<div><strong>Dirección a cargo</strong>: ${d.acargodireccion}</div>`}
+                ${d.cursodivision && `<div><strong>Curso/División</strong>: ${d.cursodivision}</div>`}
+                ${d.turno && `<div><strong>Turno</strong>: ${d.turno}</div>`}
+                ${d.jornada && `<div><strong>Jornada</strong>: ${d.jornada}</div>`}
+                ${d.supl_revista && `<div><strong>Revista</strong>: ${d.supl_revista}</div>`}
+                ${d.infectocontagiosa !== undefined && `<div><strong>Infectocontagiosa en el establecimiento</strong>: ${d.infectocontagiosa ? "Sí" : "No"}</div>`}
+                <hr>
+                ${d.tomaposesion && `<div><strong>Toma de posesión</strong>: ${resolveTomaDePosesion(d.tomaposesion)}</div>`}
+                ${d.iniciooferta && `<div><strong>Inicio oferta</strong>: ${dateTimeFormatter.format(new Date(d.iniciooferta))}</div>`}
+                ${!d.supl_desde || d.supl_desde.startsWith('9999') ? '' : `<div><strong>Desde</strong>: ${dateFormatter.format(new Date(d.supl_desde))}</div>`}
+                ${!d.supl_hasta || d.supl_hasta.startsWith('9999') ? '' : `<div><strong>Hasta</strong>: ${dateFormatter.format(new Date(d.supl_hasta))}</div>`}
+                ${daysFiltered || ""}
               </details>
             </div>
           </div>
+          <div class="card-footer text-muted"><small>Última actualización: ${d.ult_movimiento ? dateTimeFormatter.format(new Date(d.ult_movimiento)) : ""}</small></div>
         </div>
       </div>
     `;
@@ -556,7 +582,11 @@ function getAllText(filter: string) {
   return "Todos";
 }
 
-function clearFilter(filter: string) {
+function clearInputFilter(filter: string) {
+  (document.getElementById(filter) as HTMLInputElement).value = "";
+}
+
+function clearSelectFilter(filter: string) {
   [...(document.getElementById(filter) as HTMLSelectElement).options].forEach(
     (o) => (o.selected = false),
   );
@@ -746,6 +776,11 @@ function applyFiltersFromURL(params: URLSearchParams) {
     igeInput.value = ige;
   }
 
+  const id = params.get("id");
+  if (id) {
+    idInput.value = id;
+  }
+
   const cierreMode = params.get("cmode");
   if (cierreMode) {
     cierreModeSelect.value = cierreMode;
@@ -792,7 +827,7 @@ function applyFacet(filter: string, facetData: Record<string, number>) {
 
 async function fetchFacets() {
   try {
-    const res = await fetch(FACET_URL);
+    const res = await fetch(`${SERVICE_URL}?${FACET_PARAMS}`);
     const buffer = await res.arrayBuffer();
 
     const decoder = new TextDecoder("iso-8859-1");
@@ -833,7 +868,17 @@ function main() {
 
   fetchFacets();
 
+  if (navigator.share !== undefined) {
+    copyShareSearchBtn.innerHTML = `<svg class="icon" aria-hidden="true">
+      <use href="/icons.svg#share-icon"></use>
+    </svg> Compartir búsqueda`;
+  }
+
   const params = new URLSearchParams(window.location.search);
+
+  if (params.has("id") && params.get("preview") === "true") {
+    document.body.classList.add("preview");
+  }
 
   if (params.size > 0) {
     applyFiltersFromURL(params);
@@ -867,6 +912,7 @@ function main() {
 
   document.getElementById("new-search")?.addEventListener("click", () => {
     scrollTo({ top: 0, behavior: "smooth" });
+    document.body.classList.remove("preview");
     filtersFormCard.style.display = "block";
     cardResults.style.display = "none";
   });
@@ -884,7 +930,14 @@ function main() {
     .querySelectorAll(".clear-filter")
     .forEach((btn) =>
       btn.addEventListener("click", (e) =>
-        clearFilter((e.target as HTMLButtonElement).value),
+        clearSelectFilter((e.target as HTMLButtonElement).value),
+      ),
+    );
+  document
+    .querySelectorAll(".clear-input-filter")
+    .forEach((btn) =>
+      btn.addEventListener("click", (e) =>
+        clearInputFilter((e.target as HTMLButtonElement).value),
       ),
     );
 
@@ -894,13 +947,22 @@ function main() {
     cierreTimeInput.value = "";
   });
 
-  document.querySelector("#copy-search")?.addEventListener("click", (e) => {
+  copyShareSearchBtn.addEventListener("click", (e) => {
     const url = new URL(window.location.href);
+
+    if (navigator.share !== undefined) {
+      navigator.share({
+        title: "Resultados de búsqueda en APD",
+        url: url.toString(),
+      });
+      return;
+    }
+
     navigator.clipboard.writeText(url.toString());
     updateButtonLabel(e.target as HTMLButtonElement, "¡Búsqueda copiada!");
   });
   document.querySelector("#copy-url")?.addEventListener("click", (e) => {
-    navigator.clipboard.writeText(buildFetchURL());
+    navigator.clipboard.writeText(buildFetchURL({ rows: 1, start: 0 }));
     updateButtonLabel(e.target as HTMLButtonElement, "¡URL copiada!");
   });
 }

@@ -87,6 +87,20 @@ fieldset {
   min-width: 100px;
 }
 
+body.preview {
+  #results nav,
+  #active-filters,
+  .results-detail,
+  #copy-search,
+  #copy-url {
+    display: none !important;
+  }
+
+  .card-results .col {
+    width: 100%;
+  }
+}
+
 @media (max-width: 600px) {
   #filters-wrapper {
     grid-template-columns: 1fr;

@@ -94,3 +94,10 @@ export type FacetResponse = Response & {
     }
   }
 }
+
+export type APDSearchParams = {
+  q: string;
+  rows: number;
+  start: number;
+  sort: string;
+}

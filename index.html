@@ -147,12 +147,52 @@
               </div>
               <div>
                 <label for="ige">IGE</label>
-                <input class="form-control" id="ige" type="text" pattern="[0-9]+" placeholder="Ej.: 3846779" />
+                <div class="input-group">
+                  <input class="form-control" id="ige" type="text" pattern="[0-9]+" placeholder="Ej.: 3846779" />
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary clear-input-filter"
+                    value="ige"
+                    placeholder="Limpiar filtro"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/icons.svg#clear-filter-icon"></use>
+                    </svg>
+                  </button>
+                </div>
               </div>
               <div>
                 <label for="escuela">Escuela</label>
-                <input class="form-control" id="escuela" type="text" pattern="[0-9A-Za-z]+" placeholder="Ej.: 0055JI0946" />
+                <div class="input-group">
+                  <input class="form-control" id="escuela" type="text" pattern="[0-9A-Za-z]+" placeholder="Ej.: 0055JI0946" />
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary clear-input-filter"
+                    value="escuela"
+                    placeholder="Limpiar filtro"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/icons.svg#clear-filter-icon"></use>
+                    </svg>
+                  </button>
+                </div>
               </div>
+              <div>
+              <label for="id">ID</label>
+              <div class="input-group">
+                <input class="form-control" id="id" type="text" placeholder="Ej.: 3901418" />
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary clear-input-filter"
+                  value="id"
+                  placeholder="Limpiar filtro"
+                >
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/icons.svg#clear-filter-icon"></use>
+                  </svg>
+                </button>
+              </div>
+            </div>
             </div>
             <div class="mb-3">
               <label for="cierre-date">Cierre de Oferta</label>
@@ -217,7 +257,7 @@
                 Copiar URL servicio
             </div>
           </h2>
-          <div id="active-filters" class="mb-3 card">
+          <div id="active-filters" class="mb-3 card sticky-top rounded-0">
               <div class="card-body p-1 table-responsive">
                 <table class="table table-borderless mb-0 w-auto" id="filter-card-group"></table>
               </div>
