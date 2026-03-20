@@ -217,13 +217,20 @@ function buildFilters() {
   return fq;
 }
 
-function buildFetchURL() {
-  const fq = buildFilters();
-  let url =
-    SERVICE_URL +
-    `?q=*:*&rows=${rows}&start=${start}&sort=finoferta desc&wt=json`;
-  fq.forEach((f) => (url += "&fq=" + encodeURIComponent(f)));
-  return url;
+function buildFetchURL(): string {
+  const url = new URL(SERVICE_URL);
+
+  url.searchParams.set("q", "*:*");
+  url.searchParams.set("rows", String(rows));
+  url.searchParams.set("start", String(start));
+  url.searchParams.set("sort", "finoferta desc");
+  url.searchParams.set("wt", "json");
+
+  for (const filter of buildFilters()) {
+    url.searchParams.append("fq", filter);
+  }
+
+  return url.toString();
 }
 
 function saveFilters() {
