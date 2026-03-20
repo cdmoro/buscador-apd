@@ -220,7 +220,8 @@ function buildFilters() {
 function buildFetchURL() {
   const fq = buildFilters();
   let url =
-    SERVICE_URL + `?q=*:*&rows=${rows}&start=${start}&sort=finoferta desc&wt=json`;
+    SERVICE_URL +
+    `?q=*:*&rows=${rows}&start=${start}&sort=finoferta desc&wt=json`;
   fq.forEach((f) => (url += "&fq=" + encodeURIComponent(f)));
   return url;
 }
@@ -373,7 +374,7 @@ function resolveTomaDePosesion(tomaPosesion: string) {
   if (isNaN(date.getTime())) {
     return tomaPosesion;
   }
-  
+
   return dateTimeFormatter.format(date);
 }
 
@@ -396,22 +397,26 @@ async function search() {
 
   const url = buildFetchURL();
 
-  document.querySelectorAll<HTMLElement>("#active-filters .clear-active-filter-button-container").forEach((el) => {
-    const link = document.createElement("a");
-    link.className = "link-info";
-    link.href = "#";
-    link.title = "Limpiar filtro";
-    link.innerHTML = `<svg class="icon" aria-hidden="true">
+  document
+    .querySelectorAll<HTMLElement>(
+      "#active-filters .clear-active-filter-button-container",
+    )
+    .forEach((el) => {
+      const link = document.createElement("a");
+      link.className = "link-info";
+      link.href = "#";
+      link.title = "Limpiar filtro";
+      link.innerHTML = `<svg class="icon" aria-hidden="true">
       <use href="/icons.svg#clear-filter-icon"></use>
     </svg>`;
-    link.onclick = (e) => {
-      e.preventDefault();
-      if (document.body.classList.contains("loading")) return;
-      clearFilter(el.dataset.filter!);
-      search();
-    };
-    el.appendChild(link);
-  });
+      link.onclick = (e) => {
+        e.preventDefault();
+        if (document.body.classList.contains("loading")) return;
+        clearFilter(el.dataset.filter!);
+        search();
+      };
+      el.appendChild(link);
+    });
 
   const res = await fetch(url);
   const buffer = await res.arrayBuffer();
@@ -419,7 +424,7 @@ async function search() {
   const decoder = new TextDecoder("iso-8859-1");
   const text = decoder.decode(buffer);
 
-  const data = JSON.parse(text) as Response;      
+  const data = JSON.parse(text) as Response;
 
   document.body.classList.remove("loading");
 
@@ -797,6 +802,15 @@ async function fetchFacets() {
   }
 }
 
+function updateButtonLabel(btn: HTMLButtonElement, msg: string) {
+  const prevText = btn.innerHTML;
+  btn.innerText = msg;
+
+  setTimeout(() => {
+    btn.innerHTML = prevText;
+  }, 1000);
+}
+
 function main() {
   themeSelect.addEventListener("change", (e) =>
     applyTheme((e.target as HTMLSelectElement).value),
@@ -820,9 +834,7 @@ function main() {
     loadFilters();
   }
 
-  cargoSelect.addEventListener("change", () => 
-    updateActiveFilters("cargo")
-  );
+  cargoSelect.addEventListener("change", () => updateActiveFilters("cargo"));
   cargoNotCheckbox.addEventListener("change", () =>
     updateActiveFilters("cargo"),
   );
@@ -875,18 +887,9 @@ function main() {
     cierreTimeInput.value = "";
   });
 
-  function updateButtonLabel(btn: HTMLButtonElement, msg: string) {
-    const prevText = btn.innerHTML;
-    btn.innerText = msg;
-
-    setTimeout(() => {
-      btn.innerHTML = prevText;
-    }, 1000);
-  }
-
   document.querySelector("#copy-search")?.addEventListener("click", (e) => {
     const url = new URL(window.location.href);
-    navigator.clipboard.writeText(url.toString());;
+    navigator.clipboard.writeText(url.toString());
     updateButtonLabel(e.target as HTMLButtonElement, "¡Búsqueda copiada!");
   });
   document.querySelector("#copy-url")?.addEventListener("click", (e) => {

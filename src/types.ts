@@ -14,7 +14,7 @@ export type BaseCourse = {
   descripcioncargo: string;
   domiciliodesempeno: string;
   escuela: string;
-  estado: CourseStatus;
+  estado: Exclude<CourseStatus, "DESIGNADA">;
   finoferta: string;
   hsmodulos: number;
   id: string;
@@ -49,7 +49,7 @@ export type BaseCourse = {
   viernes: string;
 };
 
-export type DesignadaCourse = BaseCourse & {
+export type DesignadaCourse = Omit<BaseCourse, "estado"> & {
   cuilganador: string;
   estado: "DESIGNADA";
   listadoorigenganador: string;
@@ -58,7 +58,7 @@ export type DesignadaCourse = BaseCourse & {
   vuelta: number;
 }
 
-export type Course = BaseCourse & DesignadaCourse;
+export type Course = BaseCourse | DesignadaCourse;
 
 export type Response = {
   error: {
