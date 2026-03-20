@@ -953,6 +953,7 @@ function main() {
     if (navigator.share !== undefined) {
       navigator.share({
         title: "Resultados de búsqueda en APD",
+        text: "¡Mirá los resultados que encontré en Actos Públicos Digitales!",
         url: url.toString(),
       });
       return;
