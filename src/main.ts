@@ -422,7 +422,7 @@ async function search() {
   saveFilters();
 
   document
-    .querySelectorAll(".card input, .card select, .card button")
+    .querySelectorAll(".card button")
     .forEach((el) => ((el as HTMLInputElement).disabled = true));
 
   const url = buildFetchURL();
@@ -570,7 +570,7 @@ async function search() {
   }
 
   document
-    .querySelectorAll(".card input, .card select, .card button")
+    .querySelectorAll(".card button")
     .forEach((el) => ((el as HTMLInputElement).disabled = false));
 }
 
