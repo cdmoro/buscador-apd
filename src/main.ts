@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
-import type { APDSearchParams, Course, CourseStatus, FacetResponse, Response } from "./types";
+import type { APDSearchParams, CourseStatus, FacetResponse, Response } from "./types";
 import {
   DISTRITO_KEYS,
   DISTRITO_LABELS,
