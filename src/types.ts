@@ -2,6 +2,8 @@ export type State = {
   start: number;
   rows: number;
   sort: string;
+  isSingleCourse: boolean;
+  isPreview: boolean;
 }
 
 export type Listener = (state: State) => void;

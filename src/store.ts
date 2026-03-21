@@ -32,4 +32,6 @@ export const store = createStore({
   start: 0,
   rows: 18,
   sort: "ult_movimiento desc",
+  isSingleCourse: false,
+  isPreview: false,
 });

@@ -148,13 +148,11 @@ export function renderCards(docs: Course[], container: HTMLElement) {
         try {
           await navigator.share({
             title: `Oferta ${d.cargo} en ${d.escuela}`,
-            text: `Oferta de ${d.cargo} en ${d.escuela} (${d.descdistrito}) \n
-                    Modalidad: ${d.descnivelmodalidad} ${
-                      d.finoferta
-                        ? `\n
-                    Cierre de oferta: ${dateTimeFormatter.format(new Date(d.finoferta))}`
-                        : ""
-                    }`,
+            text: `Oferta de ${d.cargo} en ${d.escuela} (${d.descdistrito}) \nModalidad: ${d.descnivelmodalidad} ${
+              d.finoferta
+                ? `\nCierre de oferta: ${dateTimeFormatter.format(new Date(d.finoferta))}`
+                : ""
+            }`,
             url: `https://buscador-apd.netlify.app/?id=${d.id}&preview=true`,
           });
         } catch (err) {
