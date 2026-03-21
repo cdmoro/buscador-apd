@@ -11,6 +11,8 @@ import {
   CARGO_KEYS,
   CARGO_LABELS,
 } from "./filters";
+import { dateFormatter, dateTimeFormatter, getCourseVariant, numberFormatter } from "./utils";
+import { renderCards } from "./render";
 
 const SERVICE_URL =
   "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select";
@@ -55,15 +57,6 @@ const filterCardGroup = document.querySelector(
   "#filter-card-group",
 ) as HTMLDivElement;
 
-const dateFormatter = new Intl.DateTimeFormat("es-AR", {
-  dateStyle: "medium",
-});
-const dateTimeFormatter = new Intl.DateTimeFormat("es-AR", {
-  dateStyle: "medium",
-  timeStyle: "short",
-});
-const numberFormatter = new Intl.NumberFormat("es-AR");
-
 // --- Theme ---
 const themeSelect = document.getElementById("theme") as HTMLSelectElement;
 function applyTheme(value: string) {
@@ -78,12 +71,6 @@ function applyTheme(value: string) {
     document.documentElement.setAttribute("data-bs-theme", value);
   }
   localStorage.setItem("apdTheme", value);
-}
-
-function cuitFormatter(cuit: string) {
-  if (cuit.length !== 11) return cuit;
-
-  return `${cuit.slice(0, 2)}-${cuit.slice(2, 10)}-${cuit.slice(10)}`;
 }
 
 // --- Filters ---
@@ -308,19 +295,6 @@ function loadFilters() {
   cierreTimeInput.value = data.cierreTime;
 }
 
-function getCourseVariant(status: CourseStatus) {
-  switch (status.toLowerCase()) {
-    case "publicada":
-      return "success";
-    case "anulada":
-      return "warning";
-    case "renunciada":
-      return "danger";
-    default:
-      return "secondary";
-  }
-}
-
 function updateURL() {
   const params = new URLSearchParams();
 
@@ -391,21 +365,6 @@ function updateURL() {
   } else {
     history.replaceState(null, "", location.pathname);
   }
-}
-
-function resolveTomaDePosesion(tomaPosesion: string) {
-  if (!tomaPosesion) return "No especificada";
-  const date = new Date(tomaPosesion);
-
-  if (date <= new Date()) {
-    return "INMEDIATA";
-  }
-
-  if (isNaN(date.getTime())) {
-    return tomaPosesion;
-  }
-
-  return dateTimeFormatter.format(date);
 }
 
 async function search() {
@@ -479,95 +438,9 @@ async function search() {
   cardResults.classList.remove("card-results-empty");
   cardResultsGrid.innerHTML = "";
 
-  if (docs.length === 0) {
-    cardResults.classList.add("card-results-empty");
-    cardResultsGrid.innerHTML = `<div class="w-100"><div class="alert alert-info mb-0" role="alert">
-      No se encontraron resultados para los filtros seleccionados.
-    </div></div>`;
-  } else {
-    docs.forEach((d) => {
-      const courseStatus = getCourseVariant(d.estado);
-
-      const days = {
-        Lunes: d.lunes,
-        Martes: d.martes,
-        Miércoles: d.miercoles,
-        Jueves: d.jueves,
-        Viernes: d.viernes,
-      };
-
-      const daysFiltered = Object.entries(days)
-        .filter(([_, v]) => !!v)
-        .map(([k, v]) => `<div><strong>${k}</strong>: ${v}</div>`)
-        .join("");
-
-      cardResultsGrid.innerHTML += `
-      <div class="col">
-        <div class="card card-course ${courseStatus} border-${courseStatus} h-100">
-          <div class="card-header bg-${courseStatus} text-bg-${courseStatus} d-flex justify-content-between">
-            ${d.estado || ""}
-            <a title="Listar postulados" class="text-bg-${courseStatus}" href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}" target="_blank">
-              <svg class="icon" aria-hidden="true">
-                <use href="/icons.svg#list-icon"></use>
-              </svg>
-            </a>
-          </div>
-          <div class="card-body">
-            ${
-              d.estado === "DESIGNADA"
-                ? `<div class="alert alert-secondary alert-designada position-absolute top-0 start-0 end-0 bottom-0 text-center text-light justify-content-center mb-0 d-flex flex-column" role="alert">
-              <h5>Adjudicado a<br>${d.nombreganador}</h5>
-              <div>CUIL: ${cuitFormatter(d.cuilganador)}</div>
-              <small class="mt-2">
-              <div>Toma posesión: ${d.tomaposesion ? dateFormatter.format(new Date(d.tomaposesion)) : "-"}</div>
-              <div>Listado origen: ${d.listadoorigenganador}</div>
-              <div>Puntaje: ${d.puntajeganador}</div>
-              <div>Vuelta: ${d.vuelta}</div>
-              </small>
-            </div>`
-                : ""
-            }
-            <div class="card-subtitle mb-2 text-muted">${d.escuela || ""}</div>
-            <h5 class="card-title text-info">${d.cargo || ""}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">${d.descdistrito || ""} | ${d.descnivelmodalidad || ""}</h6>
-            <p class="card-text">
-              <div>Cierre de Oferta: <span class="text-info">${d.finoferta ? dateTimeFormatter.format(new Date(d.finoferta)) : ""}</span></div>
-              <div>IGE: <span class="text-info">${d.ige || ""}</span> — Área: <span class="text-info">${d.areaincumbencia || ""}</span></div>
-              ${d.observaciones && `<div class="text-muted">Observaciones: ${d.observaciones}</div>`}
-            </p>
-            <div>
-              <details${document.body.classList.contains("preview") ? " open" : ""}>
-                <summary>Detalles</summary>
-                ${d.id && `<div><strong>ID</strong>: ${d.id}</div>`}
-                ${d.descnivelmodalidad && `<div><strong>Nivel</strong>: ${d.descnivelmodalidad}</div>`}
-                ${d.descdistrito && `<div><strong>Distrito</strong>: ${d.descdistrito}</div>`}
-                ${d.domiciliodesempeno && `<div><strong>Domicilio</strong>: ${d.domiciliodesempeno}</div>`}
-                <hr>
-                ${d.areaincumbencia && `<div><strong>Área</strong>: ${d.areaincumbencia}</div>`}
-                ${d.acargodireccion && `<div><strong>Dirección a cargo</strong>: ${d.acargodireccion}</div>`}
-                ${d.cursodivision && `<div><strong>Curso/División</strong>: ${d.cursodivision}</div>`}
-                ${d.turno && `<div><strong>Turno</strong>: ${d.turno}</div>`}
-                ${d.jornada && `<div><strong>Jornada</strong>: ${d.jornada}</div>`}
-                ${d.supl_revista && `<div><strong>Revista</strong>: ${d.supl_revista}</div>`}
-                ${d.infectocontagiosa !== undefined && `<div><strong>Infectocontagiosa en el establecimiento</strong>: ${d.infectocontagiosa ? "Sí" : "No"}</div>`}
-                <hr>
-                ${d.tomaposesion && `<div><strong>Toma de posesión</strong>: ${resolveTomaDePosesion(d.tomaposesion)}</div>`}
-                ${d.iniciooferta && `<div><strong>Inicio oferta</strong>: ${dateTimeFormatter.format(new Date(d.iniciooferta))}</div>`}
-                ${!d.supl_desde || d.supl_desde.startsWith('9999') ? '' : `<div><strong>Desde</strong>: ${dateFormatter.format(new Date(d.supl_desde))}</div>`}
-                ${!d.supl_hasta || d.supl_hasta.startsWith('9999') ? '' : `<div><strong>Hasta</strong>: ${dateFormatter.format(new Date(d.supl_hasta))}</div>`}
-                ${daysFiltered || ""}
-              </details>
-            </div>
-          </div>
-          <div class="card-footer text-muted"><small>Última actualización: ${d.ult_movimiento ? dateTimeFormatter.format(new Date(d.ult_movimiento)) : ""}</small></div>
-        </div>
-      </div>
-    `;
-    });
-
-    renderPagination("pagination", total, rows, start);
-    renderPagination("pagination-bottom", total, rows, start);
-  }
+  renderCards(docs, cardResultsGrid);
+  renderPagination("pagination", total, rows, start);
+  renderPagination("pagination-bottom", total, rows, start);
 
   document
     .querySelectorAll(".card button")
