@@ -1,3 +1,5 @@
+import { search } from "./main";
+import { store } from "./store";
 import type { Course, DesignadaCourse } from "./types";
 import {
   cuitFormatter,
@@ -215,4 +217,85 @@ export function renderCards(docs: Course[], container: HTMLElement) {
 
     container.appendChild(fragment);
   });
+}
+
+export function renderPagination(
+  id: string,
+  total: number,
+  rows: number,
+  start: number,
+) {
+  const container = document.getElementById(id)!;
+  container.innerHTML = "";
+
+  const totalPages = Math.ceil(total / rows);
+  const currentPage = Math.floor(start / rows) + 1;
+
+  function createItem(
+    page: number,
+    label?: string,
+    disabled = false,
+    active = false,
+  ) {
+    const li = document.createElement("li");
+    li.className = "page-item";
+
+    const a = document.createElement("a");
+    a.className = "page-link";
+    a.href = "#";
+    a.textContent = label ?? page.toString();
+
+    if (disabled) li.classList.add("disabled");
+    else if (active) {
+      li.classList.add("active");
+      a.classList.add("bg-info", "text-bg-info", "border-info");
+    } else {
+      a.classList.add("text-info");
+    }
+
+    a.onclick = (e) => {
+      e.preventDefault();
+      scrollTo({ top: 0, behavior: "smooth" });
+      goToPage(page);
+    };
+
+    li.appendChild(a);
+    container.appendChild(li);
+  }
+
+  function createDots() {
+    const li = document.createElement("li");
+    li.className = "page-item disabled";
+    li.innerHTML = `<span class="page-link">...</span>`;
+    container.appendChild(li);
+  }
+
+  createItem(currentPage - 1, "«", currentPage === 1);
+
+  const window = 1;
+  let startPage = Math.max(1, currentPage - window);
+  let endPage = Math.min(totalPages, currentPage + window);
+
+  if (startPage > 1) {
+    createItem(1);
+
+    if (startPage > 2) createDots();
+  }
+
+  for (let p = startPage; p <= endPage; p++) {
+    createItem(p, undefined, false, p === currentPage);
+  }
+
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) createDots();
+
+    createItem(totalPages);
+  }
+
+  createItem(currentPage + 1, "»", currentPage === totalPages);
+}
+
+function goToPage(page: number) {
+  store.setState({ start: (page - 1) * store.getState().rows });
+  search();
 }

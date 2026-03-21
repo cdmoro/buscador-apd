@@ -1,6 +1,13 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
-import type { APDSearchParams, CourseStatus, FacetResponse, FilterForm, Response } from "./types";
+import type {
+  APDSearchParams,
+  CourseStatus,
+  FacetResponse,
+  FilterForm,
+  FilterFormElements,
+  Response,
+} from "./types";
 import {
   DISTRITO_KEYS,
   DISTRITO_LABELS,
@@ -11,17 +18,17 @@ import {
   CARGO_KEYS,
   CARGO_LABELS,
 } from "./filters";
-import { dateFormatter, dateTimeFormatter, getCourseVariant, numberFormatter } from "./utils";
-import { renderCards } from "./render";
+import {
+  dateFormatter,
+  dateTimeFormatter,
+  getCourseVariant,
+  numberFormatter,
+} from "./utils";
+import { renderCards, renderPagination } from "./render";
+import { FACET_PARAMS, SERVICE_URL } from "./contstans";
+import { store } from "./store";
 
-const SERVICE_URL =
-  "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select";
-const FACET_PARAMS =
-  "rows=0&facet=true&facet.limit=-1&facet.mincount=1&json.nl=map&facet.field=cargo&facet.field=estado&facet.field=descnivelmodalidad&facet.field=descdistrito&q=*:*&wt=json";
-let start = 0;
-const rows = 18;
-let sort = "ult_movimiento desc";
-
+const { start, rows, sort } = store.getState();
 const filtersForm = document.getElementById("filters") as FilterForm;
 const estadoSelect = filtersForm.elements.estado;
 const estadoNotCheckbox = filtersForm.elements.estadoNot;
@@ -37,7 +44,8 @@ const idInput = filtersForm.elements.id;
 const cierreModeSelect = filtersForm.elements.cierreMode;
 const cierreDateInput = filtersForm.elements.cierreDate;
 const cierreTimeInput = filtersForm.elements.cierreTime;
-const copyShareSearchBtn = document.querySelector<HTMLButtonElement>("#copy-search")!;
+const copyShareSearchBtn =
+  document.querySelector<HTMLButtonElement>("#copy-search")!;
 
 const cardResults = document.querySelector("#results") as HTMLDivElement;
 const cardResultsGrid = document.querySelector(
@@ -360,7 +368,7 @@ function updateURL() {
   }
 }
 
-async function search() {
+export async function search() {
   document.body.classList.add("loading");
   filtersFormCard.style.display = "none";
   cardResults.style.display = "block";
@@ -440,25 +448,27 @@ async function search() {
     .forEach((el) => ((el as HTMLInputElement).disabled = false));
 }
 
-function getAllText(filter: string) {
-  if (filter === "modalidad") {
-    return "Todas";
-  }
-
-  return "Todos";
-}
-
 function clearInputFilter(filter: string) {
-  (document.getElementById(filter) as HTMLInputElement).value = "";
+  (
+    filtersForm.elements[filter as keyof FilterFormElements] as HTMLInputElement
+  ).value = "";
 }
 
 function clearSelectFilter(filter: string) {
-  [...(document.getElementById(filter) as HTMLSelectElement).options].forEach(
-    (o) => (o.selected = false),
-  );
-  (document.getElementById(`${filter}Not`) as HTMLInputElement).checked = false;
+  [
+    ...(
+      filtersForm.elements[
+        filter as keyof FilterFormElements
+      ] as HTMLSelectElement
+    ).options,
+  ].forEach((o) => (o.selected = false));
+  (
+    filtersForm.elements[
+      `${filter}Not` as keyof FilterFormElements
+    ] as HTMLInputElement
+  ).checked = false;
   document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML =
-    `<span class="badge text-bg-info">${getAllText(filter)}</span>`;
+    `<span class="badge text-bg-info">Todos</span>`;
 }
 
 function truncateActiveFilterLabel(label: string) {
@@ -471,17 +481,27 @@ function truncateActiveFilterLabel(label: string) {
 
 function getActiveFiltersText(filter: string) {
   const selected = [
-    ...(document.getElementById(filter) as HTMLSelectElement).selectedOptions,
+    ...(
+      filtersForm.elements[
+        filter as keyof FilterFormElements
+      ] as HTMLSelectElement
+    ).selectedOptions,
   ].map(
     (o) =>
       `<span class="badge text-bg-${filter === "estado" ? getCourseVariant(o.dataset.label as CourseStatus) : "info"}" title="${o.dataset.label!}">${truncateActiveFilterLabel(o.dataset.label!)}</span>`,
   );
-  let text = `<span class="badge text-bg-info">${getAllText(filter)}</span>`;
+  let text = `<span class="badge text-bg-info">Todos</span>`;
 
   if (selected.length > 0) {
-    if ((document.getElementById(`${filter}Not`) as HTMLInputElement).checked) {
+    if (
+      (
+        filtersForm.elements[
+          `${filter}Not` as keyof FilterFormElements
+        ] as HTMLInputElement
+      ).checked
+    ) {
       text =
-        `<span class="badge text-bg-info">${getAllText(filter)}</span> excepto ` +
+        `<span class="badge text-bg-info">Todos</span> excepto ` +
         selected.join("");
     } else {
       text = selected.join("");
@@ -501,91 +521,10 @@ function updateAllActiveFilters() {
   ["modalidad", "distrito", "cargo", "estado"].forEach(updateActiveFilters);
 }
 
-function renderPagination(
-  id: string,
-  total: number,
-  rows: number,
-  start: number,
-) {
-  const container = document.getElementById(id)!;
-  container.innerHTML = "";
-
-  const totalPages = Math.ceil(total / rows);
-  const currentPage = Math.floor(start / rows) + 1;
-
-  function createItem(
-    page: number,
-    label?: string,
-    disabled = false,
-    active = false,
-  ) {
-    const li = document.createElement("li");
-    li.className = "page-item";
-
-    const a = document.createElement("a");
-    a.className = "page-link";
-    a.href = "#";
-    a.textContent = label ?? page.toString();
-
-    if (disabled) li.classList.add("disabled");
-    else if (active) {
-      li.classList.add("active");
-      a.classList.add("bg-info", "text-bg-info", "border-info");
-    } else {
-      a.classList.add("text-info");
-    }
-
-    a.onclick = (e) => {
-      e.preventDefault();
-      scrollTo({ top: 0, behavior: "smooth" });
-      goToPage(page);
-    };
-
-    li.appendChild(a);
-    container.appendChild(li);
-  }
-
-  function createDots() {
-    const li = document.createElement("li");
-    li.className = "page-item disabled";
-    li.innerHTML = `<span class="page-link">...</span>`;
-    container.appendChild(li);
-  }
-
-  createItem(currentPage - 1, "«", currentPage === 1);
-
-  const window = 1;
-  let startPage = Math.max(1, currentPage - window);
-  let endPage = Math.min(totalPages, currentPage + window);
-
-  if (startPage > 1) {
-    createItem(1);
-
-    if (startPage > 2) createDots();
-  }
-
-  for (let p = startPage; p <= endPage; p++) {
-    createItem(p, undefined, false, p === currentPage);
-  }
-
-  if (endPage < totalPages) {
-    if (endPage < totalPages - 1) createDots();
-
-    createItem(totalPages);
-  }
-
-  createItem(currentPage + 1, "»", currentPage === totalPages);
-}
-
-function goToPage(page: number) {
-  start = (page - 1) * rows;
-  search();
-}
-
 function applyFiltersFromURL(params: URLSearchParams) {
   const startParam = params.get("start");
   if (startParam) {
-    start = parseInt(startParam);
+    store.setState({ start: parseInt(startParam) });
   }
 
   const modalidad = params.get("modalidad");
@@ -789,7 +728,7 @@ function main() {
   });
   filtersForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    start = 0;
+    store.setState({ start: 0 });
     search();
   });
   document

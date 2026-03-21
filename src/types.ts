@@ -1,4 +1,12 @@
-interface FilterFormElements extends HTMLFormControlsCollection {
+export type State = {
+  start: number;
+  rows: number;
+  sort: string;
+}
+
+export type Listener = (state: State) => void;
+
+export interface FilterFormElements extends HTMLFormControlsCollection {
   modalidad: HTMLSelectElement;
   modalidadNot: HTMLInputElement;
   distrito: HTMLSelectElement;
