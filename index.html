@@ -52,12 +52,12 @@
                 <label for="modalidad" class="d-flex justify-content-between">
                   Niveles o Modalidades
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="modalidadNot">
+                    <input class="form-check-input" name="modalidadNot" type="checkbox" role="switch" id="modalidadNot">
                     <label class="form-check-label" for="modalidadNot">Invertir</label>
                   </div>
                 </label>
                 <div class="input-group">
-                  <select class="form-select" id="modalidad" multiple size="6"></select>
+                  <select class="form-select" name="modalidad" id="modalidad" multiple size="6"></select>
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-filter"
@@ -79,12 +79,12 @@
                 <label for="distrito" class="d-flex justify-content-between">
                   Distrito
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="distritoNot">
+                    <input class="form-check-input" type="checkbox" role="switch" name="distritoNot" id="distritoNot">
                     <label class="form-check-label" for="distritoNot">Invertir</label>
                   </div>
                 </label>
                 <div class="input-group">
-                  <select class="form-select" id="distrito" multiple size="6"></select>
+                  <select class="form-select" name="distrito" id="distrito" multiple size="6"></select>
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-filter"
@@ -106,12 +106,12 @@
                 <label for="cargo" class="d-flex justify-content-between">
                   Cargo
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="cargoNot">
+                    <input class="form-check-input" type="checkbox" role="switch" name="cargoNot" id="cargoNot">
                     <label class="form-check-label" for="cargoNot">Invertir</label>
                   </div>
                 </label>
                 <div class="input-group">
-                  <select class="form-select" id="cargo" multiple size="6"></select>
+                  <select class="form-select" name="cargo" id="cargo" multiple size="6"></select>
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-filter"
@@ -133,12 +133,12 @@
                 <label for="estado" class="d-flex justify-content-between">
                   Estado
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="estadoNot">
+                    <input class="form-check-input" type="checkbox" role="switch" name="estadoNot" id="estadoNot">
                     <label class="form-check-label" for="estadoNot">Invertir</label>
                   </div>
                 </label>
                 <div class="input-group">
-                  <select class="form-select" id="estado" multiple size="6"></select>
+                  <select class="form-select" name="estado" id="estado" multiple size="6"></select>
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-filter"
@@ -159,7 +159,7 @@
               <div>
                 <label for="ige">IGE</label>
                 <div class="input-group">
-                  <input class="form-control" id="ige" type="text" pattern="[0-9]+" placeholder="Ej.: 3846779" />
+                  <input class="form-control" name="ige" id="ige" type="text" pattern="[0-9]+" placeholder="Ej.: 3846779" />
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-input-filter"
@@ -175,7 +175,7 @@
               <div>
                 <label for="escuela">Escuela</label>
                 <div class="input-group">
-                  <input class="form-control" id="escuela" type="text" pattern="[0-9A-Za-z]+" placeholder="Ej.: 0055JI0946" />
+                  <input class="form-control" name="escuela" id="escuela" type="text" pattern="[0-9A-Za-z]+" placeholder="Ej.: 0055JI0946" />
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-input-filter"
@@ -191,7 +191,7 @@
               <div>
               <label for="id">ID</label>
               <div class="input-group">
-                <input class="form-control" id="id" type="text" placeholder="Ej.: 3901418" />
+                <input class="form-control" name="id" id="id" type="text" placeholder="Ej.: 3901418" />
                 <button
                   type="button"
                   class="btn btn-outline-secondary clear-input-filter"
@@ -209,15 +209,15 @@
               <label for="cierre-date">Cierre de Oferta</label>
               <div class="d-flex gap-3 justify-content-between flex-column flex-md-row">
                 <div class="flex-shrink-1 cierre-mode-select">
-                  <select class="form-select" id="cierre-mode">
+                  <select class="form-select" name="cierreMode" id="cierre-mode">
                     <option value="0" selected>Exacta</option>
                     <option value="1">Desde</option>
                     <option value="2">Hasta</option>
                   </select>
                 </div>
                 <div class="input-group w-100">
-                  <input class="form-control" id="cierre-date" type="date" placeholder="Fecha" />
-                  <input class="form-control" id="cierre-time" type="time" placeholder="Hora" />
+                  <input class="form-control" name="cierreDate" id="cierre-date" type="date" placeholder="Fecha" />
+                  <input class="form-control" name="cierreTime" id="cierre-time" type="time" placeholder="Hora" />
                   <button
                       id="clear-date-input"
                       type="button"

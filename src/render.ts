@@ -55,10 +55,14 @@ function renderDetails(d: Course, daysFiltered: string) {
       ${!d.supl_desde || d.supl_desde.startsWith("9999") ? "" : `<div><strong>Desde</strong>: ${dateFormatter.format(new Date(d.supl_desde))}</div>`}
       ${!d.supl_hasta || d.supl_hasta.startsWith("9999") ? "" : `<div><strong>Hasta</strong>: ${dateFormatter.format(new Date(d.supl_hasta))}</div>`}
       ${daysFiltered || ""}
-      ${d.observaciones && `
+      ${
+        d.observaciones &&
+        `
         <div><hr></div>
-        <div><strong>Observaciones</strong>: ${d.observaciones}</div>
-      `}`;
+        <div><strong>Observaciones</strong></div>
+        <div>${d.observaciones}</div>
+      `
+      }`;
 }
 
 export function renderCards(docs: Course[], container: HTMLElement) {
@@ -89,9 +93,14 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       Viernes: d.viernes,
     };
 
-    const daysTable = `<table class="mt-2 table table-bordered table-sm text-center w-auto"><tbody><tr>${Object.entries(days)
-      .map(([k, v]) => `<td title="${!!v ? `${k}: ${v}` : ""}" class="px-2${!!v ? " bg-info" : ""}"></td>`)
-      .join("")}</tr></tbody></table>`;
+    const daysTable = `<div class="day-preview-table card text-center w-auto d-flex flex-row d-inline-flex overflow-hidden rounded-1">${Object.entries(
+      days,
+    )
+      .map(
+        ([k, v]) =>
+          `<div title="${v || ""}" class="${!!v ? "bg-info text-bg-info" : "text-muted"}">${k[0]}</div>`,
+      )
+      .join("")}</div>`;
 
     const daysFiltered = Object.entries(days)
       .filter(([_, v]) => !!v)
@@ -137,7 +146,13 @@ export function renderCards(docs: Course[], container: HTMLElement) {
         try {
           await navigator.share({
             title: `Oferta ${d.cargo} en ${d.escuela}`,
-            text: `Oferta de ${d.cargo} en ${d.escuela} (${d.descdistrito})\n Modalidad: ${d.descnivelmodalidad}) ${d.finoferta ? `\nCierre de oferta: ${dateTimeFormatter.format(new Date(d.finoferta))}` : ""}.`,
+            text: `Oferta de ${d.cargo} en ${d.escuela} (${d.descdistrito}) \n
+                    Modalidad: ${d.descnivelmodalidad} ${
+                      d.finoferta
+                        ? `\n
+                    Cierre de oferta: ${dateTimeFormatter.format(new Date(d.finoferta))}`
+                        : ""
+                    }`,
             url: `https://buscador-apd.netlify.app/?id=${d.id}&preview=true`,
           });
         } catch (err) {
@@ -171,18 +186,20 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       <div class="card-text mb-1">
           ${d.finoferta && `<div>Cierre de Oferta: <span class="text-info">${dateTimeFormatter.format(new Date(d.finoferta))}</span></div>`}
           <div>IGE: <span class="text-info">${d.ige || ""}</span> — Área: <span class="text-info">${d.areaincumbencia || ""}</span></div>
-          <div>${daysTable}</div>
+          ${daysTable && `<div>${daysTable}</div>`}
       </div>
       
-      <div class="card-details">
-      ${isPreview ? 
-        `<div class="row row-cols-1 row-cols-md-2">
+      <div class="card-details mt-3">
+      ${
+        isPreview
+          ? `<div class="row row-cols-1 row-cols-md-2">
             ${renderDetails(d, daysFiltered)}
-          </div>` : 
-        `<details>
+          </div>`
+          : `<details>
           <summary>Detalles</summary>
           ${renderDetails(d, daysFiltered)}
-        </details>`}
+        </details>`
+      }
       </div>`;
 
     const cardFooter = document.createElement("div");

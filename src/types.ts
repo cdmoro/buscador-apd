@@ -1,3 +1,24 @@
+interface FilterFormElements extends HTMLFormControlsCollection {
+  modalidad: HTMLSelectElement;
+  modalidadNot: HTMLInputElement;
+  distrito: HTMLSelectElement;
+  distritoNot: HTMLInputElement;
+  cargo: HTMLSelectElement;
+  cargoNot: HTMLInputElement;
+  estado: HTMLSelectElement;
+  estadoNot: HTMLInputElement;
+  ige: HTMLInputElement;
+  escuela: HTMLInputElement;
+  id: HTMLInputElement;
+  cierreMode: HTMLSelectElement;
+  cierreDate: HTMLInputElement;
+  cierreTime: HTMLInputElement;
+}
+
+export interface FilterForm extends HTMLFormElement {
+  elements: FilterFormElements;
+}
+
 export type CourseStatus = "Anulada" | "Cerrada" | "Desierta" | "DESIGNADA" | "Finalizada" | "Publicada" | "RENUNCIADA";
 
 export type BaseCourse = {

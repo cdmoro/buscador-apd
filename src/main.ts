@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
-import type { APDSearchParams, CourseStatus, FacetResponse, Response } from "./types";
+import type { APDSearchParams, CourseStatus, FacetResponse, FilterForm, Response } from "./types";
 import {
   DISTRITO_KEYS,
   DISTRITO_LABELS,
@@ -22,28 +22,21 @@ let start = 0;
 const rows = 18;
 let sort = "ult_movimiento desc";
 
-const filtersForm = document.getElementById("filters") as HTMLFormElement;
-const estadoSelect = document.querySelector<HTMLSelectElement>("#estado")!;
-const estadoNotCheckbox =
-  document.querySelector<HTMLInputElement>("#estadoNot")!;
-const distritoSelect = document.querySelector<HTMLSelectElement>("#distrito")!;
-const distritoNotCheckbox =
-  document.querySelector<HTMLInputElement>("#distritoNot")!;
-const cargoSelect = document.querySelector<HTMLSelectElement>("#cargo")!;
-const cargoNotCheckbox = document.querySelector<HTMLInputElement>("#cargoNot")!;
-const modalidadSelect =
-  document.querySelector<HTMLSelectElement>("#modalidad")!;
-const modalidadNotCheckbox =
-  document.querySelector<HTMLInputElement>("#modalidadNot")!;
-const escuelaInput = document.querySelector<HTMLInputElement>("#escuela")!;
-const igeInput = document.querySelector<HTMLInputElement>("#ige")!;
-const idInput = document.querySelector<HTMLInputElement>("#id")!;
-const cierreModeSelect =
-  document.querySelector<HTMLSelectElement>("#cierre-mode")!;
-const cierreDateInput =
-  document.querySelector<HTMLInputElement>("#cierre-date")!;
-const cierreTimeInput =
-  document.querySelector<HTMLInputElement>("#cierre-time")!;
+const filtersForm = document.getElementById("filters") as FilterForm;
+const estadoSelect = filtersForm.elements.estado;
+const estadoNotCheckbox = filtersForm.elements.estadoNot;
+const distritoSelect = filtersForm.elements.distrito;
+const distritoNotCheckbox = filtersForm.elements.distritoNot;
+const cargoSelect = filtersForm.elements.cargo;
+const cargoNotCheckbox = filtersForm.elements.cargoNot;
+const modalidadSelect = filtersForm.elements.modalidad;
+const modalidadNotCheckbox = filtersForm.elements.modalidadNot;
+const escuelaInput = filtersForm.elements.escuela;
+const igeInput = filtersForm.elements.ige;
+const idInput = filtersForm.elements.id;
+const cierreModeSelect = filtersForm.elements.cierreMode;
+const cierreDateInput = filtersForm.elements.cierreDate;
+const cierreTimeInput = filtersForm.elements.cierreTime;
 const copyShareSearchBtn = document.querySelector<HTMLButtonElement>("#copy-search")!;
 
 const cardResults = document.querySelector("#results") as HTMLDivElement;
@@ -803,14 +796,14 @@ function main() {
     .querySelectorAll(".clear-filter")
     .forEach((btn) =>
       btn.addEventListener("click", (e) =>
-        clearSelectFilter((e.target as HTMLButtonElement).value),
+        clearSelectFilter((e.currentTarget as HTMLButtonElement).value),
       ),
     );
   document
     .querySelectorAll(".clear-input-filter")
     .forEach((btn) =>
       btn.addEventListener("click", (e) =>
-        clearInputFilter((e.target as HTMLButtonElement).value),
+        clearInputFilter((e.currentTarget as HTMLButtonElement).value),
       ),
     );
 

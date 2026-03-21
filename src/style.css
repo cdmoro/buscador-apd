@@ -3,7 +3,9 @@
 
 body {
   font-family: "Roboto", sans-serif;
-  transition: background 0.3s, color 0.3s;
+  transition:
+    background 0.3s,
+    color 0.3s;
 }
 
 h1 {
@@ -12,7 +14,8 @@ h1 {
   margin: 1rem 0;
 }
 
-h2, h3 {
+h2,
+h3 {
   font-family: "Encode Sans", sans-serif;
 }
 
@@ -62,7 +65,11 @@ fieldset {
 }
 
 .alert-designada {
-  background-color: color-mix(in srgb, var(--bs-secondary-bg-subtle) 95%, transparent 5%);
+  background-color: color-mix(
+    in srgb,
+    var(--bs-secondary-bg-subtle) 95%,
+    transparent 5%
+  );
 }
 
 .card-course {
@@ -87,6 +94,20 @@ fieldset {
   min-width: 100px;
 }
 
+.day-preview-table {
+  font-size: 0.7rem;
+  line-height: 1;
+
+  div {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+  }
+}
+
 body.preview {
   #results nav,
   #active-filters,
@@ -105,14 +126,16 @@ body.preview {
   }
 }
 
-@media (max-width: 600px) {
-  #filters-wrapper {
-    grid-template-columns: 1fr;
-  }
-
+@media (max-width: 767px) {
   body.preview {
     .card-details div:has(> hr) {
       display: block;
     }
+  }
+}
+
+@media (max-width: 600px) {
+  #filters-wrapper {
+    grid-template-columns: 1fr;
   }
 }
