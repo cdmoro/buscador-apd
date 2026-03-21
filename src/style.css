@@ -99,10 +99,20 @@ body.preview {
   .card-results .col {
     width: 100%;
   }
+
+  .card-details div:has(> hr) {
+    display: none;
+  }
 }
 
 @media (max-width: 600px) {
   #filters-wrapper {
     grid-template-columns: 1fr;
+  }
+
+  body.preview {
+    .card-details div:has(> hr) {
+      display: block;
+    }
   }
 }

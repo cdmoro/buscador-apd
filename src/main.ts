@@ -744,7 +744,7 @@ function main() {
   if (navigator.share !== undefined) {
     copyShareSearchBtn.innerHTML = `<svg class="icon" aria-hidden="true">
       <use href="/icons.svg#share-icon"></use>
-    </svg> Compartir búsqueda`;
+    </svg> <span class="d-none d-sm-inline-block">Compartir búsqueda</span>`;
   }
 
   const params = new URLSearchParams(window.location.search);

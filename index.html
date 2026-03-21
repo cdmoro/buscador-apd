@@ -249,23 +249,26 @@
 
       <div class="card" id="results">
         <div class="card-body">
-          <h2 class="card-title d-flex justify-content-between mb-4 flex-column flex-md-row">
+          <h2 class="card-title d-flex justify-content-between mb-4 flex-row flex-wrap gap-2">
             Resultados
             <div>
               <button type="button" class="btn btn-sm btn-info" id="new-search">
                 <svg class="icon" aria-hidden="true">
                   <use href="/icons.svg#search-icon"></use>
                 </svg>
-                Nueva búsqueda
+                <span class="d-none d-sm-inline-block">Nueva búsqueda</span>
               </button>
               <button type="button" class="btn btn-sm btn-secondary" id="copy-search">
                 <svg class="icon" aria-hidden="true">
                   <use href="/icons.svg#copy-icon"></use>
                 </svg>
-                Copiar búsqueda
+                <span class="d-none d-sm-inline-block">Copiar búsqueda</span>
               </button>
               <button type="button" class="btn btn-sm btn-secondary" id="copy-url">
-                Copiar URL servicio
+                <svg class="icon" aria-hidden="true">
+                  <use href="/icons.svg#copy-icon"></use>
+                </svg>
+                <span class="d-none d-sm-inline-block">Copiar URL servicio</span>
             </div>
           </h2>
           <div id="active-filters" class="mb-3 card sticky-top rounded-0">
