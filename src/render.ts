@@ -90,7 +90,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     };
 
     const daysTable = `<table class="mt-2 table table-bordered table-sm text-center w-auto"><tbody><tr>${Object.entries(days)
-      .map(([k, v]) => `<td title="${v || ""}" class="px-2${!!v ? " bg-info" : ""}"></td>`)
+      .map(([k, v]) => `<td title="${!!v ? `${k}: ${v}` : ""}" class="px-2${!!v ? " bg-info" : ""}"></td>`)
       .join("")}</tr></tbody></table>`;
 
     const daysFiltered = Object.entries(days)
