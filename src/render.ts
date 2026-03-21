@@ -89,6 +89,10 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       Viernes: d.viernes,
     };
 
+    const daysTable = `<table class="mt-2 table table-bordered table-sm text-center w-auto"><tbody><tr>${Object.entries(days)
+      .map(([k, v]) => `<td title="${v || ""}" class="px-2${!!v ? " bg-info" : ""}"></td>`)
+      .join("")}</tr></tbody></table>`;
+
     const daysFiltered = Object.entries(days)
       .filter(([_, v]) => !!v)
       .map(([k, v]) => `<div><strong>${k}</strong>: ${v}</div>`)
@@ -167,6 +171,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       <div class="card-text mb-1">
           ${d.finoferta && `<div>Cierre de Oferta: <span class="text-info">${dateTimeFormatter.format(new Date(d.finoferta))}</span></div>`}
           <div>IGE: <span class="text-info">${d.ige || ""}</span> — Área: <span class="text-info">${d.areaincumbencia || ""}</span></div>
+          <div>${daysTable}</div>
       </div>
       
       <div class="card-details">
