@@ -377,10 +377,9 @@ export function applyFiltersFromURL(params: URLSearchParams) {
 
   saveFilters();
   filtersFormCard.style.display = "none";
-  // search();
 }
 
-export function createFilters(
+export function createFormFilter(
   el: HTMLElement,
   values: string[],
   labels?: string[],

@@ -1,36 +1,53 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
-import type {
-  FacetResponse,
-  FilterForm,
-} from "./types";
+import type { FilterForm } from "./types";
 import {
-  numberFormatter,
-} from "./utils";
-import { CARGO_KEYS, CARGO_LABELS, DISTRITO_KEYS, DISTRITO_LABELS, ESTADO_KEYS, ESTADO_LABELS, FACET_PARAMS, MODALIDAD_KEYS, MODALIDAD_LABELS, SERVICE_URL } from "./contstans";
+  CARGO_KEYS,
+  CARGO_LABELS,
+  DISTRITO_KEYS,
+  DISTRITO_LABELS,
+  ESTADO_KEYS,
+  ESTADO_LABELS,
+  MODALIDAD_KEYS,
+  MODALIDAD_LABELS,
+} from "./contstans";
 import { store } from "./store";
 import { showToast } from "./toastService";
 import { search } from "./search";
-import { applyFiltersFromURL, clearInputFilter, clearSelectFilter, createFilters, loadFilters, updateActiveFilters, updateAllActiveFilters } from "./filters";
+import {
+  applyFiltersFromURL,
+  clearInputFilter,
+  clearSelectFilter,
+  createFormFilter,
+  loadFilters,
+  updateActiveFilters,
+  updateAllActiveFilters,
+} from "./filters";
 import { buildFetchURL } from "./url";
+import { fetchFacets } from "./facets";
 
 const filtersForm = document.getElementById("filters") as FilterForm;
-const estadoSelect = filtersForm.elements.estado;
-const estadoNotCheckbox = filtersForm.elements.estadoNot;
-const distritoSelect = filtersForm.elements.distrito;
-const distritoNotCheckbox = filtersForm.elements.distritoNot;
-const cargoSelect = filtersForm.elements.cargo;
-const cargoNotCheckbox = filtersForm.elements.cargoNot;
-const modalidadSelect = filtersForm.elements.modalidad;
-const modalidadNotCheckbox = filtersForm.elements.modalidadNot;
-const cierreModeSelect = filtersForm.elements.cierreMode;
-const cierreDateInput = filtersForm.elements.cierreDate;
-const cierreTimeInput = filtersForm.elements.cierreTime;
+const {
+  estado,
+  estadoNot,
+  distrito,
+  distritoNot,
+  cargo,
+  cargoNot,
+  modalidad,
+  modalidadNot,
+  cierreMode,
+  cierreDate,
+  cierreTime,
+  resetForm,
+} = filtersForm.elements;
+
 const copyShareSearchBtn =
   document.querySelector<HTMLButtonElement>("#copy-search")!;
 
 const sentinel = document.querySelector<HTMLElement>(".sticky-sentinel")!;
-const activeFiltersCard = document.querySelector<HTMLElement>("#active-filters")!;
+const activeFiltersCard =
+  document.querySelector<HTMLElement>("#active-filters")!;
 
 const observer = new IntersectionObserver(
   ([entry]) => {
@@ -41,12 +58,11 @@ const observer = new IntersectionObserver(
     }
   },
   { threshold: [0] },
-)
+);
 
-const cardResults = document.querySelector("#results") as HTMLDivElement;
-const filtersFormCard = document.querySelector(
-  "#filters-form",
-) as HTMLFormElement;
+const cardResults = document.querySelector<HTMLDivElement>("#results")!;
+const filtersFormCard =
+  document.querySelector<HTMLFormElement>("#filters-form")!;
 
 const themeSelect = document.getElementById("theme") as HTMLSelectElement;
 function applyTheme(value: string) {
@@ -63,38 +79,6 @@ function applyTheme(value: string) {
   localStorage.setItem("apdTheme", value);
 }
 
-function applyFacet(filter: string, facetData: Record<string, number>) {
-  const select = document.getElementById(filter) as HTMLSelectElement;
-  const options = [...select.options];
-
-  Object.entries(facetData).forEach(([key, count]) => {
-    const option = options.find((o) => o.dataset.key === key);
-    if (option) {
-      option.textContent = `${option.dataset.label} — ${numberFormatter.format(count)}`;
-      option.disabled = false;
-    }
-  });
-}
-
-async function fetchFacets() {
-  try {
-    const res = await fetch(`${SERVICE_URL}?${FACET_PARAMS}`);
-    const buffer = await res.arrayBuffer();
-
-    const decoder = new TextDecoder("iso-8859-1");
-    const text = decoder.decode(buffer);
-
-    const data = JSON.parse(text) as FacetResponse;
-
-    applyFacet("modalidad", data.facet_counts.facet_fields.descnivelmodalidad);
-    applyFacet("distrito", data.facet_counts.facet_fields.descdistrito);
-    applyFacet("cargo", data.facet_counts.facet_fields.cargo);
-    applyFacet("estado", data.facet_counts.facet_fields.estado);
-  } catch {
-    return;
-  }
-}
-
 function main() {
   themeSelect.addEventListener("change", (e) =>
     applyTheme((e.target as HTMLSelectElement).value),
@@ -103,10 +87,10 @@ function main() {
   themeSelect.value = savedTheme;
   applyTheme(savedTheme);
 
-  createFilters(modalidadSelect, MODALIDAD_KEYS, MODALIDAD_LABELS);
-  createFilters(estadoSelect, ESTADO_KEYS, ESTADO_LABELS);
-  createFilters(distritoSelect, DISTRITO_KEYS, DISTRITO_LABELS);
-  createFilters(cargoSelect, CARGO_KEYS, CARGO_LABELS);
+  createFormFilter(modalidad, MODALIDAD_KEYS, MODALIDAD_LABELS);
+  createFormFilter(estado, ESTADO_KEYS, ESTADO_LABELS);
+  createFormFilter(distrito, DISTRITO_KEYS, DISTRITO_LABELS);
+  createFormFilter(cargo, CARGO_KEYS, CARGO_LABELS);
 
   fetchFacets();
 
@@ -128,29 +112,19 @@ function main() {
     loadFilters();
   }
 
-  cargoSelect.addEventListener("change", () => updateActiveFilters("cargo"));
-  cargoNotCheckbox.addEventListener("change", () =>
-    updateActiveFilters("cargo"),
-  );
-  distritoSelect.addEventListener("change", () =>
-    updateActiveFilters("distrito"),
-  );
-  distritoNotCheckbox.addEventListener("change", () =>
-    updateActiveFilters("distrito"),
-  );
-  modalidadSelect.addEventListener("change", () =>
+  cargo.addEventListener("change", () => updateActiveFilters("cargo"));
+  cargoNot.addEventListener("change", () => updateActiveFilters("cargo"));
+  distrito.addEventListener("change", () => updateActiveFilters("distrito"));
+  distritoNot.addEventListener("change", () => updateActiveFilters("distrito"));
+  modalidad.addEventListener("change", () => updateActiveFilters("modalidad"));
+  modalidadNot.addEventListener("change", () =>
     updateActiveFilters("modalidad"),
   );
-  modalidadNotCheckbox.addEventListener("change", () =>
-    updateActiveFilters("modalidad"),
-  );
-  estadoSelect.addEventListener("change", () => updateActiveFilters("estado"));
-  estadoNotCheckbox.addEventListener("change", () =>
-    updateActiveFilters("estado"),
-  );
+  estado.addEventListener("change", () => updateActiveFilters("estado"));
+  estadoNot.addEventListener("change", () => updateActiveFilters("estado"));
 
   updateAllActiveFilters();
-  search();;
+  search();
 
   observer.observe(sentinel);
 
@@ -167,8 +141,8 @@ function main() {
     cardResults.style.display = "none";
   });
 
-  document.getElementById("reset-form")?.addEventListener("click", () => {
-    (document.getElementById("filters") as HTMLFormElement).reset();
+  resetForm.addEventListener("click", () => {
+    filtersForm.reset();
     updateAllActiveFilters();
   });
   filtersForm.addEventListener("submit", (e) => {
@@ -177,24 +151,24 @@ function main() {
     search();
   });
   document
-    .querySelectorAll(".clear-filter")
-    .forEach((btn) =>
-      btn.addEventListener("click", (e) =>
-        clearSelectFilter((e.currentTarget as HTMLButtonElement).value),
-      ),
+    .querySelectorAll<HTMLElement>(".clear-filter")
+    .forEach(
+      (btn) =>
+        (btn.onclick = (e) =>
+          clearSelectFilter((e.currentTarget as HTMLButtonElement).value)),
     );
   document
-    .querySelectorAll(".clear-input-filter")
-    .forEach((btn) =>
-      btn.addEventListener("click", (e) =>
-        clearInputFilter((e.currentTarget as HTMLButtonElement).value),
-      ),
+    .querySelectorAll<HTMLElement>(".clear-input-filter")
+    .forEach(
+      (btn) =>
+        (btn.onclick = (e) =>
+          clearInputFilter((e.currentTarget as HTMLButtonElement).value)),
     );
 
   document.querySelector("#clear-date-input")?.addEventListener("click", () => {
-    cierreModeSelect.value = "0";
-    cierreDateInput.value = "";
-    cierreTimeInput.value = "";
+    cierreMode.value = "0";
+    cierreDate.value = "";
+    cierreTime.value = "";
   });
 
   copyShareSearchBtn.addEventListener("click", () => {
@@ -218,4 +192,4 @@ function main() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => main());
+document.addEventListener("DOMContentLoaded", main);

@@ -23,6 +23,8 @@ export interface FilterFormElements extends HTMLFormControlsCollection {
   cierreMode: HTMLSelectElement;
   cierreDate: HTMLInputElement;
   cierreTime: HTMLInputElement;
+  searchBtn: HTMLButtonElement;
+  resetForm: HTMLButtonElement;
 }
 
 export interface FilterForm extends HTMLFormElement {
