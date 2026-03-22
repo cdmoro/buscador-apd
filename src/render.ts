@@ -29,7 +29,7 @@ function resolveTomaDePosesion(tomaPosesion: string) {
 
 function renderDesignada(d: DesignadaCourse) {
   return `
-  <div class="alert alert-secondary alert-designada position-absolute top-0 start-0 end-0 bottom-0 text-center text-light justify-content-center mb-0 d-flex flex-column" role="alert">
+  <div class="alert-designada position-absolute top-0 start-0 end-0 bottom-0 text-center text-light justify-content-center mb-0 d-flex flex-column z-1" role="alert">
     <h5>Adjudicado a<br>${d.nombreganador}</h5>
     <div>CUIL: ${cuitFormatter(d.cuilganador)}</div>
     <div class="mt-2">
