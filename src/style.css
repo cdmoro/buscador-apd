@@ -113,8 +113,6 @@ fieldset {
   z-index: 1020;
   border-radius: 0;
   border-top: none;
-  border-left: none;
-  border-right: none;
 }
 
 body.loading {
