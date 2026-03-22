@@ -1,4 +1,4 @@
-import { clearSelectFilter, saveFilters } from "./filters";
+import { clearDateInputFilter, clearInputFilter, clearSelectFilter, saveFilters } from "./filters";
 import { renderCards, renderPagination } from "./render";
 import { store } from "./store";
 import type { FilterForm, Response } from "./types";
@@ -113,7 +113,7 @@ export async function search() {
   document.body.classList.add("loading");
 
   const { start, rows } = store.getState();
-  
+
   filtersFormCard.style.display = "none";
   cardResults.style.display = "block";
   cardResultsGrid.innerHTML = `<div class="d-flex justify-content-center mt-5 mb-4 w-100">
@@ -146,7 +146,21 @@ export async function search() {
       link.onclick = (e) => {
         e.preventDefault();
         if (document.body.classList.contains("loading")) return;
-        clearSelectFilter(el.dataset.filter!);
+
+        const filter = el.dataset.filter!;
+
+        switch (el.dataset.filterType) {
+          case "select":
+            clearSelectFilter(filter);
+            break;
+          case "input":
+            clearInputFilter(filter);
+            break;
+          case "date":
+            clearDateInputFilter();
+            break;
+        }
+
         search();
       };
       el.appendChild(link);
@@ -177,8 +191,7 @@ export async function search() {
   const docs = data.response.docs;
   const total = data.response.numFound;
 
-  countResults.innerText =
-    `Mostrando ${start + 1} a ${start + docs.length} de ${numberFormatter.format(total)} resultados`;
+  countResults.innerText = `Mostrando ${start + 1} a ${start + docs.length} de ${numberFormatter.format(total)} resultados`;
 
   cardResults.classList.remove("card-results-empty");
   cardResultsGrid.innerHTML = "";

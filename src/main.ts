@@ -16,10 +16,12 @@ import { showToast } from "./toastService";
 import { search } from "./search";
 import {
   applyFiltersFromURL,
+  clearDateInputFilter,
   clearInputFilter,
   clearSelectFilter,
   createFormFilter,
   loadFilters,
+  saveFilters,
   updateActiveFilters,
   updateAllActiveFilters,
 } from "./filters";
@@ -131,12 +133,15 @@ function main() {
   document.getElementById("new-search")?.addEventListener("click", () => {
     scrollTo({ top: 0, behavior: "smooth" });
 
+    filtersForm.reset();
+    updateAllActiveFilters();
+    saveFilters();
+
     if (document.body.classList.contains("preview")) {
-      filtersForm.reset();
-      updateAllActiveFilters();
       document.body.classList.remove("preview");
       history.replaceState(null, "", location.pathname);
     }
+
     filtersFormCard.style.display = "block";
     cardResults.style.display = "none";
   });
@@ -166,9 +171,7 @@ function main() {
     );
 
   document.querySelector("#clear-date-input")?.addEventListener("click", () => {
-    cierreMode.value = "0";
-    cierreDate.value = "";
-    cierreTime.value = "";
+    clearDateInputFilter();
   });
 
   copyShareSearchBtn.addEventListener("click", () => {

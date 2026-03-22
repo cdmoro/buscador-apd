@@ -50,6 +50,18 @@ export function saveFilters() {
   localStorage.setItem("apdFilters", JSON.stringify(data));
 }
 
+export function clearDateInputFilter() {
+  cierreMode.value = "0";
+  cierreDate.value = "";
+  cierreTime.value = "";
+}
+
+export function clearAllFilters() {
+  filtersForm.reset();
+  updateAllActiveFilters();
+  saveFilters();
+}
+
 export function clearSelectFilter(filter: string) {
   [
     ...(
@@ -198,7 +210,7 @@ export function buildFilters() {
 
     activeFilters.push({
       title: "Cierre de Oferta",
-      filters: `<span class="badge text-bg-info">${text}</span>`,
+      filters: `<span class="badge text-bg-info">${text}</span> <span class="clear-active-filter-button-container" data-filter-type="date" data-filter="cierreDate"></span>`,
     });
   }
 
@@ -291,15 +303,14 @@ function getActiveSelectFiltersText(filter: string) {
     } else {
       text = selected.join("");
     }
-    text += `<span class="clear-active-filter-button-container" data-filter="${filter}"></span>`;
+    text += `<span class="clear-active-filter-button-container" data-filter-type="select" data-filter="${filter}"></span>`;
   }
 
   return text;
 }
 
-function getActiveInputFilterText(value: string, _filter: string) {
-  return `<span class="badge text-bg-info">${value}</span>`;
-  // return `<span class="badge text-bg-info">${value}</span> <span class="clear-active-filter-button-container" data-filter="${filter}"></span>`;
+function getActiveInputFilterText(value: string, filter: string) {
+  return `<span class="badge text-bg-info">${value}</span> <span class="clear-active-filter-button-container" data-filter-type="input" data-filter="${filter}"></span>`;
 }
 
 export function updateActiveFilters(filter: string) {
