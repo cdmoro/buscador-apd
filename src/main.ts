@@ -654,15 +654,6 @@ async function fetchFacets() {
   }
 }
 
-function updateButtonLabel(btn: HTMLButtonElement, msg: string) {
-  const prevText = btn.innerHTML;
-  btn.innerText = msg;
-
-  setTimeout(() => {
-    btn.innerHTML = prevText;
-  }, 1000);
-}
-
 function main() {
   themeSelect.addEventListener("change", (e) =>
     applyTheme((e.target as HTMLSelectElement).value),
