@@ -38,9 +38,6 @@ const {
   cargoNot,
   modalidad,
   modalidadNot,
-  cierreMode,
-  cierreDate,
-  cierreTime,
   resetForm,
 } = filtersForm.elements;
 
