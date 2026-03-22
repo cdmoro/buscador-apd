@@ -23,6 +23,7 @@ const {
   modalidadNot,
   escuela,
   ige,
+  palabraClave,
   id,
   cierreMode,
   cierreDate,
@@ -75,6 +76,11 @@ function updateURL() {
   const igeValue = ige.value;
   if (igeValue) {
     params.set("ige", igeValue);
+  }
+
+  const palabraClaveValue = palabraClave.value;
+  if (palabraClaveValue) {
+    params.set("palabraClave", palabraClaveValue);
   }
 
   const idValue = id.value;

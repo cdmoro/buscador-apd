@@ -159,7 +159,7 @@
               <div>
                 <label for="ige">IGE</label>
                 <div class="input-group">
-                  <input class="form-control" name="ige" id="ige" type="text" pattern="[0-9]+" placeholder="Ej.: 3846779" />
+                  <input class="form-control" name="ige" id="ige" type="text" pattern="[0-9]+" title="Ingresar solamente valores numéricos" placeholder="Ej.: 3846779" />
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-input-filter"
@@ -175,7 +175,7 @@
               <div>
                 <label for="escuela">Escuela</label>
                 <div class="input-group">
-                  <input class="form-control" name="escuela" id="escuela" type="text" pattern="[0-9A-Za-z]+" placeholder="Ej.: 0055JI0946" />
+                  <input class="form-control" name="escuela" id="escuela" type="text" pattern="[0-9A-Za-z]+" title="Ingresar solamente valores alfanuméricos" placeholder="Ej.: 0055JI0946" />
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-input-filter"
@@ -189,21 +189,38 @@
                 </div>
               </div>
               <div>
-              <label for="id">ID</label>
-              <div class="input-group">
-                <input class="form-control" name="id" id="id" pattern="[0-9]+" type="text" placeholder="Ej.: 3901418" />
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary clear-input-filter"
-                  value="id"
-                  placeholder="Limpiar filtro"
-                >
-                  <svg class="icon" aria-hidden="true">
-                    <use href="/icons.svg#clear-filter-icon"></use>
-                  </svg>
-                </button>
+                <label for="palabraClave">Palabra clave</label>
+                <div class="input-group">
+                  <input class="form-control" name="palabraClave" id="palabraClave" type="text" placeholder="Ej.: Encargado, Matemática, &quot;bibliotecario inicial&quot;, etc." />
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary clear-input-filter"
+                    value="palabraClave"
+                    placeholder="Limpiar filtro"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/icons.svg#clear-filter-icon"></use>
+                    </svg>
+                  </button>
+                </div>
+                <div class="form-text" id="basic-addon3">Busca coincidencias en varios campos, usar comillas para frases exactas.</div>
               </div>
-            </div>
+              <div>
+                <label for="id">ID</label>
+                <div class="input-group">
+                  <input class="form-control" name="id" id="id" pattern="[0-9]+" title="Ingresar solamente valores numéricos" type="text" placeholder="Ej.: 3901418" />
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary clear-input-filter"
+                    value="id"
+                    placeholder="Limpiar filtro"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/icons.svg#clear-filter-icon"></use>
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
             <div class="mb-3">
               <label for="cierre-date">Cierre de Oferta</label>

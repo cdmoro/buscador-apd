@@ -14,6 +14,7 @@ const {
   modalidadNot,
   escuela,
   ige,
+  palabraClave,
   id,
   cierreMode,
   cierreDate,
@@ -40,6 +41,7 @@ export function saveFilters() {
 
     ige: ige.value,
     escuela: escuela.value,
+    palabraClave: palabraClave.value,
     id: id.value,
     cierreMode: cierreMode.value,
     cierreDate: cierreDate.value,
@@ -83,7 +85,7 @@ export function buildFilters() {
 
   activeFilters.push({
     title: "Niveles o Modalidades",
-    filters: getActiveFiltersText("modalidad"),
+    filters: getActiveSelectFiltersText("modalidad"),
   });
 
   const distritoSelected = [...distrito.selectedOptions].map(
@@ -97,7 +99,7 @@ export function buildFilters() {
 
   activeFilters.push({
     title: "Distrito",
-    filters: getActiveFiltersText("distrito"),
+    filters: getActiveSelectFiltersText("distrito"),
   });
 
   const cargoSelected = [...cargo.selectedOptions].map(
@@ -111,7 +113,7 @@ export function buildFilters() {
 
   activeFilters.push({
     title: "Cargo",
-    filters: getActiveFiltersText("cargo"),
+    filters: getActiveSelectFiltersText("cargo"),
   });
 
   const estadoSelected = [...estado.selectedOptions].map(
@@ -125,7 +127,7 @@ export function buildFilters() {
 
   activeFilters.push({
     title: "Estado",
-    filters: getActiveFiltersText("estado"),
+    filters: getActiveSelectFiltersText("estado"),
   });
 
   const escuelaValue = escuela.value;
@@ -133,7 +135,7 @@ export function buildFilters() {
     fq.push(`escuela:${escuelaValue}`);
     activeFilters.push({
       title: "Escuela",
-      filters: `<span class="badge text-bg-info">${escuelaValue}</span>`,
+      filters: getActiveInputFilterText(escuelaValue, "escuela"),
     });
   }
 
@@ -142,7 +144,15 @@ export function buildFilters() {
     fq.push(`ige:${igeValue}`);
     activeFilters.push({
       title: "IGE",
-      filters: `<span class="badge text-bg-info">${igeValue}</span>`,
+      filters: getActiveInputFilterText(igeValue, "ige"),
+    });
+  }
+
+  const palabraClaveValue = palabraClave.value;
+  if (palabraClaveValue) {
+    activeFilters.push({
+      title: "Palabra Clave",
+      filters: getActiveInputFilterText(palabraClaveValue, "palabraClave"),
     });
   }
 
@@ -151,7 +161,7 @@ export function buildFilters() {
     fq.push(`id:${idValue}`);
     activeFilters.push({
       title: "ID",
-      filters: `<span class="badge text-bg-info">${idValue}</span>`,
+      filters: getActiveInputFilterText(idValue, "id"),
     });
   }
 
@@ -231,12 +241,13 @@ export function loadFilters() {
   });
   estadoNot.checked = data.estadoNot;
 
-  ige.value = data.ige;
-  escuela.value = data.escuela;
-  id.value = data.id;
-  cierreMode.value = data.cierreMode;
-  cierreDate.value = data.cierreDate;
-  cierreTime.value = data.cierreTime;
+  ige.value = data.ige || "";
+  escuela.value = data.escuela || "";
+  palabraClave.value = data.palabraClave || "";
+  id.value = data.id || "";
+  cierreMode.value = data.cierreMode || "0";
+  cierreDate.value = data.cierreDate || "";
+  cierreTime.value = data.cierreTime || "";
 }
 
 export function clearInputFilter(filter: string) {
@@ -253,7 +264,7 @@ function truncateActiveFilterLabel(label: string) {
   return label.slice(0, 10) + "…" + label.slice(label.length - 10);
 }
 
-function getActiveFiltersText(filter: string) {
+function getActiveSelectFiltersText(filter: string) {
   const selected = [
     ...(
       filtersForm.elements[
@@ -286,9 +297,14 @@ function getActiveFiltersText(filter: string) {
   return text;
 }
 
+function getActiveInputFilterText(value: string, _filter: string) {
+  return `<span class="badge text-bg-info">${value}</span>`;
+  // return `<span class="badge text-bg-info">${value}</span> <span class="clear-active-filter-button-container" data-filter="${filter}"></span>`;
+}
+
 export function updateActiveFilters(filter: string) {
   document.querySelector<HTMLInputElement>(`#${filter}-filters`)!.innerHTML =
-    getActiveFiltersText(filter);
+    getActiveSelectFiltersText(filter);
 }
 
 export function updateAllActiveFilters() {
@@ -353,6 +369,11 @@ export function applyFiltersFromURL(params: URLSearchParams) {
   const igeParam = params.get("ige");
   if (igeParam) {
     ige.value = igeParam;
+  }
+
+  const palabraClaveParam = params.get("palabraClave");
+  if (palabraClaveParam) {
+    palabraClave.value = palabraClaveParam;
   }
 
   const idParam = params.get("id");

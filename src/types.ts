@@ -19,6 +19,7 @@ export interface FilterFormElements extends HTMLFormControlsCollection {
   estadoNot: HTMLInputElement;
   ige: HTMLInputElement;
   escuela: HTMLInputElement;
+  palabraClave: HTMLInputElement;
   id: HTMLInputElement;
   cierreMode: HTMLSelectElement;
   cierreDate: HTMLInputElement;

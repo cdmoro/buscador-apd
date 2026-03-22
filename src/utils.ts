@@ -19,6 +19,10 @@ export function cuitFormatter(cuit: string) {
   return `${cuit.slice(0, 2)}-${cuit.slice(2, 10)}-${cuit.slice(10)}`;
 }
 
+export function escapeSolr(term: string): string {
+  return term.replace(/([+\-!(){}\[\]^"~*?:\\/])/g, "\\$1");
+}
+
 export const dateFormatter = new Intl.DateTimeFormat("es-AR", {
   dateStyle: "medium",
 });
