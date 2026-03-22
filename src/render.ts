@@ -1,8 +1,8 @@
-import { clearAllFilters, updateAllActiveFilters } from "./filters";
+import { clearAllFilters } from "./filters";
 import { search } from "./search";
 import { store } from "./store";
 import { showToast } from "./toastService";
-import type { Course, DesignadaCourse, FilterForm } from "./types";
+import type { Course, DesignadaCourse } from "./types";
 import {
   cuitFormatter,
   dateFormatter,
@@ -10,7 +10,6 @@ import {
   getCourseVariant,
 } from "./utils";
 
-const filtersForm = document.getElementById("filters") as FilterForm;
 const cardResults = document.querySelector<HTMLDivElement>("#results")!;
 
 function resolveTomaDePosesion(tomaPosesion: string) {
@@ -30,14 +29,14 @@ function resolveTomaDePosesion(tomaPosesion: string) {
 
 function renderDesignada(d: DesignadaCourse) {
   return `
-  <div class="alert-designada position-absolute top-0 start-0 end-0 bottom-0 text-center text-light justify-content-center mb-0 d-flex flex-column z-1" role="alert">
+  <div class="alert-designada position-absolute top-0 start-0 end-0 bottom-0 text-center text-light justify-content-center mb-0 d-flex flex-column p-3 z-1" role="alert">
     <h5>Adjudicado a<br>${d.nombreganador}</h5>
     <div>CUIL: ${cuitFormatter(d.cuilganador)}</div>
-    <div class="mt-2">
-      <div><small>Toma posesión: ${d.tomaposesion ? dateFormatter.format(new Date(d.tomaposesion)) : "-"}</small></div>
-      <div><small>Listado origen: ${d.listadoorigenganador}</small></div>
-      <div><small>Puntaje: ${d.puntajeganador}</small></div>
-      <div><small>Vuelta: ${d.vuelta}</small></div>
+    <div class="mt-3">
+      <div>Toma posesión: ${d.tomaposesion ? dateFormatter.format(new Date(d.tomaposesion)) : "-"}</div>
+      <div>Listado: ${decodeURIComponent(d.listadoorigenganador)}</div>
+      <div>Puntaje: ${d.puntajeganador}</div>
+      <div>Vuelta: ${d.vuelta}</div>
     </div>
   </div>`;
 }
@@ -127,7 +126,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     col.className = "col";
 
     const card = document.createElement("div");
-    card.className = `card card-course ${courseStatus} border-${courseStatus} h-100`;
+    card.className = `card card-course ${courseStatus} border-${courseStatus} h-100 overflow-hidden`;
 
     const cardHeader = document.createElement("div");
     cardHeader.className = `card-header bg-${courseStatus} text-bg-${courseStatus} d-flex justify-content-between gap-2`;

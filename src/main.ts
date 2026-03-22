@@ -52,7 +52,7 @@ const observer = new IntersectionObserver(
   ([entry]) => {
     if (entry.boundingClientRect.top < 0) {
       activeFiltersCard.classList.add("container");
-      activeFiltersCard.querySelector(".card-body")?.scrollTo({ left: 0 });
+      activeFiltersCard.querySelector(".card-body")?.scrollTo({ left: 0, behavior: "smooth" });
     } else {
       activeFiltersCard.classList.remove("container");
     }

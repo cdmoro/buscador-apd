@@ -1897,7 +1897,7 @@ export const DISTRITO_LABELS = [
 
 export const ESTADO_KEYS = [
   "anulada",
-  "cerrada",
+//   "cerrada",
   "desierta",
   "designada",
   "finalizada",
@@ -1907,7 +1907,7 @@ export const ESTADO_KEYS = [
 
 export const ESTADO_LABELS = [
   "Anulada",
-  "Cerrada",
+//   "Cerrada",
   "Desierta",
   "Designada",
   "Finalizada",
