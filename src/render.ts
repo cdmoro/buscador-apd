@@ -1,12 +1,15 @@
-import { search } from "./main";
+import { search, updateAllActiveFilters } from "./main";
 import { store } from "./store";
-import type { Course, DesignadaCourse } from "./types";
+import { showToast } from "./toastService";
+import type { Course, DesignadaCourse, FilterForm } from "./types";
 import {
   cuitFormatter,
   dateFormatter,
   dateTimeFormatter,
   getCourseVariant,
 } from "./utils";
+
+const filtersForm = document.getElementById("filters") as FilterForm;
 
 function resolveTomaDePosesion(tomaPosesion: string) {
   if (!tomaPosesion) return "No especificada";
@@ -56,23 +59,35 @@ function renderDetails(d: Course, daysFiltered: string) {
       ${d.iniciooferta && `<div><strong>Inicio oferta</strong>: ${dateTimeFormatter.format(new Date(d.iniciooferta))}</div>`}
       ${!d.supl_desde || d.supl_desde.startsWith("9999") ? "" : `<div><strong>Desde</strong>: ${dateFormatter.format(new Date(d.supl_desde))}</div>`}
       ${!d.supl_hasta || d.supl_hasta.startsWith("9999") ? "" : `<div><strong>Hasta</strong>: ${dateFormatter.format(new Date(d.supl_hasta))}</div>`}
-      ${daysFiltered || ""}
-      ${
-        d.observaciones &&
-        `
-        <div><hr></div>
-        <div><strong>Observaciones</strong></div>
-        <div>${d.observaciones}</div>
-      `
-      }`;
+      ${daysFiltered || ""}`;
 }
 
 export function renderCards(docs: Course[], container: HTMLElement) {
   if (docs.length === 0) {
     document.body.classList.add("card-results-empty");
-    container.innerHTML = `<div class="w-100"><div class="alert alert-info mb-0" role="alert">
-            No se encontraron resultados para los filtros seleccionados.
-        </div></div>`;
+    const alertWrapper = document.createElement("div");
+    alertWrapper.className = "w-100";
+
+    const alert = document.createElement("div");
+    alert.className = "alert alert-info mb-0";
+    alert.role = "alert";
+    alert.textContent =
+      "No se encontraron resultados para los filtros seleccionados. ";
+    
+    const clearFiltersBtn = document.createElement("a");
+    clearFiltersBtn.href = "#";
+    clearFiltersBtn.className = "alert-link";
+    clearFiltersBtn.textContent = "Limpiar todos los filtros";
+    clearFiltersBtn.onclick = () => {
+      filtersForm.reset();
+      updateAllActiveFilters();
+      document.body.classList.remove("card-results-empty");
+      search();
+    }
+    alert.appendChild(clearFiltersBtn);
+
+    alertWrapper.appendChild(alert);
+    container.appendChild(alertWrapper);
 
     return;
   }
@@ -130,10 +145,11 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       navigator.clipboard.writeText(
         `https://buscador-apd.netlify.app/?id=${d.id}&preview=true`,
       );
+      showToast("URL del curso copiada al portapapeles");
     });
     copyCourseLink.innerHTML = `<svg class="icon" aria-hidden="true">
-            <use href="/icons.svg#copy-icon"></use>
-        </svg>`;
+        <use href="/icons.svg#copy-icon"></use>
+      </svg>`;
 
     cardHeader.appendChild(copyCourseLink);
 
@@ -177,6 +193,8 @@ export function renderCards(docs: Course[], container: HTMLElement) {
 
     cardHeader.appendChild(listLink);
 
+    const observaciones = d.observaciones ? `<div><hr></div><div><strong>Observaciones</strong></div><div>${d.observaciones}</div>` : "";
+
     const cardBody = document.createElement("div");
     cardBody.className = "card-body";
     cardBody.innerHTML = `${d.estado === "DESIGNADA" ? renderDesignada(d) : ""}
@@ -192,13 +210,17 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       <div class="card-details mt-3">
       ${
         isPreview
-          ? `<div class="row row-cols-1 row-cols-md-2">
-            ${renderDetails(d, daysFiltered)}
-          </div>`
-          : `<details>
-          <summary>Detalles</summary>
-          ${renderDetails(d, daysFiltered)}
-        </details>`
+          ? `
+            <div class="row row-cols-1 row-cols-md-2">
+              ${renderDetails(d, daysFiltered)}
+            </div>
+            ${observaciones}`
+          : `
+            <details>
+              <summary>Detalles</summary>
+              ${renderDetails(d, daysFiltered)}
+              ${observaciones}
+            </details>`
       }
       </div>`;
 
@@ -294,6 +316,6 @@ export function renderPagination(
 }
 
 function goToPage(page: number) {
-  store.setState({ start: (page - 1) * store.getState().rows });
+  store.setState({ start: (page - 1) * store.getKey("rows") });
   search();
 }

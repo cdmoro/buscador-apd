@@ -126,6 +126,10 @@ body.preview {
   }
 }
 
+.toast {
+  --bs-toast-bg: var(--bs-body-bg);
+}
+
 @media (max-width: 767px) {
   body.preview {
     .card-details div:has(> hr) {

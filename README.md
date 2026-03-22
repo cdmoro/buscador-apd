@@ -1,16 +1,38 @@
 # Buscador Actos Públicos Digitales
 
-Después de escuchar a muchos de mis amigos profesores, decidí hacer una pagina alternativa para realizar búsquedas en los actos públicos de la Provincia de Buenos Aires. El buscador cuenta con algunas caracterísitcas que mejoran sustancialmente al buscador original. Este es un proyecto Open Source que solo busca hacerles la vida más fáciles a los docentes bonaerenses.
+Después de escuchar a muchos amigos docentes, decidí crear una alternativa para realizar búsquedas en los actos públicos de la Provincia de Buenos Aires.
 
-Como podrán adivinar, este buscador está inspirado en el búscador original, cuya url es http://servicios.abc.gov.ar/actos.publicos.digitales/.
+Este proyecto busca mejorar la experiencia del buscador oficial, incorporando funcionalidades que lo hacen más flexible, rápido y fácil de usar en el día a día.
 
-Entre las principales características podemos encontrar:
+Es un proyecto open source, hecho con la intención de facilitar el acceso a la información y simplificar las búsquedas para los docentes bonaerenses.
 
-- Interfaz de usuario pensada para que sea funcional y cómoda.
-- Tema claro y oscuro
-- Diseño optimizado para verse bien en celulares.
-- Los filtros ahora se pueden sumar. Por ejemplo, se pueden realizar búsquedas en más de un distrito a la vez.
-- Los filtros se pueden excluir. Por ejemplo, buscar todos las modalidades MENOS primaria.
-- Cada vez que abras el buscador vas a ver los filtros que elegiste la última vez.
-- Las búsquedas se pueden compartir! Por lo que no hace falta volver a elegir los mismos filtros de nuevo.
-- Los detalles de los actos públicos solo tienen información relevante, todos los campos que no tengan valor no serán mostrados.
+## Fuente
+
+El buscador está basado en los datos del sitio oficial: http://servicios.abc.gov.ar/actos.publicos.digitales/ 
+
+## Características principales
+
+- 🧭 Interfaz simple y cómoda, pensada para uso diario
+- 🌗 Modo claro y oscuro
+- 📱 Diseño responsive, optimizado para celulares
+- 🔎 Filtros avanzados:
+  - combinar múltiples opciones (OR)
+  - excluir opciones (NOT)
+- 💾 Persistencia de filtros: el buscador recuerda tus últimas selecciones
+- 🔗 Búsquedas compartibles mediante URL
+- 🧹 Resultados más limpios: solo se muestra información relevante
+
+## Objetivo
+
+Hacer que encontrar ofertas docentes sea más rápido, claro y eficiente, mejorando la experiencia del buscador tradicional sin reemplazarlo.
+
+## Disclaimer
+
+Este proyecto no es oficial ni está afiliado con el Gobierno de la Provincia de Buenos Aires.
+
+Los datos provienen de fuentes públicas oficiales.
+
+## Contribuciones
+
+Las contribuciones son bienvenidas.
+Si tenés ideas, mejoras o encontraste algún problema, podés abrir un issue o pull request.

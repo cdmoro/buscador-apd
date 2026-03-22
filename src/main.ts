@@ -27,8 +27,8 @@ import {
 import { renderCards, renderPagination } from "./render";
 import { FACET_PARAMS, SERVICE_URL } from "./contstans";
 import { store } from "./store";
+import { showToast } from "./toastService";
 
-const { start, rows, sort } = store.getState();
 const filtersForm = document.getElementById("filters") as FilterForm;
 const estadoSelect = filtersForm.elements.estado;
 const estadoNotCheckbox = filtersForm.elements.estadoNot;
@@ -215,6 +215,7 @@ function buildFilters() {
 }
 
 function buildFetchURL(apdSearchParams: Partial<APDSearchParams> = {}): string {
+  const { start, rows, sort } = store.getState();
   const url = new URL(SERVICE_URL);
   const searchParams: APDSearchParams = {
     q: "*:*",
@@ -361,6 +362,8 @@ function updateURL() {
   }
 
   if (params.size > 0) {
+    const { start } = store.getState();
+
     params.set("start", start.toString());
     history.replaceState(null, "", "?" + params.toString());
   } else {
@@ -370,6 +373,8 @@ function updateURL() {
 
 export async function search() {
   document.body.classList.add("loading");
+
+  const { start, rows } = store.getState();
   filtersFormCard.style.display = "none";
   cardResults.style.display = "block";
   cardResultsGrid.innerHTML = `<div class="d-flex justify-content-center mt-5 mb-4 w-100">
@@ -517,7 +522,7 @@ function updateActiveFilters(filter: string) {
     getActiveFiltersText(filter);
 }
 
-function updateAllActiveFilters() {
+export function updateAllActiveFilters() {
   ["modalidad", "distrito", "cargo", "estado"].forEach(updateActiveFilters);
 }
 
@@ -717,7 +722,13 @@ function main() {
 
   document.getElementById("new-search")?.addEventListener("click", () => {
     scrollTo({ top: 0, behavior: "smooth" });
-    document.body.classList.remove("preview");
+
+    if (document.body.classList.contains("preview")) {
+      filtersForm.reset();
+      updateAllActiveFilters();
+      document.body.classList.remove("preview");
+      history.replaceState(null, "", location.pathname);
+    }
     filtersFormCard.style.display = "block";
     cardResults.style.display = "none";
   });
@@ -752,7 +763,7 @@ function main() {
     cierreTimeInput.value = "";
   });
 
-  copyShareSearchBtn.addEventListener("click", (e) => {
+  copyShareSearchBtn.addEventListener("click", () => {
     const url = new URL(window.location.href);
 
     if (navigator.share !== undefined) {
@@ -765,11 +776,11 @@ function main() {
     }
 
     navigator.clipboard.writeText(url.toString());
-    updateButtonLabel(e.target as HTMLButtonElement, "¡Búsqueda copiada!");
+    showToast("¡URL de búsqueda copiada al portapapeles!");
   });
-  document.querySelector("#copy-url")?.addEventListener("click", (e) => {
+  document.querySelector("#copy-url")?.addEventListener("click", () => {
     navigator.clipboard.writeText(buildFetchURL({ rows: 1, start: 0 }));
-    updateButtonLabel(e.target as HTMLButtonElement, "¡URL copiada!");
+    showToast("¡URL del servicio copiada al portapapeles!");
   });
 }
 
