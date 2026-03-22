@@ -1,3 +1,4 @@
+import { search } from "./search";
 import { store } from "./store";
 import type { CourseStatus, FilterForm, FilterFormElements } from "./types";
 import { dateFormatter, dateTimeFormatter, getCourseVariant } from "./utils";
@@ -24,6 +25,7 @@ const filterCardGroup =
   document.querySelector<HTMLElement>("#filter-card-group")!;
 const filtersFormCard =
   document.querySelector<HTMLFormElement>("#filters-form")!;
+const cardResults = document.querySelector<HTMLDivElement>("#results")!;
 
 export function saveFilters() {
   const data = {
@@ -59,7 +61,8 @@ export function clearDateInputFilter() {
 export function clearAllFilters() {
   filtersForm.reset();
   updateAllActiveFilters();
-  saveFilters();
+  cardResults.classList.remove("card-results-empty");
+  search();
 }
 
 export function clearSelectFilter(filter: string) {
@@ -222,6 +225,8 @@ export function buildFilters() {
   </td>`,
     )
     .join("")}</tr>`;
+
+  document.getElementById("edit-search")!.style.display = fq.length > 0 || palabraClave.value.length > 0 ? "inline-block" : "none";
 
   return fq;
 }

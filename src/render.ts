@@ -1,4 +1,4 @@
-import { updateAllActiveFilters } from "./filters";
+import { clearAllFilters, updateAllActiveFilters } from "./filters";
 import { search } from "./search";
 import { store } from "./store";
 import { showToast } from "./toastService";
@@ -11,6 +11,7 @@ import {
 } from "./utils";
 
 const filtersForm = document.getElementById("filters") as FilterForm;
+const cardResults = document.querySelector<HTMLDivElement>("#results")!;
 
 function resolveTomaDePosesion(tomaPosesion: string) {
   if (!tomaPosesion) return "No especificada";
@@ -65,7 +66,7 @@ function renderDetails(d: Course, daysFiltered: string) {
 
 export function renderCards(docs: Course[], container: HTMLElement) {
   if (docs.length === 0) {
-    document.body.classList.add("card-results-empty");
+    cardResults.classList.add("card-results-empty");
     const alertWrapper = document.createElement("div");
     alertWrapper.className = "w-100";
 
@@ -79,12 +80,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     clearFiltersBtn.href = "#";
     clearFiltersBtn.className = "alert-link";
     clearFiltersBtn.textContent = "Limpiar todos los filtros";
-    clearFiltersBtn.onclick = () => {
-      filtersForm.reset();
-      updateAllActiveFilters();
-      document.body.classList.remove("card-results-empty");
-      search();
-    }
+    clearFiltersBtn.onclick = () => clearAllFilters();
     alert.appendChild(clearFiltersBtn);
 
     alertWrapper.appendChild(alert);

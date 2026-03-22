@@ -266,7 +266,7 @@
 
       <div class="card" id="results">
         <div class="card-body">
-          <h2 class="card-title d-flex justify-content-between mb-4 flex-row flex-wrap gap-2">
+          <h2 class="card-title d-flex justify-content-between mb-4 flex-row flex-wrap gap-2 align-items-center">
             Resultados
             <div>
               <button type="button" class="btn btn-sm btn-info" id="new-search">
@@ -275,24 +275,30 @@
                 </svg>
                 <span class="d-none d-sm-inline-block">Nueva búsqueda</span>
               </button>
-              <button type="button" class="btn btn-sm btn-secondary" id="copy-search">
+              <button type="button" class="btn btn-info btn-sm" id="edit-search">
                 <svg class="icon" aria-hidden="true">
-                  <use href="/icons.svg#copy-icon"></use>
+                  <use href="/icons.svg#edit-icon"></use>
                 </svg>
-                <span class="d-none d-sm-inline-block">Copiar búsqueda</span>
+                <span class="d-none d-sm-inline-block">Editar búsqueda</span>
               </button>
-              <button type="button" class="btn btn-sm btn-secondary" id="copy-url">
+              <button type="button" class="btn btn-outline-info btn-sm" id="copy-search">
                 <svg class="icon" aria-hidden="true">
                   <use href="/icons.svg#copy-icon"></use>
                 </svg>
-                <span class="d-none d-sm-inline-block">Copiar URL servicio</span>
+                <span class="visually-hidden">Copiar búsqueda</span>
+              </button>
+              <button type="button" class="btn btn-outline-info btn-sm" id="copy-url">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/icons.svg#copy-icon"></use>
+                </svg>
+                <span class="visually-hidden">Copiar URL servicio</span>
             </div>
           </h2>
           <div class="sticky-sentinel"></div>
           <div id="active-filters" class="mb-3 card top-0 start-0 end-0">
-              <div class="card-body p-2 table-responsive">
-                <table class="table table-borderless mb-0 w-auto" id="filter-card-group"></table>
-              </div>
+            <div class="card-body p-2 table-responsive">
+              <table class="table table-borderless mb-0 w-auto" id="filter-card-group"></table>
+            </div>
           </div>
           <div class="results-detail d-flex justify-content-between align-items-center flex-md-row flex-column mb-3 gap-3">
             <nav>

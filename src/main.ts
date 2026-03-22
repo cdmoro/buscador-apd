@@ -52,6 +52,7 @@ const observer = new IntersectionObserver(
   ([entry]) => {
     if (entry.boundingClientRect.top < 0) {
       activeFiltersCard.classList.add("container");
+      activeFiltersCard.querySelector(".card-body")?.scrollTo({ left: 0 });
     } else {
       activeFiltersCard.classList.remove("container");
     }
@@ -96,7 +97,7 @@ function main() {
   if (navigator.share !== undefined) {
     copyShareSearchBtn.innerHTML = `<svg class="icon" aria-hidden="true">
       <use href="/icons.svg#share-icon"></use>
-    </svg> <span class="d-none d-sm-inline-block">Compartir búsqueda</span>`;
+    </svg> <span class="visually-hidden">Compartir</span>`;
   }
 
   const params = new URLSearchParams(window.location.search);
@@ -135,6 +136,22 @@ function main() {
     saveFilters();
 
     if (document.body.classList.contains("preview")) {
+      document.body.classList.remove("preview");
+    }
+
+    history.replaceState(null, "", location.pathname);
+    filtersFormCard.style.display = "block";
+    cardResults.style.display = "none";
+  });
+
+  document.getElementById("edit-search")?.addEventListener("click", () => {
+    scrollTo({ top: 0, behavior: "smooth" });
+
+    if (document.body.classList.contains("preview")) {
+      filtersForm.reset();
+      updateAllActiveFilters();
+      saveFilters();
+
       document.body.classList.remove("preview");
       history.replaceState(null, "", location.pathname);
     }

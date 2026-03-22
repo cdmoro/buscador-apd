@@ -126,6 +126,7 @@ body.preview {
   #results nav,
   #active-filters,
   .results-detail,
+  #edit-search,
   #copy-search,
   #copy-url {
     display: none !important;
