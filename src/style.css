@@ -108,6 +108,22 @@ fieldset {
   }
 }
 
+#active-filters.container {
+  position: fixed;
+  z-index: 1020;
+  border-radius: 0;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+
+body.loading {
+  #results .pagination,
+  #results #count {
+    display: none !important;
+  }
+}
+
 body.preview {
   #results nav,
   #active-filters,

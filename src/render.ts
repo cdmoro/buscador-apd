@@ -1,4 +1,5 @@
-import { search, updateAllActiveFilters } from "./main";
+import { updateAllActiveFilters } from "./filters";
+import { search } from "./search";
 import { store } from "./store";
 import { showToast } from "./toastService";
 import type { Course, DesignadaCourse, FilterForm } from "./types";
