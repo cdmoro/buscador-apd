@@ -1,4 +1,4 @@
-import { clearDateInputFilter, clearInputFilter, clearSelectFilter, saveFilters } from "./filters";
+import { clearDateInputFilter, clearInputFilter, clearSelectFilter, renderActiveFilters, saveFiltersToLocalStorage } from "./filters";
 import { renderCards, renderPagination } from "./render";
 import { store } from "./store";
 import type { FilterForm, Response } from "./types";
@@ -110,6 +110,10 @@ function updateURL() {
 }
 
 export async function search() {
+  renderActiveFilters();
+  updateURL();
+  saveFiltersToLocalStorage();
+
   document.body.classList.add("loading");
 
   const { start, rows } = store.getState();
@@ -122,50 +126,12 @@ export async function search() {
     </div>
   </div>`;
 
-  updateURL();
-  saveFilters();
-
   document
     .querySelectorAll(".card button")
     .forEach((el) => ((el as HTMLInputElement).disabled = true));
 
   const url = buildFetchURL();
   window.__internal__.apiUrl = url;
-
-  document
-    .querySelectorAll<HTMLElement>(
-      "#active-filters .clear-active-filter-button-container",
-    )
-    .forEach((el) => {
-      const link = document.createElement("a");
-      link.className = "link-info";
-      link.href = "#";
-      link.title = "Limpiar filtro";
-      link.innerHTML = `<svg class="icon" aria-hidden="true">
-      <use href="/icons.svg#clear-filter-icon"></use>
-    </svg>`;
-      link.onclick = (e) => {
-        e.preventDefault();
-        if (document.body.classList.contains("loading")) return;
-
-        const filter = el.dataset.filter!;
-
-        switch (el.dataset.filterType) {
-          case "select":
-            clearSelectFilter(filter);
-            break;
-          case "input":
-            clearInputFilter(filter);
-            break;
-          case "date":
-            clearDateInputFilter();
-            break;
-        }
-
-        search();
-      };
-      el.appendChild(link);
-    });
 
   const res = await fetch(url);
   const buffer = await res.arrayBuffer();

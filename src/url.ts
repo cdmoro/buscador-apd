@@ -1,5 +1,5 @@
 import { SERVICE_URL } from "./contstans";
-import { buildFilters } from "./filters";
+import { buildFiltersParams } from "./filters";
 import { store } from "./store";
 import type { APDSearchParams, FilterForm } from "./types";
 import { escapeSolr } from "./utils";
@@ -33,7 +33,7 @@ export function buildFetchURL(apdSearchParams: Partial<APDSearchParams> = {}): s
   url.searchParams.set("sort", searchParams.sort);
   url.searchParams.set("wt", "json");
 
-  for (const filter of buildFilters()) {
+  for (const filter of buildFiltersParams()) {
     url.searchParams.append("fq", filter);
   }
 

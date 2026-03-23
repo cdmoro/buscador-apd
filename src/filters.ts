@@ -27,7 +27,7 @@ const filtersFormCard =
   document.querySelector<HTMLFormElement>("#filters-form")!;
 const cardResults = document.querySelector<HTMLDivElement>("#results")!;
 
-export function saveFilters() {
+export function saveFiltersToLocalStorage() {
   const data = {
     modalidad: [...modalidad.selectedOptions].map((o) => o.value),
     modalidadNot: modalidadNot.checked,
@@ -82,12 +82,8 @@ export function clearSelectFilter(filter: string) {
     `<span class="badge text-bg-info">Todos</span>`;
 }
 
-export function buildFilters() {
+export function buildFiltersParams() {
   let fq = [];
-  const activeFilters: {
-    title: string;
-    filters: string;
-  }[] = [];
 
   const modalidadSelected = [...modalidad.selectedOptions].map(
     (o) => `"${o.dataset.key}"`,
@@ -98,11 +94,6 @@ export function buildFilters() {
     fq.push(q);
   }
 
-  activeFilters.push({
-    title: "Niveles o Modalidades",
-    filters: getActiveSelectFiltersText("modalidad"),
-  });
-
   const distritoSelected = [...distrito.selectedOptions].map(
     (o) => `"${o.dataset.key}"`,
   );
@@ -111,11 +102,6 @@ export function buildFilters() {
     if (distritoNot.checked) q = "-" + q;
     fq.push(q);
   }
-
-  activeFilters.push({
-    title: "Distrito",
-    filters: getActiveSelectFiltersText("distrito"),
-  });
 
   const cargoSelected = [...cargo.selectedOptions].map(
     (o) => `"${o.dataset.key}"`,
@@ -126,11 +112,6 @@ export function buildFilters() {
     fq.push(q);
   }
 
-  activeFilters.push({
-    title: "Cargo",
-    filters: getActiveSelectFiltersText("cargo"),
-  });
-
   const estadoSelected = [...estado.selectedOptions].map(
     (o) => `"${o.dataset.key}"`,
   );
@@ -140,44 +121,23 @@ export function buildFilters() {
     fq.push(q);
   }
 
-  activeFilters.push({
-    title: "Estado",
-    filters: getActiveSelectFiltersText("estado"),
-  });
-
   const escuelaValue = escuela.value;
   if (escuelaValue) {
     fq.push(`escuela:${escuelaValue}`);
-    activeFilters.push({
-      title: "Escuela",
-      filters: getActiveInputFilterText(escuelaValue, "escuela"),
-    });
   }
 
   const igeValue = ige.value;
   if (igeValue) {
     fq.push(`ige:${igeValue}`);
-    activeFilters.push({
-      title: "IGE",
-      filters: getActiveInputFilterText(igeValue, "ige"),
-    });
   }
 
   const palabraClaveValue = palabraClave.value;
   if (palabraClaveValue) {
-    activeFilters.push({
-      title: "Palabra Clave",
-      filters: getActiveInputFilterText(palabraClaveValue, "palabraClave"),
-    });
   }
 
   const idValue = id.value;
   if (idValue) {
     fq.push(`id:${idValue}`);
-    activeFilters.push({
-      title: "ID",
-      filters: getActiveInputFilterText(idValue, "id"),
-    });
   }
 
   const cierreDateValue = cierreDate.value;
@@ -210,23 +170,10 @@ export function buildFilters() {
     } else {
       text += `${dateFormatter.format(new Date(cierreDateValue))} (${cierreModeValue !== 0 ? "incluido" : "todo el día"})`;
     }
-
-    activeFilters.push({
-      title: "Cierre de Oferta",
-      filters: `<span class="badge text-bg-info">${text}</span> <span class="clear-active-filter-button-container" data-filter-type="date" data-filter="cierreDate"></span>`,
-    });
   }
 
-  filterCardGroup.innerHTML = `<tr>${activeFilters
-    .map(
-      (af) => `<td class="bg-transparent">
-      <small class="text-muted text-nowrap">${af.title}</small>
-      <div class="active-filters flex-nowrap text-nowrap">${af.filters}</div>
-  </td>`,
-    )
-    .join("")}</tr>`;
-
-  document.getElementById("edit-search")!.style.display = fq.length > 0 || palabraClave.value.length > 0 ? "inline-block" : "none";
+  document.getElementById("edit-search")!.style.display =
+    fq.length > 0 || palabraClave.value.length > 0 ? "inline-block" : "none";
 
   return fq;
 }
@@ -292,7 +239,7 @@ function getActiveSelectFiltersText(filter: string) {
     (o) =>
       `<span class="badge text-bg-${filter === "estado" ? getCourseVariant(o.dataset.label as CourseStatus) : "info"}" title="${o.dataset.label!}">${truncateActiveFilterLabel(o.dataset.label!)}</span>`,
   );
-  let text = `<span class="badge text-bg-info">Todos</span>`;
+  let text = `<span class="badge text-bg-info badge-no-filter">Todos</span>`;
 
   if (selected.length > 0) {
     if (
@@ -308,14 +255,13 @@ function getActiveSelectFiltersText(filter: string) {
     } else {
       text = selected.join("");
     }
-    text += `<span class="clear-active-filter-button-container" data-filter-type="select" data-filter="${filter}"></span>`;
   }
 
   return text;
 }
 
-function getActiveInputFilterText(value: string, filter: string) {
-  return `<span class="badge text-bg-info">${value}</span> <span class="clear-active-filter-button-container" data-filter-type="input" data-filter="${filter}"></span>`;
+function getActiveInputFilterText(value: string) {
+  return `<span class="badge text-bg-info">${value}</span>`;
 }
 
 export function updateActiveFilters(filter: string) {
@@ -412,7 +358,7 @@ export function applyFiltersFromURL(params: URLSearchParams) {
     cierreTime.value = cierreTimeParam;
   }
 
-  saveFilters();
+  saveFiltersToLocalStorage();
   filtersFormCard.style.display = "none";
 }
 
@@ -429,4 +375,125 @@ export function createFormFilter(
     option.textContent = labels ? labels[i] : v;
     el.appendChild(option);
   });
+}
+
+export function renderActiveFilters() {
+  filterCardGroup.innerHTML = "";
+
+  const tbody = document.createElement("tbody");
+  const tr = document.createElement("tr");
+
+  const activeFilters: {
+    title: string;
+    type: "select" | "input" | "date";
+    name: string;
+    filters: string;
+  }[] = [];
+
+  ["modalidad", "distrito", "cargo", "estado"].forEach((filter) => {
+    activeFilters.push({
+      title:
+        filter === "modalidad"
+          ? "Niveles o Modalidades"
+          : filter.charAt(0).toUpperCase() + filter.slice(1),
+      type: "select",
+      name: filter,
+      filters: getActiveSelectFiltersText(filter),
+    });
+  });
+
+  if (escuela.value) {
+    activeFilters.push({
+      title: "Escuela",
+      type: "input",
+      name: "escuela",
+      filters: getActiveInputFilterText(escuela.value),
+    });
+  }
+
+  if (ige.value) {
+    activeFilters.push({
+      title: "IGE",
+      type: "input",
+      name: "ige",
+      filters: getActiveInputFilterText(ige.value),
+    });
+  }
+
+  const palabraClaveValue = palabraClave.value;
+  if (palabraClaveValue) {
+    activeFilters.push({
+      title: "Palabra Clave",
+      type: "input",
+      name: "palabraClave",
+      filters: getActiveInputFilterText(palabraClaveValue),
+    });
+  }
+
+  const idValue = id.value;
+  if (idValue) {
+    activeFilters.push({
+      title: "ID",
+      type: "input",
+      name: "id",
+      filters: getActiveInputFilterText(idValue),
+    });
+  }
+
+  const cierreDateValue = cierreDate.value;
+  if (cierreDateValue) {
+    const cierreModeValue = parseInt(cierreMode.value);
+    const cierreTimeValue = cierreTime.value;
+    const cierreModeLabels = ["Exacta", "Desde", "Hasta"];
+
+    activeFilters.push({
+      title: "Cierre de Oferta",
+      type: "date",
+      name: "cierreDate",
+      filters: `<span class="badge text-bg-info">${cierreModeLabels[cierreModeValue]} ${cierreTimeValue ? dateTimeFormatter.format(new Date(`${cierreDateValue} ${cierreTimeValue}`)) : dateFormatter.format(new Date(cierreDateValue))}</span>`,
+    });
+  }
+
+  activeFilters.forEach((af) => {
+    const td = document.createElement("td");
+    td.classList.add("bg-transparent");
+
+    const small = document.createElement("small");
+    small.classList.add("text-muted", "text-nowrap");
+    small.textContent = af.title;
+
+    const div = document.createElement("div");
+    div.classList.add("active-filters", "flex-nowrap", "text-nowrap");
+    div.innerHTML = af.filters;
+
+    if (!af.filters.includes("badge-no-filter")) {
+      const clearBtn = document.createElement("a");
+      clearBtn.href = "#";
+      clearBtn.title = `Limpiar filtro`;
+      clearBtn.classList.add("link-info");
+      clearBtn.innerHTML = `<svg class="icon" aria-hidden="true">
+        <use href="/icons.svg#clear-filter-icon"></use>
+      </svg>`;
+      clearBtn.onclick = (e) => {
+        e.preventDefault();
+        if (af.type === "select") {
+          clearSelectFilter(af.name);
+        } else if (af.type === "input") {
+          clearInputFilter(af.name);
+        } else if (af.type === "date") {
+          clearDateInputFilter();
+        }
+        search();
+      };
+
+      div.appendChild(clearBtn);
+    }
+
+    td.appendChild(small);
+    td.appendChild(div);
+    tr.appendChild(td);
+  });
+
+  tbody.appendChild(tr);
+  filterCardGroup.appendChild(tbody);
 }

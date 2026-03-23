@@ -21,7 +21,7 @@ import {
   clearSelectFilter,
   createFormFilter,
   loadFilters,
-  saveFilters,
+  saveFiltersToLocalStorage,
   updateActiveFilters,
   updateAllActiveFilters,
 } from "./filters";
@@ -138,7 +138,7 @@ function main() {
     filtersForm.reset();
     window.__internal__.apiUrl = "";
     updateAllActiveFilters();
-    saveFilters();
+    saveFiltersToLocalStorage();
 
     if (document.body.classList.contains("preview")) {
       document.body.classList.remove("preview");
@@ -155,7 +155,7 @@ function main() {
     if (document.body.classList.contains("preview")) {
       filtersForm.reset();
       updateAllActiveFilters();
-      saveFilters();
+      saveFiltersToLocalStorage();
 
       document.body.classList.remove("preview");
       history.replaceState(null, "", location.pathname);
