@@ -80,6 +80,10 @@ function applyTheme(value: string) {
 }
 
 function main() {
+  window.__internal__ = {
+    apiUrl: "",
+  };
+
   themeSelect.addEventListener("change", (e) =>
     applyTheme((e.target as HTMLSelectElement).value),
   );
@@ -132,6 +136,7 @@ function main() {
     scrollTo({ top: 0, behavior: "smooth" });
 
     filtersForm.reset();
+    window.__internal__.apiUrl = "";
     updateAllActiveFilters();
     saveFilters();
 

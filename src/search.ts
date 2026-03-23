@@ -130,6 +130,7 @@ export async function search() {
     .forEach((el) => ((el as HTMLInputElement).disabled = true));
 
   const url = buildFetchURL();
+  window.__internal__.apiUrl = url;
 
   document
     .querySelectorAll<HTMLElement>(

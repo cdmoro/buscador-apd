@@ -3,7 +3,6 @@ import { buildFilters } from "./filters";
 import { store } from "./store";
 import type { APDSearchParams, FilterForm } from "./types";
 import { escapeSolr } from "./utils";
-
 const filtersForm = document.getElementById("filters") as FilterForm;
 
 export function buildFetchURL(apdSearchParams: Partial<APDSearchParams> = {}): string {

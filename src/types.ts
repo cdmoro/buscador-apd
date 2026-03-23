@@ -32,7 +32,14 @@ export interface FilterForm extends HTMLFormElement {
   elements: FilterFormElements;
 }
 
-export type CourseStatus = "Anulada" | "Cerrada" | "Desierta" | "DESIGNADA" | "Finalizada" | "Publicada" | "RENUNCIADA";
+export type CourseStatus =
+  | "Anulada"
+  | "Cerrada"
+  | "Desierta"
+  | "DESIGNADA"
+  | "Finalizada"
+  | "Publicada"
+  | "RENUNCIADA";
 
 export type BaseCourse = {
   _version_: number;
@@ -90,7 +97,7 @@ export type DesignadaCourse = Omit<BaseCourse, "estado"> & {
   nombreganador: string;
   puntajeganador: string;
   vuelta: number;
-}
+};
 
 export type Course = BaseCourse | DesignadaCourse;
 
@@ -121,17 +128,17 @@ export type Response = {
 export type FacetResponse = Response & {
   facet_counts: {
     facet_fields: {
-      cargo:  Record<string, number>,
-      descdistrito: Record<string, number>,
-      descnivelmodalidad: Record<string, number>,
-      estado: Record<string, number>,
-    }
-  }
-}
+      cargo: Record<string, number>;
+      descdistrito: Record<string, number>;
+      descnivelmodalidad: Record<string, number>;
+      estado: Record<string, number>;
+    };
+  };
+};
 
 export type APDSearchParams = {
   q: string;
   rows: number;
   start: number;
   sort: string;
-}
+};
