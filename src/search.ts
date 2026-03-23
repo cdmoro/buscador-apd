@@ -1,4 +1,4 @@
-import { clearDateInputFilter, clearInputFilter, clearSelectFilter, renderActiveFilters, saveFiltersToLocalStorage } from "./filters";
+import { renderActiveFilters, saveFiltersToLocalStorage } from "./filters";
 import { renderCards, renderPagination } from "./render";
 import { store } from "./store";
 import type { FilterForm, Response } from "./types";
