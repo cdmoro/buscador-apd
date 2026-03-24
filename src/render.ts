@@ -73,12 +73,12 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     alert.className = "alert alert-info mb-0";
     alert.role = "alert";
     alert.textContent =
-      "No se encontraron resultados para los filtros seleccionados. ";
+      "No se encontraron ofertas para los filtros seleccionados. ";
     
     const clearFiltersBtn = document.createElement("a");
     clearFiltersBtn.href = "#";
     clearFiltersBtn.className = "alert-link";
-    clearFiltersBtn.textContent = "Limpiar todos los filtros";
+    clearFiltersBtn.textContent = "Limpiar filtros";
     clearFiltersBtn.onclick = () => clearAllFilters();
     alert.appendChild(clearFiltersBtn);
 

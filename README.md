@@ -20,7 +20,7 @@ El buscador está basado en los datos del sitio oficial: http://servicios.abc.go
 - Filtros avanzados:
   - combinar múltiples opciones (OR)
   - excluir opciones (NOT)
-- Resultados ordenados por última modificacion (no por fecha de cierre como en el original)
+- Ofertas ordenadas por última modificacion (no por fecha de cierre como en el original)
 - Persistencia de filtros: el buscador recuerda tus últimas selecciones
 - Búsquedas compartibles mediante URL
 - Resultados más limpios: solo se muestra información relevante
@@ -43,7 +43,7 @@ Formulario de búsqueda con multiples filtros y exceptiones
 |---|---|
 |<img width="1905" height="999" alt="image" src="https://github.com/user-attachments/assets/85a87e25-4f9d-4107-a8d4-b9dd76e7329e" />|<img width="1905" height="999" alt="image" src="https://github.com/user-attachments/assets/8eade88b-90c0-4d8b-897d-e237e0a78725" />|
 
-Resultados ordenados por última actualización (no por fecha de cierre como en el buscador original)
+Ofertas ordenadas por última actualización (no por fecha de cierre como en el buscador original)
 
 |Claro|Oscuro|
 |---|---|

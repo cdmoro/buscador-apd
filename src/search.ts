@@ -158,7 +158,7 @@ export async function search() {
   const docs = data.response.docs;
   const total = data.response.numFound;
 
-  countResults.innerText = `Mostrando ${start + 1} a ${start + docs.length} de ${numberFormatter.format(total)} resultados`;
+  countResults.innerText = `Mostrando ${start + 1} a ${start + docs.length} de ${numberFormatter.format(total)} ofertas`;
 
   cardResults.classList.remove("card-results-empty");
   cardResultsGrid.innerHTML = "";
