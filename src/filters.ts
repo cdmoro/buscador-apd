@@ -123,21 +123,20 @@ export function buildFiltersParams() {
 
   const escuelaValue = escuela.value;
   if (escuelaValue) {
-    fq.push(`escuela:${escuelaValue}`);
+    const escuelaFq = escuelaValue.split(",").filter((e) => e.trim() !== "").map((e) => `"${e.trim()}"`);
+    fq.push(`escuela:(${escuelaFq.join(" OR ")})`);
   }
 
   const igeValue = ige.value;
   if (igeValue) {
-    fq.push(`ige:${igeValue}`);
-  }
-
-  const palabraClaveValue = palabraClave.value;
-  if (palabraClaveValue) {
+    const igeFq = igeValue.split(",").filter((e) => e.trim() !== "").map((e) => `"${e.trim()}"`);
+    fq.push(`ige:(${igeFq.join(" OR ")})`);
   }
 
   const idValue = id.value;
   if (idValue) {
-    fq.push(`id:${idValue}`);
+    const idFq = idValue.split(",").filter((e) => e.trim() !== "").map((e) => `"${e.trim()}"`);
+    fq.push(`id:(${idFq.join(" OR ")})`);
   }
 
   const cierreDateValue = cierreDate.value;
@@ -261,7 +260,10 @@ function getActiveSelectFiltersText(filter: string) {
 }
 
 function getActiveInputFilterText(value: string) {
-  return `<span class="badge text-bg-info">${value}</span>`;
+  if (value.startsWith('"') && value.endsWith('"')) {
+    return `<span class="badge text-bg-info">${value}</span>`;
+  }
+  return value.split(",").map((v) => `<span class="badge text-bg-info">${v.trim()}</span>`).join("");
 }
 
 export function updateActiveFilters(filter: string) {
