@@ -63,6 +63,18 @@ function renderDetails(d: Course, daysFiltered: string) {
       ${daysFiltered || ""}`;
 }
 
+function isValidWeekday(value: string) {
+  if (!value) return false;
+
+  const numbers = value.split("").map((v) => v.trim()).filter((v) => /^\d+$/.test(v));
+
+  if (numbers.join("") === "0") {
+    return false;
+  }
+
+  return numbers.length > 0;
+}
+
 export function renderCards(docs: Course[], container: HTMLElement) {
   if (docs.length === 0) {
     cardResults.classList.add("card-results-empty");
@@ -111,12 +123,12 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     )
       .map(
         ([k, v]) =>
-          `<div title="${v || ""}" class="${!!v ? "bg-info text-bg-info" : "text-muted"}">${k[0]}</div>`,
+          `<div title="${v || ""}" class="${isValidWeekday(v) ? "bg-info text-bg-info" : "text-muted"}">${k[0]}</div>`,
       )
       .join("")}</div>`;
 
     const daysFiltered = Object.entries(days)
-      .filter(([_, v]) => !!v)
+      .filter(([_, v]) => isValidWeekday(v))
       .map(([k, v]) => `<div><strong>${k}</strong>: ${v}</div>`)
       .join("");
 
