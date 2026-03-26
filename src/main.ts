@@ -30,7 +30,6 @@ import { buildFetchURL } from "./url";
 import { fetchFacets } from "./facets";
 import { handleSchoolClick } from "./school";
 import { handlePostulacionClick } from "./postulaciones";
-import Modal from "bootstrap/js/dist/modal";
 
 const filtersForm = document.getElementById("filters") as FilterForm;
 const {
