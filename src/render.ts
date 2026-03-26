@@ -17,7 +17,7 @@ function resolveTomaDePosesion(tomaPosesion: string) {
   const date = new Date(tomaPosesion);
 
   if (date <= new Date()) {
-    return "INMEDIATA";
+    return '<span class="badge text-bg-info">INMEDIATA</span>';
   }
 
   if (isNaN(date.getTime())) {
@@ -56,7 +56,6 @@ function renderDetails(d: Course, daysFiltered: string) {
       ${d.supl_revista && `<div><strong>Revista</strong>: ${d.supl_revista}</div>`}
       ${d.infectocontagiosa !== undefined && `<div><strong>Infectocontagiosa en el establecimiento</strong>: ${d.infectocontagiosa ? "Sí" : "No"}</div>`}
       <div><hr></div>
-      ${d.tomaposesion && `<div><strong>Toma de posesión</strong>: ${resolveTomaDePosesion(d.tomaposesion)}</div>`}
       ${d.iniciooferta && `<div><strong>Inicio oferta</strong>: ${dateTimeFormatter.format(new Date(d.iniciooferta))}</div>`}
       ${!d.supl_desde || d.supl_desde.startsWith("9999") ? "" : `<div><strong>Desde</strong>: ${dateFormatter.format(new Date(d.supl_desde))}</div>`}
       ${!d.supl_hasta || d.supl_hasta.startsWith("9999") ? "" : `<div><strong>Hasta</strong>: ${dateFormatter.format(new Date(d.supl_hasta))}</div>`}
@@ -66,7 +65,10 @@ function renderDetails(d: Course, daysFiltered: string) {
 function isValidWeekday(value: string) {
   if (!value) return false;
 
-  const numbers = value.split("").map((v) => v.trim()).filter((v) => /^\d+$/.test(v));
+  const numbers = value
+    .split("")
+    .map((v) => v.trim())
+    .filter((v) => /^\d+$/.test(v));
 
   if (numbers.join("") === "0") {
     return false;
@@ -86,7 +88,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     alert.role = "alert";
     alert.textContent =
       "No se encontraron ofertas para los filtros seleccionados. ";
-    
+
     const clearFiltersBtn = document.createElement("a");
     clearFiltersBtn.href = "#";
     clearFiltersBtn.className = "alert-link";
@@ -193,7 +195,15 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     const listLink = document.createElement("a");
     listLink.title = "Listar postulados";
     listLink.className = `text-bg-${courseStatus}`;
-    listLink.href = `http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}`;
+    // listLink.href = `http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${d.ige}&detalle=${d.id}&_t=${new Date(d.timestamp).getTime()}`;
+    listLink.href = "#";
+    listLink.dataset.bsToggle = "modal";
+    listLink.dataset.bsTarget = "#postulacion-modal";
+    listLink.dataset.bsIge = d.ige.toString();
+    listLink.dataset.bsId = d.id;
+    listLink.dataset.bsEstado = d.estado;
+    listLink.dataset.bsEscuela = d.escuela;
+    listLink.dataset.bsCargo = d.cargo;
     listLink.target = "_blank";
     listLink.innerHTML = `<svg class="icon" aria-hidden="true">
         <use href="/icons.svg#list-icon"></use>
@@ -201,20 +211,26 @@ export function renderCards(docs: Course[], container: HTMLElement) {
 
     cardHeader.appendChild(listLink);
 
-    const observaciones = d.observaciones ? `<div><hr></div><div><strong>Observaciones</strong></div><div>${d.observaciones}</div>` : "";
+    const observaciones = d.observaciones
+      ? `<div><hr></div><div><strong>Observaciones</strong></div><div>${d.observaciones}</div>`
+      : "";
 
     const cardBody = document.createElement("div");
     cardBody.className = "card-body";
     cardBody.innerHTML = `${d.estado === "DESIGNADA" ? renderDesignada(d) : ""}
-      ${d.escuela && `<div class="card-subtitle mb-2 text-muted">
+      ${
+        d.escuela &&
+        `<div class="card-subtitle mb-2 text-muted">
         <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-school="${d.escuela}" title="Ver detalles de la institución">${d.escuela}</a>
-      </div>`}
+      </div>`
+      }
       <h5 class="card-title text-info">${d.cargo || ""}</h5>
       <h6 class="card-subtitle mb-2 text-muted">${d.descdistrito || ""} | ${d.descnivelmodalidad || ""}</h6>
       <div class="card-text mb-1">
-          ${d.finoferta && `<div>Cierre de Oferta: <span class="text-info">${dateTimeFormatter.format(new Date(d.finoferta))}</span></div>`}
           <div>IGE: <span class="text-info">${d.ige || ""}</span> — Área: <span class="text-info">${d.areaincumbencia || ""}</span></div>
-          ${daysTable && `<div>${daysTable}</div>`}
+          ${d.finoferta && d.estado !== "DESIGNADA" ? `<div>Cierre de Oferta: <span class="text-info">${dateTimeFormatter.format(new Date(d.finoferta))}</span></div>` : ""}
+          ${d.tomaposesion && d.estado !== "DESIGNADA" ? `<div>Toma de posesión: ${resolveTomaDePosesion(d.tomaposesion)}</div>` : ""}
+          ${daysTable && `<div class="mt-1">${daysTable}</div>`}
       </div>
       
       <div class="card-details mt-3">

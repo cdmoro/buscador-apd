@@ -3,7 +3,11 @@ export const SERVICE_URL =
 export const FACET_PARAMS =
   "rows=0&facet=true&facet.limit=-1&facet.mincount=1&json.nl=map&facet.field=cargo&facet.field=estado&facet.field=descnivelmodalidad&facet.field=descdistrito&q=*:*&wt=json";
 export const SCHOOL_SERVICE_URL =
-    "https://servicios3.abc.gob.ar/oferta.educativa/api/establecimiento/collapsed/select"; // ?q=*%3A*&fq=CLAVEESTAB%3A0032JI0908&wt=json
+  "https://servicios3.abc.gob.ar/oferta.educativa/api/establecimiento/collapsed/select";
+// ?q=*%3A*&fq=CLAVEESTAB%3A0032JI0908&wt=json
+export const POSTULANTES_SERVICE_URL =
+  "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.postulante/select";
+// ?fq=idoferta%3A3915102&q=idoferta%3A3915102&rows=10&sort=estadopostulacion%20asc%2C%20orden%20asc%2C%20puntaje%20desc&wt=json
 
 export const CARGO_KEYS = [
   " derecho económico y del trabajo (cta)",
@@ -1899,7 +1903,7 @@ export const DISTRITO_LABELS = [
 
 export const ESTADO_KEYS = [
   "anulada",
-//   "cerrada",
+  //   "cerrada",
   "desierta",
   "designada",
   "finalizada",
@@ -1909,7 +1913,7 @@ export const ESTADO_KEYS = [
 
 export const ESTADO_LABELS = [
   "Anulada",
-//   "Cerrada",
+  //   "Cerrada",
   "Desierta",
   "Designada",
   "Finalizada",

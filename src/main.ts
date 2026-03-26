@@ -29,6 +29,8 @@ import {
 import { buildFetchURL } from "./url";
 import { fetchFacets } from "./facets";
 import { handleSchoolClick } from "./school";
+import { handlePostulacionClick } from "./postulaciones";
+import Modal from "bootstrap/js/dist/modal";
 
 const filtersForm = document.getElementById("filters") as FilterForm;
 const {
@@ -218,6 +220,11 @@ function main() {
   const schoolModalEl = document.getElementById("school-modal")!;
   schoolModalEl.addEventListener("show.bs.modal", e => {
     handleSchoolClick(schoolModalEl, e);
+  });
+
+  const postulacionModalEl = document.getElementById("postulacion-modal")!;
+  postulacionModalEl.addEventListener("show.bs.modal", e => {
+    handlePostulacionClick(postulacionModalEl, e);
   });
 }
 

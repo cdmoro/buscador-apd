@@ -31,10 +31,16 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
     modalBody.innerHTML = `
     <h6>${details.RAMA} ${details.CLAVEESTAB.slice(-4)}</h6>
     <h5 class="mb-4 text-info">${details.NOMBRE}</h5>
-    <div><strong>Calle:</strong> ${details.CALLE} — <strong>Número:</strong> ${details.NRODIRECCION}</div>
+    <div><strong>Calle:</strong> ${details.CALLE}${details.NRODIRECCION ? ` — <strong>Número:</strong> ${details.NRODIRECCION}` : ""}</div>
     <div><strong>Localidad:</strong> ${details.DESCRLOCALIDAD}</div>
     <div><strong>Distrito:</strong> ${details.DESC_DISTRITO}</div>
-    <div><a class="link-info" href="https://maps.google.com/?q=${details.LATITUD},${details.LONGITUD}" target="_blank">Ver en Google Maps</a></div>
+    ${
+      details.LATITUD && details.LONGITUD
+        ? `
+        <div class="mt-2 card overflow-hidden"><iframe width="100%" height="200" frameborder="0" style="border:0" src="https://maps.google.com/maps?q=${details.LATITUD},${details.LONGITUD}&hl=es;z=14&output=embed" allowfullscreen></iframe></div>
+        <div class="text-end"><a class="link-info" href="https://maps.google.com/?q=${details.LATITUD},${details.LONGITUD}" target="_blank"><small>Abrir en Google Maps</small></a></div>`
+        : ""
+    }
     <hr>
     <div><strong>Rama:</strong> ${details.RAMA}</div>
     <div><strong>Nivel:</strong> ${details.NIVEL}</div>
@@ -45,7 +51,9 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
   } catch (error) {
     Modal.getOrCreateInstance(modal).hide();
     showToast(
-      error instanceof Error ? error.message : "Error al cargar los detalles de la institución educativa.",
+      error instanceof Error
+        ? error.message
+        : "Error al cargar los detalles de la escuela.",
       { type: "warning" },
     );
   }
