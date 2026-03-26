@@ -4,7 +4,7 @@ export type State = {
   sort: string;
   isSingleCourse: boolean;
   isPreview: boolean;
-}
+};
 
 export type Listener = (state: State) => void;
 
@@ -101,14 +101,14 @@ export type DesignadaCourse = Omit<BaseCourse, "estado"> & {
 
 export type Course = BaseCourse | DesignadaCourse;
 
-export type Response = {
+export type Response<T> = {
   error: {
     code: number;
     metadata: string[];
     msg: string;
   };
   response: {
-    docs: Course[];
+    docs: T[];
     numFound: number;
     start: number;
   };
@@ -125,7 +125,7 @@ export type Response = {
   };
 };
 
-export type FacetResponse = Response & {
+export type FacetResponse = Response<Course> & {
   facet_counts: {
     facet_fields: {
       cargo: Record<string, number>;
@@ -141,4 +141,39 @@ export type APDSearchParams = {
   rows: number;
   start: number;
   sort: string;
+};
+
+export type SchoolResponse = Response<School>;
+
+export type School = {
+  IDSER: string;
+  IDCICLOLECTIVO: string;
+  RAMA: string;
+  RAMA_FACET: string;
+  NOMBRE_TITULO: string;
+  CALLE: string;
+  NIVEL: string;
+  NIVEL_FACET: string;
+  REGION: string;
+  CUE: string;
+  DESC_DISTRITO: string;
+  DESC_DISTRITO_FACET: string;
+  DESCRLOCALIDAD: string;
+  TURNO_INICIO: string;
+  id: string;
+  LONGITUD: string;
+  IDOFERTAEDUCATIVA: string;
+  MODALIDAD: string;
+  MODALIDAD_FACET: string;
+  NOMBRE: string;
+  NOMBRE_FACET: string;
+  NRODIRECCION: string;
+  JORNADA: string;
+  JORNADA_FACET: string;
+  CLAVEESTAB: string;
+  CLAVEESTAB_FACET: string;
+  LATITUD: string;
+  IDPROPUESTAEDUCATIVA: string;
+  _version_: number;
+  timestamp: string;
 };

@@ -1,4 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/js/dist/modal";
 import "./style.css";
 import type { FilterForm } from "./types";
 import {
@@ -27,6 +28,7 @@ import {
 } from "./filters";
 import { buildFetchURL } from "./url";
 import { fetchFacets } from "./facets";
+import { handleSchoolClick } from "./school";
 
 const filtersForm = document.getElementById("filters") as FilterForm;
 const {
@@ -211,6 +213,11 @@ function main() {
   document.querySelector("#copy-url")?.addEventListener("click", () => {
     navigator.clipboard.writeText(buildFetchURL({ rows: 1, start: 0 }));
     showToast("¡URL del servicio copiada al portapapeles!");
+  });
+
+  const schoolModalEl = document.getElementById("school-modal")!;
+  schoolModalEl.addEventListener("show.bs.modal", e => {
+    handleSchoolClick(schoolModalEl, e);
   });
 }
 

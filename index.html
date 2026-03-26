@@ -5,35 +5,66 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Buscador Actos Públicos Digitales | Provincia de Buenos Aires</title>
-    <meta property="og:title" content="Buscador Actos Públicos Digitales | Provincia de Buenos Aires" />
-    <meta property="og:description" content="Buscador de actos públicos digitales (APD) para cargos docentes en la Provincia de Buenos Aires. Filtrá y encontrá ofertas laborales educativas de manera simple y eficiente." />
-    <meta property="og:image" content="https://buscador-apd.netlify.app/og.jpg" />
+    <meta
+      property="og:title"
+      content="Buscador Actos Públicos Digitales | Provincia de Buenos Aires"
+    />
+    <meta
+      property="og:description"
+      content="Buscador de actos públicos digitales (APD) para cargos docentes en la Provincia de Buenos Aires. Filtrá y encontrá ofertas laborales educativas de manera simple y eficiente."
+    />
+    <meta
+      property="og:image"
+      content="https://buscador-apd.netlify.app/og.jpg"
+    />
     <meta property="og:url" content="https://buscador-apd.netlify.app/" />
     <meta property="og:type" content="website" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Buscador Actos Públicos Digitales | Provincia de Buenos Aires" />
-    <meta name="twitter:description" content="Buscador de actos públicos digitales (APD) para cargos docentes en la Provincia de Buenos Aires. Filtrá y encontrá ofertas laborales educativas de manera simple y eficiente." />
-    <meta name="twitter:image" content="https://buscador-apd.netlify.app/og.jpg" />
+    <meta
+      name="twitter:title"
+      content="Buscador Actos Públicos Digitales | Provincia de Buenos Aires"
+    />
+    <meta
+      name="twitter:description"
+      content="Buscador de actos públicos digitales (APD) para cargos docentes en la Provincia de Buenos Aires. Filtrá y encontrá ofertas laborales educativas de manera simple y eficiente."
+    />
+    <meta
+      name="twitter:image"
+      content="https://buscador-apd.netlify.app/og.jpg"
+    />
   </head>
   <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
         <h1>APD <span>Actos Públicos Digitales</span></h1>
         <div class="d-flex gap-3 align-items-center">
-          <a href="http://servicios.abc.gob.ar/servaddo/puntaje.ingreso.docencia/" target="_blank" class="btn btn-sm btn-info text-nowrap align-self-start">Consultar oblea</a>
+          <a
+            href="http://servicios.abc.gob.ar/servaddo/puntaje.ingreso.docencia/"
+            target="_blank"
+            class="btn btn-sm btn-info text-nowrap align-self-start"
+            >Consultar oblea</a
+          >
           <select class="form-select form-select-sm" id="theme">
             <option value="auto">Auto</option>
             <option value="light">Claro</option>
             <option value="dark">Oscuro</option>
           </select>
-          <a class="text-info" href="https://github.com/cdmoro/buscador-apd" target="_blank">
+          <a
+            class="text-info"
+            href="https://github.com/cdmoro/buscador-apd"
+            target="_blank"
+          >
             <svg class="icon" aria-hidden="true">
               <use href="/icons.svg#github-icon"></use>
             </svg>
           </a>
-          <a class="text-info" href="https://x.com/CarlosBonadeo" target="_blank">
+          <a
+            class="text-info"
+            href="https://x.com/CarlosBonadeo"
+            target="_blank"
+          >
             <svg class="icon" aria-hidden="true">
               <use href="/icons.svg#x-icon"></use>
             </svg>
@@ -52,12 +83,26 @@
                 <label for="modalidad" class="d-flex justify-content-between">
                   Niveles o Modalidades
                   <div class="form-check form-switch">
-                    <input class="form-check-input" name="modalidadNot" type="checkbox" role="switch" id="modalidadNot">
-                    <label class="form-check-label" for="modalidadNot">Invertir</label>
+                    <input
+                      class="form-check-input"
+                      name="modalidadNot"
+                      type="checkbox"
+                      role="switch"
+                      id="modalidadNot"
+                    />
+                    <label class="form-check-label" for="modalidadNot"
+                      >Invertir</label
+                    >
                   </div>
                 </label>
                 <div class="input-group">
-                  <select class="form-select" name="modalidad" id="modalidad" multiple size="6"></select>
+                  <select
+                    class="form-select"
+                    name="modalidad"
+                    id="modalidad"
+                    multiple
+                    size="6"
+                  ></select>
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-filter"
@@ -79,12 +124,26 @@
                 <label for="distrito" class="d-flex justify-content-between">
                   Distrito
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" name="distritoNot" id="distritoNot">
-                    <label class="form-check-label" for="distritoNot">Invertir</label>
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      name="distritoNot"
+                      id="distritoNot"
+                    />
+                    <label class="form-check-label" for="distritoNot"
+                      >Invertir</label
+                    >
                   </div>
                 </label>
                 <div class="input-group">
-                  <select class="form-select" name="distrito" id="distrito" multiple size="6"></select>
+                  <select
+                    class="form-select"
+                    name="distrito"
+                    id="distrito"
+                    multiple
+                    size="6"
+                  ></select>
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-filter"
@@ -106,12 +165,26 @@
                 <label for="cargo" class="d-flex justify-content-between">
                   Cargo
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" name="cargoNot" id="cargoNot">
-                    <label class="form-check-label" for="cargoNot">Invertir</label>
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      name="cargoNot"
+                      id="cargoNot"
+                    />
+                    <label class="form-check-label" for="cargoNot"
+                      >Invertir</label
+                    >
                   </div>
                 </label>
                 <div class="input-group">
-                  <select class="form-select" name="cargo" id="cargo" multiple size="6"></select>
+                  <select
+                    class="form-select"
+                    name="cargo"
+                    id="cargo"
+                    multiple
+                    size="6"
+                  ></select>
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-filter"
@@ -133,12 +206,26 @@
                 <label for="estado" class="d-flex justify-content-between">
                   Estado
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" name="estadoNot" id="estadoNot">
-                    <label class="form-check-label" for="estadoNot">Invertir</label>
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      name="estadoNot"
+                      id="estadoNot"
+                    />
+                    <label class="form-check-label" for="estadoNot"
+                      >Invertir</label
+                    >
                   </div>
                 </label>
                 <div class="input-group">
-                  <select class="form-select" name="estado" id="estado" multiple size="6"></select>
+                  <select
+                    class="form-select"
+                    name="estado"
+                    id="estado"
+                    multiple
+                    size="6"
+                  ></select>
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-filter"
@@ -159,7 +246,15 @@
               <div>
                 <label for="ige">IGE</label>
                 <div class="input-group">
-                  <input class="form-control" name="ige" id="ige" type="text" pattern="[0-9, ]+" title="Ingresar solamente valores numéricos" placeholder="Ej.: 3846779" />
+                  <input
+                    class="form-control"
+                    name="ige"
+                    id="ige"
+                    type="text"
+                    pattern="[0-9, ]+"
+                    title="Ingresar solamente valores numéricos"
+                    placeholder="Ej.: 3846779"
+                  />
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-input-filter"
@@ -171,12 +266,22 @@
                     </svg>
                   </button>
                 </div>
-                <div class="form-text" id="basic-addon3">Podés ingresar varios valores separados por comas</div>
+                <div class="form-text" id="basic-addon3">
+                  Podés ingresar varios valores separados por comas
+                </div>
               </div>
               <div>
                 <label for="escuela">Escuela</label>
                 <div class="input-group">
-                  <input class="form-control" name="escuela" id="escuela" type="text" pattern="[0-9A-Za-z, ]+" title="Ingresar solamente valores alfanuméricos" placeholder="Ej.: 0055JI0946" />
+                  <input
+                    class="form-control"
+                    name="escuela"
+                    id="escuela"
+                    type="text"
+                    pattern="[0-9A-Za-z, ]+"
+                    title="Ingresar solamente valores alfanuméricos"
+                    placeholder="Ej.: 0055JI0946"
+                  />
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-input-filter"
@@ -188,12 +293,20 @@
                     </svg>
                   </button>
                 </div>
-                <div class="form-text" id="basic-addon3">Podés ingresar varios valores separados por comas</div>
+                <div class="form-text" id="basic-addon3">
+                  Podés ingresar varios valores separados por comas
+                </div>
               </div>
               <div>
                 <label for="palabraClave">Palabra clave</label>
                 <div class="input-group">
-                  <input class="form-control" name="palabraClave" id="palabraClave" type="text" placeholder="Ej.: Encargado, Matemática, &quot;bibliotecario inicial&quot;, etc." />
+                  <input
+                    class="form-control"
+                    name="palabraClave"
+                    id="palabraClave"
+                    type="text"
+                    placeholder='Ej.: Encargado, Matemática, "bibliotecario inicial", etc.'
+                  />
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-input-filter"
@@ -205,12 +318,23 @@
                     </svg>
                   </button>
                 </div>
-                <div class="form-text" id="basic-addon3">Busca coincidencias en varios campos, usar comillas para frases exactas.</div>
+                <div class="form-text" id="basic-addon3">
+                  Busca coincidencias en varios campos, usar comillas para
+                  frases exactas.
+                </div>
               </div>
               <div>
                 <label for="id">ID</label>
                 <div class="input-group">
-                  <input class="form-control" name="id" id="id" pattern="[0-9, ]+" title="Ingresar solamente valores numéricos" type="text" placeholder="Ej.: 3901418" />
+                  <input
+                    class="form-control"
+                    name="id"
+                    id="id"
+                    pattern="[0-9, ]+"
+                    title="Ingresar solamente valores numéricos"
+                    type="text"
+                    placeholder="Ej.: 3901418"
+                  />
                   <button
                     type="button"
                     class="btn btn-outline-secondary clear-input-filter"
@@ -222,38 +346,65 @@
                     </svg>
                   </button>
                 </div>
-                <div class="form-text" id="basic-addon3">Podés ingresar varios valores separados por comas</div>
+                <div class="form-text" id="basic-addon3">
+                  Podés ingresar varios valores separados por comas
+                </div>
               </div>
             </div>
             <div class="mb-3">
               <label for="cierre-date">Cierre de Oferta</label>
-              <div class="d-flex gap-3 justify-content-between flex-column flex-md-row">
+              <div
+                class="d-flex gap-3 justify-content-between flex-column flex-md-row"
+              >
                 <div class="flex-shrink-1 cierre-mode-select">
-                  <select class="form-select" name="cierreMode" id="cierre-mode">
+                  <select
+                    class="form-select"
+                    name="cierreMode"
+                    id="cierre-mode"
+                  >
                     <option value="0" selected>Exacta</option>
                     <option value="1">Desde</option>
                     <option value="2">Hasta</option>
                   </select>
                 </div>
                 <div class="input-group w-100">
-                  <input class="form-control" name="cierreDate" id="cierre-date" type="date" placeholder="Fecha" />
-                  <input class="form-control" name="cierreTime" id="cierre-time" type="time" placeholder="Hora" />
+                  <input
+                    class="form-control"
+                    name="cierreDate"
+                    id="cierre-date"
+                    type="date"
+                    placeholder="Fecha"
+                  />
+                  <input
+                    class="form-control"
+                    name="cierreTime"
+                    id="cierre-time"
+                    type="time"
+                    placeholder="Hora"
+                  />
                   <button
-                      id="clear-date-input"
-                      type="button"
-                      class="btn btn-outline-secondary"
-                      placeholder="Limpiar filtro"
-                    >
-                      <svg class="icon" aria-hidden="true">
-                        <use href="/icons.svg#clear-filter-icon"></use>
-                      </svg>
-                    </button>
+                    id="clear-date-input"
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    placeholder="Limpiar filtro"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/icons.svg#clear-filter-icon"></use>
+                    </svg>
+                  </button>
                 </div>
               </div>
-              <div class="form-text" id="basic-addon4">Si no se especifica la hora se tomará el día completo.</div>
+              <div class="form-text" id="basic-addon4">
+                Si no se especifica la hora se tomará el día completo.
+              </div>
             </div>
             <div class="d-flex gap-3">
-              <button class="btn btn-info" name="search" type="submit" id="search">
+              <button
+                class="btn btn-info"
+                name="search"
+                type="submit"
+                id="search"
+              >
                 <svg class="icon" aria-hidden="true">
                   <use href="/icons.svg#search-icon"></use>
                 </svg>
@@ -269,7 +420,9 @@
 
       <div class="card" id="results">
         <div class="card-body">
-          <h2 class="card-title d-flex justify-content-between mb-4 flex-row flex-wrap gap-2 align-items-center">
+          <h2
+            class="card-title d-flex justify-content-between mb-4 flex-row flex-wrap gap-2 align-items-center"
+          >
             Ofertas
             <div>
               <button type="button" class="btn btn-sm btn-info" id="new-search">
@@ -278,44 +431,95 @@
                 </svg>
                 <span class="d-none d-sm-inline-block">Nueva búsqueda</span>
               </button>
-              <button type="button" class="btn btn-info btn-sm" id="edit-search">
+              <button
+                type="button"
+                class="btn btn-info btn-sm"
+                id="edit-search"
+              >
                 <svg class="icon" aria-hidden="true">
                   <use href="/icons.svg#edit-icon"></use>
                 </svg>
                 <span class="d-none d-sm-inline-block">Editar búsqueda</span>
               </button>
-              <button type="button" class="btn btn-outline-info btn-sm" id="copy-search">
+              <button
+                type="button"
+                class="btn btn-outline-info btn-sm"
+                id="copy-search"
+              >
                 <svg class="icon" aria-hidden="true">
                   <use href="/icons.svg#copy-icon"></use>
                 </svg>
                 <span class="visually-hidden">Copiar búsqueda</span>
               </button>
-              <button type="button" class="d-none btn btn-outline-info btn-sm" id="copy-url">
+              <button
+                type="button"
+                class="d-none btn btn-outline-info btn-sm"
+                id="copy-url"
+              >
                 <svg class="icon" aria-hidden="true">
                   <use href="/icons.svg#copy-icon"></use>
                 </svg>
                 <span class="visually-hidden">Copiar URL servicio</span>
+              </button>
             </div>
           </h2>
           <div class="sticky-sentinel"></div>
           <div id="active-filters" class="mb-3 card top-0 start-0 end-0">
             <div class="card-body p-2 table-responsive">
-              <table class="table table-borderless mb-0 w-auto" id="filter-card-group"></table>
+              <table
+                class="table table-borderless mb-0 w-auto"
+                id="filter-card-group"
+              ></table>
             </div>
           </div>
-          <div class="results-detail d-flex justify-content-between align-items-center flex-md-row flex-column mb-3 gap-3">
+          <div
+            class="results-detail d-flex justify-content-between align-items-center flex-md-row flex-column mb-3 gap-3"
+          >
             <nav>
               <ul id="pagination" class="pagination mb-0"></ul>
             </nav>
             <span id="count" class="text-muted"></span>
           </div>
-          <div class="card-results row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4"></div>
+          <div
+            class="card-results row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4"
+          ></div>
           <nav class="mt-3">
-            <ul id="pagination-bottom" class="pagination justify-content-center mb-0"></ul>
+            <ul
+              id="pagination-bottom"
+              class="pagination justify-content-center mb-0"
+            ></ul>
           </nav>
         </div>
       </div>
     </main>
+
+    <div class="modal" id="school-modal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"></h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

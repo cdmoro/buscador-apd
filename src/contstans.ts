@@ -2,6 +2,8 @@ export const SERVICE_URL =
   "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.encabezado/select";
 export const FACET_PARAMS =
   "rows=0&facet=true&facet.limit=-1&facet.mincount=1&json.nl=map&facet.field=cargo&facet.field=estado&facet.field=descnivelmodalidad&facet.field=descdistrito&q=*:*&wt=json";
+export const SCHOOL_SERVICE_URL =
+    "https://servicios3.abc.gob.ar/oferta.educativa/api/establecimiento/collapsed/select"; // ?q=*%3A*&fq=CLAVEESTAB%3A0032JI0908&wt=json
 
 export const CARGO_KEYS = [
   " derecho económico y del trabajo (cta)",

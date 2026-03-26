@@ -206,7 +206,9 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     const cardBody = document.createElement("div");
     cardBody.className = "card-body";
     cardBody.innerHTML = `${d.estado === "DESIGNADA" ? renderDesignada(d) : ""}
-      <div class="card-subtitle mb-2 text-muted">${d.escuela || ""}</div>
+      ${d.escuela && `<div class="card-subtitle mb-2 text-muted">
+        <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-school="${d.escuela}" title="Ver detalles de la institución">${d.escuela}</a>
+      </div>`}
       <h5 class="card-title text-info">${d.cargo || ""}</h5>
       <h6 class="card-subtitle mb-2 text-muted">${d.descdistrito || ""} | ${d.descnivelmodalidad || ""}</h6>
       <div class="card-text mb-1">
