@@ -1,4 +1,4 @@
-import { Modal } from "bootstrap";
+import Modal from "bootstrap/js/dist/modal";
 import { showToast } from "./toastService";
 import type { Response, Postulacion, CourseStatus } from "./types";
 import { POSTULANTES_SERVICE_URL } from "./contstans";
@@ -37,7 +37,7 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
 
     modalBody.innerHTML = `
         <div><strong>IGE:</strong> ${ige}</div>
-        <div><strong>Escuela:</strong> <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-school="${escuela}" data-bs-id="${id}" data-bs-ige="${ige}" data-bs-estado="${estado}" data-bs-cargo="${cargo}">${escuela}</a></div>
+        <div><strong>Escuela:</strong> <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-escuela="${escuela}" data-bs-id="${id}" data-bs-ige="${ige}" data-bs-estado="${estado}" data-bs-cargo="${cargo}">${escuela}</a></div>
         <div><strong>Postulantes:</strong> ${data.response.docs.length}</div>
         <div><a href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${ige}&detalle=${id}" target="_blank">Ver listado en el sitio oficial</a></div>
         <div class="mt-2 row row-cols-1 row-cols-md-2 g-3">

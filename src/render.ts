@@ -222,7 +222,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       ${
         d.escuela &&
         `<div class="card-subtitle mb-2 text-muted">
-        <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-school="${d.escuela}" title="Ver detalles de la institución">${d.escuela}</a>
+        <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-escuela="${d.escuela}" title="Ver detalles de la institución">${d.escuela}</a>
       </div>`
       }
       <h5 class="card-title text-info">${d.cargo || ""}</h5>

@@ -5,13 +5,13 @@ import Modal from "bootstrap/js/dist/modal";
 
 export async function handleSchoolClick(modal: HTMLElement, event: Event) {
   const trigger = (event as MouseEvent).relatedTarget as HTMLElement;
-  const schoolId = trigger.getAttribute("data-bs-school")!;
+  const escuela = trigger.getAttribute("data-bs-escuela")!;
   const id = trigger.getAttribute("data-bs-id");
   const ige = trigger.getAttribute("data-bs-ige");
   const cargo = trigger.getAttribute("data-bs-cargo");
   const estado = trigger.getAttribute("data-bs-estado");
   const modalTitle = modal.querySelector(".modal-title")!;
-  modalTitle.textContent = `Escuela ${schoolId}`;
+  modalTitle.innerHTML = 'Cargando detalles de la escuela...';
   const modalBody = modal.querySelector(".modal-body")!;
   modalBody.innerHTML = `<div class="d-flex justify-content-center mt-3 mb-3 w-100">
       <div class="spinner-border text-info" role="status">
@@ -32,7 +32,7 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
         data-bs-ige="${ige}"
         data-bs-cargo="${cargo}"
         data-bs-estado="${estado}"
-        data-bs-escuela="${schoolId}">
+        data-bs-escuela="${escuela}">
         Volver
       `
           : `data-bs-dismiss="modal">
@@ -40,23 +40,25 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
       }
     </button>`;
 
-  if (!schoolId) return;
+  if (!escuela) return;
 
   try {
     const res = await fetch(
-      `${SCHOOL_SERVICE_URL}?q=*%3A*&fq=CLAVEESTAB%3A${schoolId}&wt=json`,
+      `${SCHOOL_SERVICE_URL}?q=*%3A*&fq=CLAVEESTAB%3A${escuela}&wt=json`,
     );
     const data = await res.json();
 
     if (data.response.numFound === 0) {
-      throw new Error(`No se encontraron datos para la escuela ${schoolId}.`);
+      throw new Error(`No se encontraron datos para la escuela ${escuela}.`);
     }
 
     const details = data.response.docs[0] as School;
 
+    modalTitle.innerHTML = `
+      <h6>${details.RAMA} ${details.CLAVEESTAB.slice(-4)}</h6>
+      <h5 class="mb-0 text-info">${details.NOMBRE}</h5>`;
+
     modalBody.innerHTML = `
-    <h6>${details.RAMA} ${details.CLAVEESTAB.slice(-4)}</h6>
-    <h5 class="mb-4 text-info">${details.NOMBRE}</h5>
     <div><strong>Calle:</strong> ${details.CALLE}${details.NRODIRECCION ? ` — <strong>Número:</strong> ${details.NRODIRECCION}` : ""}</div>
     <div><strong>Localidad:</strong> ${details.DESCRLOCALIDAD}</div>
     <div><strong>Distrito:</strong> ${details.DESC_DISTRITO}</div>
@@ -76,6 +78,15 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
     `;
   } catch (error) {
     Modal.getOrCreateInstance(modal).hide();
+
+    if (id && ige && cargo && estado) {
+      const postulacionModal = document.getElementById(
+        "postulacion-modal",
+      ) as HTMLElement;
+      const modalInstance = Modal.getOrCreateInstance(postulacionModal);
+      modalInstance.show(trigger);
+    }
+
     showToast(
       error instanceof Error
         ? error.message
