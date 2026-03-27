@@ -23,24 +23,21 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
 
   if (!ige || !id) return;
 
-  let sort = "estadopostulacion asc, orden asc, puntaje desc";
-
-  if (estado === "DESIGNADA") {
-    sort = `designado desc, ${sort}`;
-  }
-
   try {
     const url = new URL(POSTULANTES_SERVICE_URL);
     url.searchParams.set("q", `idoferta:${ige} OR iddetalle:${id}`);
-    url.searchParams.set("rows", "10");
-    url.searchParams.set("sort", sort);
+    url.searchParams.set("rows", "20");
+    url.searchParams.set(
+      "sort",
+      "designado desc, estadopostulacion asc, orden asc, puntaje desc",
+    );
     url.searchParams.set("wt", "json");
     const res = await fetch(url.toString());
     const data = (await res.json()) as Response<Postulacion>;
 
     modalBody.innerHTML = `
         <div><strong>IGE:</strong> ${ige}</div>
-        <div><strong>Escuela:</strong> <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-school="${escuela}">${escuela}</a></div>
+        <div><strong>Escuela:</strong> <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-school="${escuela}" data-bs-id="${id}" data-bs-ige="${ige}" data-bs-estado="${estado}" data-bs-cargo="${cargo}">${escuela}</a></div>
         <div><strong>Postulantes:</strong> ${data.response.docs.length}</div>
         <div><a href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${ige}&detalle=${id}" target="_blank">Ver listado en el sitio oficial</a></div>
         <div class="mt-2 row row-cols-1 row-cols-md-2 g-3">
@@ -49,21 +46,31 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
                 ? `<div class="col w-100"><div class="card"><div class="card-body text-center">No se encontraron postulantes para esta oferta.</div></div></div>`
                 : data.response.docs
                     .map(
-                      (p) => `
+                      (p) => {
+                        const isDesignado = p.designado === "S";
+                        const borderClass = isDesignado ? "border-warning" : "";
+                        const icon = isDesignado ? "star" : "star-empty";
+                        const iconClass = isDesignado ? "text-warning" : "text-muted";
+
+                        return `
                         <div class="col">
-                            <div class="card h-100 ${p.designado === "S" ? "border-success" : ""}">
-                                ${p.designado === "S" ? '<div class="card-header bg-success">Designado</div>' : ""}
+                            <div class="card h-100 ${borderClass}">
+                                <div class="card-header d-flex gap-2 align-items-center ${borderClass}">
+                                  <svg class="icon ${iconClass}" aria-hidden="true">
+                                    <use href="/icons.svg#${icon}-icon"></use>
+                                  </svg>
+                                  ${p.idpostulacion}
+                                </div>
                                 <div class="card-body">
-                                  <h6>${p.idpostulacion}</h6>
-                                    <h5>${p.nombres}</h5>
-                                    <div><strong>CUIL:</strong> ${cuitFormatter(p.cuil)}</div>
+                                    <h5 class="card-title">${p.nombres}</h5>
+                                    <div class="card-subtitle text-muted mb-2">${cuitFormatter(p.cuil)}</div>
                                     <div><strong>Fecha de postulación:</strong> ${dateTimeFormatter.format(new Date(p.postulacionfechacarga))}</div>
                                     ${estado === "DESIGNADA" ? "" : `<div><strong>Estado:</strong> ${p.estadopostulacion}</div>`}
                                     <div><strong>Puntaje:</strong> ${p.puntaje}</div>
                                     <div><strong>Listado de origen:</strong> ${p.listadoorigen}</div>
                                 </div>
                             </div>
-                        </div>`,
+                        </div>`}
                     )
                     .join("")
             }

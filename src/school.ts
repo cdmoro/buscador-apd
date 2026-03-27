@@ -6,6 +6,10 @@ import Modal from "bootstrap/js/dist/modal";
 export async function handleSchoolClick(modal: HTMLElement, event: Event) {
   const trigger = (event as MouseEvent).relatedTarget as HTMLElement;
   const schoolId = trigger.getAttribute("data-bs-school")!;
+  const id = trigger.getAttribute("data-bs-id");
+  const ige = trigger.getAttribute("data-bs-ige");
+  const cargo = trigger.getAttribute("data-bs-cargo");
+  const estado = trigger.getAttribute("data-bs-estado");
   const modalTitle = modal.querySelector(".modal-title")!;
   modalTitle.textContent = `Escuela ${schoolId}`;
   const modalBody = modal.querySelector(".modal-body")!;
@@ -14,6 +18,28 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>`;
+  const modalFooter = modal.querySelector(".modal-footer")!;
+  modalFooter.innerHTML = `
+    <button
+      type="button"
+      class="btn btn-secondary"
+      ${
+        id && ige && cargo && estado
+          ? `
+        data-bs-toggle="modal"
+        data-bs-target="#postulacion-modal"
+        data-bs-id="${id}"
+        data-bs-ige="${ige}"
+        data-bs-cargo="${cargo}"
+        data-bs-estado="${estado}"
+        data-bs-escuela="${schoolId}">
+        Volver
+      `
+          : `data-bs-dismiss="modal">
+          Cerrar`
+      }
+    </button>`;
+
   if (!schoolId) return;
 
   try {
