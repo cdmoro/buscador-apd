@@ -94,7 +94,8 @@ fieldset {
   min-width: 100px;
 }
 
-.day-preview-table {
+.card-days,
+.card-turnos {
   font-size: 0.7rem;
   line-height: 1;
 

@@ -11,6 +11,7 @@ import {
 } from "./utils";
 
 const cardResults = document.querySelector<HTMLDivElement>("#results")!;
+const turnos = { M: "Mañana", T: "Tarde", V: "Tarde/Noche" };
 
 function resolveTomaDePosesion(tomaPosesion: string) {
   if (!tomaPosesion) return "No especificada";
@@ -92,17 +93,7 @@ function getDurationLegend(start: string, end: string) {
 
   const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
   const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-  return `${days} día${days > 1 ? "s" : ""} (${getDurationType(days)})`;
-}
-
-function getDurationType(duration: number) {
-  if (duration <= 7) {
-    return "corta";
-  } else if (duration <= 30) {
-    return "mediana";
-  } else {
-    return "larga";
-  }
+  return `${days} día${days > 1 ? "s" : ""}`;
 }
 
 export function renderCards(docs: Course[], container: HTMLElement) {
@@ -148,12 +139,12 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       Viernes: d.viernes,
     };
 
-    const daysTable = `<div class="day-preview-table card text-center w-auto d-flex flex-row d-inline-flex overflow-hidden rounded-1">${Object.entries(
+    const daysCard = `<div class="card card-days text-center w-auto d-flex flex-row d-inline-flex overflow-hidden rounded-1 border-secondary">${Object.entries(
       days,
     )
       .map(
         ([k, v]) =>
-          `<div title="${v || ""}" class="${isValidWeekday(v) ? "bg-info text-bg-info" : "text-muted"}">${k[0]}</div>`,
+          `<div title="${v || ""}" class="${isValidWeekday(v) ? "bg-secondary text-bg-secondary" : "text-muted"}">${k[0]}</div>`,
       )
       .join("")}</div>`;
 
@@ -161,6 +152,14 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       .filter(([_, v]) => isValidWeekday(v))
       .map(([k, v]) => `<div><strong>${k}</strong>: ${v}</div>`)
       .join("");
+
+    function renderTurnoCard(turno: string) {
+      if (!turnos.hasOwnProperty(turno)) return "";
+
+      return `<div class="card card-turnos text-center w-auto d-flex flex-row d-inline-flex rounded-1 overflow-hidden border-secondary">
+        ${Object.entries(turnos).map(([key, value]) => `<div class="${key === turno ? "bg-secondary text-bg-secondary" : "text-muted"}" title="${value}">${key}</div>`).join("")}
+      </div>`;
+    }
 
     const fragment = document.createDocumentFragment();
 
@@ -239,9 +238,10 @@ export function renderCards(docs: Course[], container: HTMLElement) {
 
     cardHeader.appendChild(listLink);
 
-    const observaciones = d.observaciones.trim() !== ""
-      ? `<div><hr></div><div><strong>Observaciones</strong></div><div>${d.observaciones}</div>`
-      : "";
+    const observaciones =
+      d.observaciones.trim() !== ""
+        ? `<div><hr></div><div><strong>Observaciones</strong></div><div>${d.observaciones}</div>`
+        : "";
     const duration = getDurationLegend(d.supl_desde, d.supl_hasta);
 
     const cardBody = document.createElement("div");
@@ -260,7 +260,10 @@ export function renderCards(docs: Course[], container: HTMLElement) {
           ${d.finoferta && d.estado !== "DESIGNADA" ? `<div>Cierre de Oferta: <span class="text-info">${dateTimeFormatter.format(new Date(d.finoferta))}</span></div>` : ""}
           ${d.tomaposesion && d.estado !== "DESIGNADA" ? `<div>Toma de posesión: ${resolveTomaDePosesion(d.tomaposesion)}</div>` : ""}
           ${duration && `<div>Duración: ${duration}</div>`}
-          ${daysTable && `<div class="mt-1">${daysTable}</div>`}
+          <div class="mt-1 d-flex gap-2 align-items-center">
+            ${daysCard ? daysCard : ""}
+            ${renderTurnoCard(d.turno)}
+          </div>
       </div>
       
       <div class="card-details mt-3">
