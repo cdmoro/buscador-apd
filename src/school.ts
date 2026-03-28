@@ -59,7 +59,7 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
       <h5 class="mb-0 text-info">${details.NOMBRE}</h5>`;
 
     modalBody.innerHTML = `
-    <div><strong>Calle:</strong> ${details.CALLE}${details.NRODIRECCION ? ` — <strong>Número:</strong> ${details.NRODIRECCION}` : ""}</div>
+    <div><strong>Calle:</strong> ${details.CALLE} — <strong>Número:</strong> ${details.NRODIRECCION?.trim() !== "" ? details.NRODIRECCION : "N/A"}</div>
     <div><strong>Localidad:</strong> ${details.DESCRLOCALIDAD}</div>
     <div><strong>Distrito:</strong> ${details.DESC_DISTRITO}</div>
     ${
