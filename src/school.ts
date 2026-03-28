@@ -11,7 +11,7 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
   const cargo = trigger.getAttribute("data-bs-cargo");
   const estado = trigger.getAttribute("data-bs-estado");
   const modalTitle = modal.querySelector(".modal-title")!;
-  modalTitle.innerHTML = 'Cargando detalles de la escuela...';
+  modalTitle.innerHTML = "Cargando detalles de la escuela...";
   const modalBody = modal.querySelector(".modal-body")!;
   modalBody.innerHTML = `<div class="d-flex justify-content-center mt-3 mb-3 w-100">
       <div class="spinner-border text-info" role="status">

@@ -60,7 +60,7 @@ function renderDetails(d: Course, daysFiltered: string) {
       ${d.iniciooferta && `<div><strong>Inicio oferta</strong>: ${dateTimeFormatter.format(new Date(d.iniciooferta))}</div>`}
       ${!d.supl_desde || d.supl_desde.startsWith("9999") ? "" : `<div><strong>Desde</strong>: ${dateFormatter.format(new Date(d.supl_desde))}</div>`}
       ${!d.supl_hasta || d.supl_hasta.startsWith("9999") ? "" : `<div><strong>Hasta</strong>: ${dateFormatter.format(new Date(d.supl_hasta))}</div>`}
-      ${daysFiltered || ""}`;
+      ${daysFiltered ? `<hr>${daysFiltered}` : ""}`;
 }
 
 function isValidWeekday(value: string) {
@@ -76,6 +76,33 @@ function isValidWeekday(value: string) {
   }
 
   return numbers.length > 0;
+}
+
+function getDurationLegend(start: string, end: string) {
+  if (start.startsWith("9999") || end.startsWith("9999")) {
+    return "Indefinida";
+  }
+
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    return null;
+  }
+
+  const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+  const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  return `${days} día${days > 1 ? "s" : ""} (${getDurationType(days)})`;
+}
+
+function getDurationType(duration: number) {
+  if (duration <= 7) {
+    return "corta";
+  } else if (duration <= 30) {
+    return "mediana";
+  } else {
+    return "larga";
+  }
 }
 
 export function renderCards(docs: Course[], container: HTMLElement) {
@@ -215,6 +242,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     const observaciones = d.observaciones.trim() !== ""
       ? `<div><hr></div><div><strong>Observaciones</strong></div><div>${d.observaciones}</div>`
       : "";
+    const duration = getDurationLegend(d.supl_desde, d.supl_hasta);
 
     const cardBody = document.createElement("div");
     cardBody.className = "card-body";
@@ -231,6 +259,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
           <div>IGE: <span class="text-info">${d.ige || ""}</span> — Área: <span class="text-info">${d.areaincumbencia || ""}</span></div>
           ${d.finoferta && d.estado !== "DESIGNADA" ? `<div>Cierre de Oferta: <span class="text-info">${dateTimeFormatter.format(new Date(d.finoferta))}</span></div>` : ""}
           ${d.tomaposesion && d.estado !== "DESIGNADA" ? `<div>Toma de posesión: ${resolveTomaDePosesion(d.tomaposesion)}</div>` : ""}
+          ${duration && `<div>Duración: ${duration}</div>`}
           ${daysTable && `<div class="mt-1">${daysTable}</div>`}
       </div>
       
