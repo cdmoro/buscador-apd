@@ -9,12 +9,13 @@ import {
   dateTimeFormatter,
   getCourseVariant,
 } from "./utils";
+import Tooltip from "bootstrap/js/dist/tooltip";
 
 const cardResults = document.querySelector<HTMLDivElement>("#results")!;
 const turnos = {
   M: "Mañana",
   T: "Tarde",
-  V: "Tarde/Noche",
+  V: "Vespertino",
   A: "Alternado",
 } as const;
 const jornadas = {
@@ -148,30 +149,38 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       Viernes: d.viernes,
     };
 
-    const daysCard = `<div class="card card-days text-center w-auto d-flex flex-row d-inline-flex overflow-hidden rounded-1 border-secondary">${Object.entries(
-      days,
-    )
-      .map(
-        ([k, v]) =>
-          `<div ${v!! ? `title="${k}: ${v}"` : ""} class="${isValidWeekday(v) ? "bg-info text-bg-info" : "text-muted"}">${k[0]}</div>`,
-      )
-      .join("")}</div>`;
-
     const daysFiltered = Object.entries(days)
       .filter(([_, v]) => isValidWeekday(v))
       .map(([k, v]) => `<div><strong>${k}</strong>: ${v}</div>`)
       .join("");
+
+    const daysCard = `<div 
+      class="card card-days text-center w-auto d-flex flex-row d-inline-flex overflow-hidden rounded-1 border-secondary"
+      data-bs-toggle="tooltip"
+      data-bs-placement="top"
+      data-bs-title="${daysFiltered}"
+    >${Object.entries(days)
+      .map(
+        ([k, v]) =>
+          `<div class="${isValidWeekday(v) ? "bg-info text-bg-info" : "text-muted"}">${k[0]}</div>`,
+      )
+      .join("")}</div>`;
 
     function renderTurnoCard(turno: string) {
       const turnoArr = turno.split("");
 
       if (!Object.keys(turnos).some((t) => turnoArr.includes(t))) return "";
 
-      return `<div class="card card-turnos text-center w-auto d-flex flex-row d-inline-flex rounded-1 overflow-hidden border-secondary ${turnoArr.map((t) => `card-turnos-${t.toLowerCase()}`).join(" ")}">
-        ${Object.entries(turnos)
+      return `<div 
+          class="card card-turnos text-center w-auto d-flex flex-row d-inline-flex rounded-1 overflow-hidden border-secondary ${turnoArr.map((t) => `card-turnos-${t.toLowerCase()}`).join(" ")}"
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          data-bs-title="${turnoArr.map((t) => `<div>${turnos[t as keyof typeof turnos]}</div>`).join("")}"
+        >
+        ${Object.keys(turnos)
           .map(
-            ([key, value]) =>
-              `<div class="${turnoArr.includes(key) ? "bg-info text-bg-info" : "text-muted"} pill-turno-${key.toLowerCase()}" title="Turno ${value.toLocaleLowerCase()}">${key}</div>`,
+            (key) =>
+              `<div class="${turnoArr.includes(key) ? "bg-info text-bg-info" : "text-muted"} pill-turno-${key.toLowerCase()}">${key}</div>`,
           )
           .join("")}
       </div>`;
@@ -285,8 +294,13 @@ export function renderCards(docs: Course[], container: HTMLElement) {
             ${
               d.jornada
                 ? `
-              <div class="card card-jornada text-center w-auto d-flex flex-row d-inline-flex rounded-1 overflow-hidden border-secondary">
-                <div class="bg-info text-bg-info" ${jornada ? `title="${jornada}"` : ""}>${d.jornada}</div>
+              <div 
+                class="card card-jornada text-center w-auto d-flex flex-row d-inline-flex rounded-1 overflow-hidden border-secondary"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                data-bs-title="${jornada}"
+              >
+                <div class="bg-info text-bg-info">${d.jornada}</div>
               </div>`
                 : ""
             }
@@ -323,6 +337,13 @@ export function renderCards(docs: Course[], container: HTMLElement) {
 
     container.appendChild(fragment);
   });
+
+  [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(
+    (tooltipTriggerEl) =>
+      new Tooltip(tooltipTriggerEl, {
+        html: true,
+      }),
+  );
 }
 
 export function renderPagination(

@@ -1,6 +1,6 @@
 import Modal from "bootstrap/js/dist/modal";
 import { showToast } from "./toastService";
-import type { Response, Postulacion, CourseStatus } from "./types";
+import type { ApacheResponse, Postulacion, CourseStatus } from "./types";
 import { POSTULANTES_SERVICE_URL } from "./contstans";
 import { cuitFormatter, dateFormatter } from "./utils";
 
@@ -32,13 +32,19 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
       "designado desc, estadopostulacion asc, orden asc, puntaje desc",
     );
     url.searchParams.set("wt", "json");
+
     const res = await fetch(url.toString());
-    const data = (await res.json()) as Response<Postulacion>;
+    const buffer = await res.arrayBuffer();
+  
+    const decoder = new TextDecoder("iso-8859-1");
+    const text = decoder.decode(buffer);
+  
+    const data = JSON.parse(text) as ApacheResponse<Postulacion>;
 
     modalBody.innerHTML = `
         <div><strong>IGE:</strong> ${ige}</div>
         <div><strong>Escuela:</strong> <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-escuela="${escuela}" data-bs-id="${id}" data-bs-ige="${ige}" data-bs-estado="${estado}" data-bs-cargo="${cargo}">${escuela}</a></div>
-        <div><strong>Postulantes:</strong> ${data.response.docs.length}</div>
+        <div><strong>Postulantes:</strong> ${data.response.numFound}${data.response.numFound > data.response.docs.length ? ` (${data.response.docs.length} mostrados)` : ""}</div>
         <div><a href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${ige}&detalle=${id}" target="_blank">Ver listado en el sitio oficial</a></div>
         <div class="mt-2 row row-cols-1 row-cols-md-2 g-3">
             ${
@@ -48,26 +54,33 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
                     .map(
                       (p) => {
                         const isDesignado = p.designado === "S";
-                        const borderClass = isDesignado ? "border-warning" : "";
+                        let variant;
+                        if (isDesignado) {
+                          variant = "success";
+                        } else if (p.estadopostulacion === "INACTIVA") {
+                          variant = "secondary";
+                        }
                         const icon = isDesignado ? "star" : "star-empty";
-                        const iconClass = isDesignado ? "text-black" : "text-muted";
+                        const iconClass = isDesignado ? "text-warning" : "text-muted";
 
                         return `
                         <div class="col">
-                            <div class="card h-100 ${borderClass}">
-                                <div class="card-header d-flex gap-2 align-items-center ${borderClass} ${isDesignado ? "text-bg-warning" : ""}">
+                            <div class="card h-100 ${variant ? `border-${variant}` : ""} ${p.estadopostulacion === "INACTIVA" ? "text-muted" : ""}">
+                                <div class="card-header d-flex gap-2 align-items-center ${variant ? `border-${variant} text-bg-${variant}` : ""}">
                                   <svg class="icon ${iconClass}" aria-hidden="true">
                                     <use href="/icons.svg#${icon}-icon"></use>
                                   </svg>
                                   ID ${p.idpostulacion}
                                 </div>
                                 <div class="card-body">
-                                    <h5 class="card-title mb-1">${p.nombres}</h5>
+                                    <h5 class="card-title mb-1">${p.nombres.toLocaleUpperCase()}</h5>
                                     <div class="card-subtitle text-muted mb-2">${cuitFormatter(p.cuil)}</div>
-                                    <div><strong>Puntaje:</strong> <span class="badge text-bg-info">${p.puntaje}</span></div>
+                                    ${p.puntaje ? `<div><strong>Puntaje:</strong> <span class="badge text-bg-info">${p.puntaje}</span></div>` : ""}
                                     <div><strong>Fecha postulación:</strong> ${dateFormatter.format(new Date(p.postulacionfechacarga))}</div>
                                     ${estado === "DESIGNADA" ? "" : `<div><strong>Estado:</strong> ${p.estadopostulacion}</div>`}
                                     <div><strong>Listado de origen:</strong> ${p.listadoorigen}</div>
+                                    <div><strong>Prioridad:</strong> ${p.prioridad}</div>
+                                    <div><strong>Vuelta:</strong> ${p.vuelta || "—"}</div>
                                 </div>
                             </div>
                         </div>`}

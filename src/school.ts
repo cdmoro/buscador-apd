@@ -1,6 +1,6 @@
 import { SCHOOL_SERVICE_URL } from "./contstans";
 import { showToast } from "./toastService";
-import type { School } from "./types";
+import type { ApacheResponse, School } from "./types";
 import Modal from "bootstrap/js/dist/modal";
 
 export async function handleSchoolClick(modal: HTMLElement, event: Event) {
@@ -11,7 +11,7 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
   const cargo = trigger.getAttribute("data-bs-cargo");
   const estado = trigger.getAttribute("data-bs-estado");
   const modalTitle = modal.querySelector(".modal-title")!;
-  modalTitle.innerHTML = "Cargando detalles de la escuela...";
+  modalTitle.innerHTML = 'Cargando detalles de la escuela...';
   const modalBody = modal.querySelector(".modal-body")!;
   modalBody.innerHTML = `<div class="d-flex justify-content-center mt-3 mb-3 w-100">
       <div class="spinner-border text-info" role="status">
@@ -46,13 +46,13 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
     const res = await fetch(
       `${SCHOOL_SERVICE_URL}?q=*%3A*&fq=CLAVEESTAB%3A${escuela}&wt=json`,
     );
-    const data = await res.json();
+    const data = await res.json() as ApacheResponse<School>;
 
     if (data.response.numFound === 0) {
       throw new Error(`No se encontraron datos para la escuela ${escuela}.`);
     }
 
-    const details = data.response.docs[0] as School;
+    const details = data.response.docs[0];
 
     modalTitle.innerHTML = `
       <h6>${details.RAMA} ${details.CLAVEESTAB.slice(-4)}</h6>

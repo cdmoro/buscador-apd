@@ -1,7 +1,7 @@
 import { renderActiveFilters, saveFiltersToLocalStorage } from "./filters";
 import { renderCards, renderPagination } from "./render";
 import { store } from "./store";
-import type { Course, FilterForm, Response } from "./types";
+import type { Course, FilterForm, ApacheResponse } from "./types";
 import { buildFetchURL } from "./url";
 import { numberFormatter } from "./utils";
 
@@ -139,7 +139,7 @@ export async function search() {
   const decoder = new TextDecoder("iso-8859-1");
   const text = decoder.decode(buffer);
 
-  const data = JSON.parse(text) as Response<Course>;
+  const data = JSON.parse(text) as ApacheResponse<Course>;
 
   document.body.classList.remove("loading");
 

@@ -101,7 +101,7 @@ export type DesignadaCourse = Omit<BaseCourse, "estado"> & {
 
 export type Course = BaseCourse | DesignadaCourse;
 
-export type Response<T> = {
+export type ApacheResponse<T> = {
   error: {
     code: number;
     metadata: string[];
@@ -125,7 +125,7 @@ export type Response<T> = {
   };
 };
 
-export type FacetResponse = Response<Course> & {
+export type FacetResponse = ApacheResponse<Course> & {
   facet_counts: {
     facet_fields: {
       cargo: Record<string, number>;
@@ -143,7 +143,7 @@ export type APDSearchParams = {
   sort: string;
 };
 
-export type SchoolResponse = Response<School>;
+export type SchoolResponse = ApacheResponse<School>;
 
 export type School = {
   _version_: number;
@@ -178,7 +178,7 @@ export type School = {
   TURNO_INICIO: string;
 };
 
-export type PostulacionResponse = Response<Postulacion>;
+export type PostulacionResponse = ApacheResponse<Postulacion>;
 
 export type Postulacion = {
   _version_: number;
@@ -258,4 +258,5 @@ export type Postulacion = {
   turno: string;
   ult_movimiento: string;
   viernes: string;
+  vuelta?: number;
 };

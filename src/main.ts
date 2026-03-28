@@ -1,5 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal";
+import 'bootstrap/js/dist/tooltip';
 import "./style.css";
 import type { FilterForm } from "./types";
 import {
