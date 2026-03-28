@@ -153,7 +153,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     )
       .map(
         ([k, v]) =>
-          `<div title="${v || ""}" class="${isValidWeekday(v) ? "bg-secondary text-bg-secondary" : "text-muted"}">${k[0]}</div>`,
+          `<div ${v!! ? `title="${k}: ${v}"` : ""} class="${isValidWeekday(v) ? "bg-info text-bg-info" : "text-muted"}">${k[0]}</div>`,
       )
       .join("")}</div>`;
 
@@ -171,7 +171,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
         ${Object.entries(turnos)
           .map(
             ([key, value]) =>
-              `<div class="${turnoArr.includes(key) ? "bg-secondary text-bg-secondary" : "text-muted"} pill-turno-${key.toLowerCase()}" title="${value}">${key}</div>`,
+              `<div class="${turnoArr.includes(key) ? "bg-info text-bg-info" : "text-muted"} pill-turno-${key.toLowerCase()}" title="Turno ${value.toLocaleLowerCase()}">${key}</div>`,
           )
           .join("")}
       </div>`;
@@ -286,7 +286,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
               d.jornada
                 ? `
               <div class="card card-jornada text-center w-auto d-flex flex-row d-inline-flex rounded-1 overflow-hidden border-secondary">
-                <div class="bg-secondary text-bg-secondary" ${jornada ? `title="${jornada}"` : ""}>${d.jornada}</div>
+                <div class="bg-info text-bg-info" ${jornada ? `title="${jornada}"` : ""}>${d.jornada}</div>
               </div>`
                 : ""
             }
