@@ -11,7 +11,16 @@ import {
 } from "./utils";
 
 const cardResults = document.querySelector<HTMLDivElement>("#results")!;
-const turnos = { M: "Mañana", T: "Tarde", V: "Tarde/Noche" };
+const turnos = {
+  M: "Mañana",
+  T: "Tarde",
+  V: "Tarde/Noche",
+  A: "Alternado",
+} as const;
+const jornadas = {
+  JS: "Jornada Simple",
+  JC: "Jornada Completa",
+} as const;
 
 function resolveTomaDePosesion(tomaPosesion: string) {
   if (!tomaPosesion) return "No especificada";
@@ -154,10 +163,17 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       .join("");
 
     function renderTurnoCard(turno: string) {
-      if (!turnos.hasOwnProperty(turno)) return "";
+      const turnoArr = turno.split("");
 
-      return `<div class="card card-turnos text-center w-auto d-flex flex-row d-inline-flex rounded-1 overflow-hidden border-secondary">
-        ${Object.entries(turnos).map(([key, value]) => `<div class="${key === turno ? "bg-secondary text-bg-secondary" : "text-muted"}" title="${value}">${key}</div>`).join("")}
+      if (!Object.keys(turnos).some((t) => turnoArr.includes(t))) return "";
+
+      return `<div class="card card-turnos text-center w-auto d-flex flex-row d-inline-flex rounded-1 overflow-hidden border-secondary ${turnoArr.map((t) => `card-turnos-${t.toLowerCase()}`).join(" ")}">
+        ${Object.entries(turnos)
+          .map(
+            ([key, value]) =>
+              `<div class="${turnoArr.includes(key) ? "bg-secondary text-bg-secondary" : "text-muted"} pill-turno-${key.toLowerCase()}" title="${value}">${key}</div>`,
+          )
+          .join("")}
       </div>`;
     }
 
@@ -243,6 +259,9 @@ export function renderCards(docs: Course[], container: HTMLElement) {
         ? `<div><hr></div><div><strong>Observaciones</strong></div><div>${d.observaciones}</div>`
         : "";
     const duration = getDurationLegend(d.supl_desde, d.supl_hasta);
+    const jornada = jornadas[d.jornada as keyof typeof jornadas]
+      ? jornadas[d.jornada as keyof typeof jornadas]
+      : "";
 
     const cardBody = document.createElement("div");
     cardBody.className = "card-body";
@@ -263,6 +282,14 @@ export function renderCards(docs: Course[], container: HTMLElement) {
           <div class="mt-1 d-flex gap-2 align-items-center">
             ${daysCard ? daysCard : ""}
             ${renderTurnoCard(d.turno)}
+            ${
+              d.jornada
+                ? `
+              <div class="card card-jornada text-center w-auto d-flex flex-row d-inline-flex rounded-1 overflow-hidden border-secondary">
+                <div class="bg-secondary text-bg-secondary" ${jornada ? `title="${jornada}"` : ""}>${d.jornada}</div>
+              </div>`
+                : ""
+            }
           </div>
       </div>
       

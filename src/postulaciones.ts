@@ -2,7 +2,7 @@ import Modal from "bootstrap/js/dist/modal";
 import { showToast } from "./toastService";
 import type { Response, Postulacion, CourseStatus } from "./types";
 import { POSTULANTES_SERVICE_URL } from "./contstans";
-import { cuitFormatter, dateTimeFormatter } from "./utils";
+import { cuitFormatter, dateFormatter } from "./utils";
 
 export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
   const trigger = (event as MouseEvent).relatedTarget as HTMLElement;
@@ -50,23 +50,23 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
                         const isDesignado = p.designado === "S";
                         const borderClass = isDesignado ? "border-warning" : "";
                         const icon = isDesignado ? "star" : "star-empty";
-                        const iconClass = isDesignado ? "text-warning" : "text-muted";
+                        const iconClass = isDesignado ? "text-black" : "text-muted";
 
                         return `
                         <div class="col">
                             <div class="card h-100 ${borderClass}">
-                                <div class="card-header d-flex gap-2 align-items-center ${borderClass}">
+                                <div class="card-header d-flex gap-2 align-items-center ${borderClass} ${isDesignado ? "text-bg-warning" : ""}">
                                   <svg class="icon ${iconClass}" aria-hidden="true">
                                     <use href="/icons.svg#${icon}-icon"></use>
                                   </svg>
-                                  ${p.idpostulacion}
+                                  ID ${p.idpostulacion}
                                 </div>
                                 <div class="card-body">
-                                    <h5 class="card-title">${p.nombres}</h5>
+                                    <h5 class="card-title mb-1">${p.nombres}</h5>
                                     <div class="card-subtitle text-muted mb-2">${cuitFormatter(p.cuil)}</div>
-                                    <div><strong>Fecha de postulación:</strong> ${dateTimeFormatter.format(new Date(p.postulacionfechacarga))}</div>
+                                    <div><strong>Puntaje:</strong> <span class="badge text-bg-info">${p.puntaje}</span></div>
+                                    <div><strong>Fecha postulación:</strong> ${dateFormatter.format(new Date(p.postulacionfechacarga))}</div>
                                     ${estado === "DESIGNADA" ? "" : `<div><strong>Estado:</strong> ${p.estadopostulacion}</div>`}
-                                    <div><strong>Puntaje:</strong> ${p.puntaje}</div>
                                     <div><strong>Listado de origen:</strong> ${p.listadoorigen}</div>
                                 </div>
                             </div>

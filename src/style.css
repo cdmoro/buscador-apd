@@ -95,7 +95,8 @@ fieldset {
 }
 
 .card-days,
-.card-turnos {
+.card-turnos,
+.card-jornada {
   font-size: 0.7rem;
   line-height: 1;
 
@@ -106,6 +107,18 @@ fieldset {
     align-items: center;
     justify-content: center;
     cursor: default;
+  }
+}
+
+.card-turnos {
+  .pill-turno-a,
+  .pill-turno-v {
+    display: none;
+  }
+
+  &.card-turnos-a .pill-turno-a,
+  &.card-turnos-v .pill-turno-v {
+    display: inline-flex;
   }
 }
 
