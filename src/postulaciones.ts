@@ -35,10 +35,10 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
 
     const res = await fetch(url.toString());
     const buffer = await res.arrayBuffer();
-  
+
     const decoder = new TextDecoder("iso-8859-1");
     const text = decoder.decode(buffer);
-  
+
     const data = JSON.parse(text) as ApacheResponse<Postulacion>;
 
     modalBody.innerHTML = `
@@ -51,26 +51,27 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
               data.response.docs.length === 0
                 ? `<div class="col w-100"><div class="card"><div class="card-body text-center">No se encontraron postulantes para esta oferta.</div></div></div>`
                 : data.response.docs
-                    .map(
-                      (p) => {
-                        const isDesignado = p.designado === "S";
-                        let variant;
-                        if (isDesignado) {
-                          variant = "success";
-                        } else if (p.estadopostulacion === "INACTIVA") {
-                          variant = "secondary";
-                        }
-                        const icon = isDesignado ? "star" : "star-empty";
-                        const iconClass = isDesignado ? "text-warning" : "text-muted";
+                    .map((p) => {
+                      const isDesignado = p.designado === "S";
+                      let variant;
+                      if (isDesignado) {
+                        variant = "success";
+                      } else if (p.estadopostulacion === "INACTIVA") {
+                        variant = "secondary";
+                      }
+                      const icon = isDesignado ? "star" : "star-empty";
+                      const iconClass = isDesignado
+                        ? "text-warning"
+                        : "text-muted";
 
-                        return `
+                      return `
                         <div class="col">
                             <div class="card h-100 ${variant ? `border-${variant}` : ""} ${p.estadopostulacion === "INACTIVA" ? "text-muted" : ""}">
                                 <div class="card-header d-flex gap-2 align-items-center ${variant ? `border-${variant} text-bg-${variant}` : ""}">
                                   <svg class="icon ${iconClass}" aria-hidden="true">
                                     <use href="/icons.svg#${icon}-icon"></use>
                                   </svg>
-                                  Postulado ${p.idpostulacion}
+                                  ${isDesignado ? "Designado" : "Postulado"} ${p.idpostulacion}
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title mb-1">${p.nombres.toLocaleUpperCase()}</h5>
@@ -83,8 +84,8 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
                                     <div><strong>Prioridad:</strong> ${p.prioridad}</div>
                                 </div>
                             </div>
-                        </div>`}
-                    )
+                        </div>`;
+                    })
                     .join("")
             }
         </div>
