@@ -72,7 +72,7 @@ function renderDetails(d: Course, daysFiltered: string) {
       ${d.iniciooferta && `<div><strong>Inicio oferta</strong>: ${dateTimeFormatter.format(new Date(d.iniciooferta))}</div>`}
       ${!d.supl_desde || d.supl_desde.startsWith("9999") ? "" : `<div><strong>Desde</strong>: ${dateFormatter.format(new Date(d.supl_desde))}</div>`}
       ${!d.supl_hasta || d.supl_hasta.startsWith("9999") ? "" : `<div><strong>Hasta</strong>: ${dateFormatter.format(new Date(d.supl_hasta))}</div>`}
-      ${daysFiltered ? `<hr>${daysFiltered}` : ""}`;
+      ${daysFiltered ? `<div><hr></div>${daysFiltered}` : ""}`;
 }
 
 function isValidWeekday(value: string) {
@@ -266,7 +266,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
 
     const observaciones =
       d.observaciones.trim() !== ""
-        ? `<div><hr></div><div><strong>Observaciones</strong></div><div>${d.observaciones}</div>`
+        ? `<hr><div><strong>Observaciones</strong></div><div>${d.observaciones}</div>`
         : "";
     const duration = getDurationLegend(d.supl_desde, d.supl_hasta);
     const jornada = jornadas[d.jornada as keyof typeof jornadas]
@@ -312,7 +312,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       ${
         isPreview
           ? `
-            <div class="row row-cols-1 row-cols-md-2">
+            <div class="card-details-rows row row-cols-1 row-cols-md-2">
               ${renderDetails(d, daysFiltered)}
             </div>
             ${observaciones}`

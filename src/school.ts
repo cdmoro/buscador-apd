@@ -15,7 +15,7 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
   const modalBody = modal.querySelector(".modal-body")!;
   modalBody.innerHTML = `<div class="d-flex justify-content-center mt-3 mb-3 w-100">
       <div class="spinner-border text-info" role="status">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden">Cargando detalles de la escuela...</span>
       </div>
     </div>`;
   const modalFooter = modal.querySelector(".modal-footer")!;

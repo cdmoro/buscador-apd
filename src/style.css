@@ -150,7 +150,7 @@ body.preview {
     width: 100%;
   }
 
-  .card-details div:has(> hr) {
+  .card-details-rows div:has(> hr) {
     display: none;
   }
 }

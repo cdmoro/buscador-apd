@@ -122,7 +122,7 @@ export async function search() {
   cardResults.style.display = "block";
   cardResultsGrid.innerHTML = `<div class="d-flex justify-content-center mt-5 mb-4 w-100">
     <div class="spinner-border text-info" role="status">
-      <span class="visually-hidden">Loading...</span>
+      <span class="visually-hidden">Cargando resultados...</span>
     </div>
   </div>`;
 
