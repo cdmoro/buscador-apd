@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal";
-import 'bootstrap/js/dist/tooltip';
+import Tooltip from "bootstrap/js/dist/tooltip";
 import "./style.css";
 import type { FilterForm } from "./types";
 import {
@@ -135,6 +135,11 @@ function main() {
   search();
 
   observer.observe(sentinel);
+
+  new Tooltip(document.body, {
+    selector: '[data-bs-toggle="tooltip"]',
+    html: true,
+  });
 
   document.getElementById("new-search")?.addEventListener("click", () => {
     scrollTo({ top: 0, behavior: "smooth" });

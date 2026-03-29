@@ -2,7 +2,7 @@ import Modal from "bootstrap/js/dist/modal";
 import { showToast } from "./toastService";
 import type { ApacheResponse, Postulacion, CourseStatus } from "./types";
 import { POSTULANTES_SERVICE_URL } from "./contstans";
-import { cuitFormatter, dateFormatter } from "./utils";
+import { cuitFormatter, dateFormatter, numberFormatter } from "./utils";
 
 export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
   const trigger = (event as MouseEvent).relatedTarget as HTMLElement;
@@ -70,17 +70,17 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
                                   <svg class="icon ${iconClass}" aria-hidden="true">
                                     <use href="/icons.svg#${icon}-icon"></use>
                                   </svg>
-                                  ID ${p.idpostulacion}
+                                  Postulado ${p.idpostulacion}
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title mb-1">${p.nombres.toLocaleUpperCase()}</h5>
                                     <div class="card-subtitle text-muted mb-2">${cuitFormatter(p.cuil)}</div>
-                                    ${p.puntaje ? `<div><strong>Puntaje:</strong> <span class="badge text-bg-info">${p.puntaje}</span></div>` : ""}
                                     <div><strong>Fecha postulación:</strong> ${dateFormatter.format(new Date(p.postulacionfechacarga))}</div>
                                     ${estado === "DESIGNADA" ? "" : `<div><strong>Estado:</strong> ${p.estadopostulacion}</div>`}
-                                    <div><strong>Listado de origen:</strong> ${p.listadoorigen}</div>
-                                    <div><strong>Prioridad:</strong> ${p.prioridad}</div>
+                                    <div><strong>Listado:</strong> ${p.listadoorigen}</div>
+                                    <div class="d-flex gap-2 flex-nowrap align-items-center"><strong>Puntaje:</strong> ${p.puntaje ? `<span class="badge text-bg-info">${numberFormatter.format(p.puntaje)}</span>` : "—"}</div>
                                     <div><strong>Vuelta:</strong> ${p.vuelta || "—"}</div>
+                                    <div><strong>Prioridad:</strong> ${p.prioridad}</div>
                                 </div>
                             </div>
                         </div>`}

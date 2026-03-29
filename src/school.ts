@@ -59,22 +59,25 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
       <h5 class="mb-0 text-info">${details.NOMBRE}</h5>`;
 
     modalBody.innerHTML = `
-    <div><strong>Calle:</strong> ${details.CALLE} — <strong>Número:</strong> ${details.NRODIRECCION?.trim() !== "" ? details.NRODIRECCION : "N/A"}</div>
-    <div><strong>Localidad:</strong> ${details.DESCRLOCALIDAD}</div>
-    <div><strong>Distrito:</strong> ${details.DESC_DISTRITO}</div>
-    ${
-      details.LATITUD && details.LONGITUD
-        ? `
-        <div class="mt-2 card overflow-hidden"><iframe width="100%" height="200" frameborder="0" style="border:0" src="https://maps.google.com/maps?q=${details.LATITUD},${details.LONGITUD}&hl=es;z=14&output=embed" allowfullscreen></iframe></div>
-        <div class="text-end"><a class="link-info" href="https://maps.google.com/?q=${details.LATITUD},${details.LONGITUD}" target="_blank"><small>Abrir en Google Maps</small></a></div>`
-        : ""
-    }
-    <hr>
-    <div><strong>Rama:</strong> ${details.RAMA}</div>
-    <div><strong>Nivel:</strong> ${details.NIVEL}</div>
-    <div><strong>Modalidad:</strong> ${details.MODALIDAD}</div>
-    <div><strong>Jornada:</strong> ${details.JORNADA}</div>
-    <div><strong>CUE:</strong> ${details.CUE}</div>
+      <div class="d-flex column-gap-4 flex-wrap">
+        <div><strong>Calle:</strong> ${details.CALLE}</div>
+        <div><strong>Número:</strong> ${details.NRODIRECCION?.trim() !== "" ? details.NRODIRECCION : "N/A"}</div>
+      </div>
+      <div><strong>Localidad:</strong> ${details.DESCRLOCALIDAD}</div>
+      <div><strong>Distrito:</strong> ${details.DESC_DISTRITO}</div>
+      ${
+        details.LATITUD && details.LONGITUD
+          ? `
+          <div class="mt-2 card overflow-hidden"><iframe width="100%" height="200" frameborder="0" style="border:0" src="https://maps.google.com/maps?q=${details.LATITUD},${details.LONGITUD}&hl=es;z=14&output=embed" allowfullscreen></iframe></div>
+          <div class="text-end"><a class="link-info" href="https://maps.google.com/?q=${details.LATITUD},${details.LONGITUD}" target="_blank"><small>Abrir en Google Maps</small></a></div>`
+          : ""
+      }
+      <hr>
+      <div><strong>Rama:</strong> ${details.RAMA}</div>
+      <div><strong>Nivel:</strong> ${details.NIVEL}</div>
+      <div><strong>Modalidad:</strong> ${details.MODALIDAD}</div>
+      <div><strong>Jornada:</strong> ${details.JORNADA}</div>
+      <div><strong>CUE:</strong> ${details.CUE}</div>
     `;
   } catch (error) {
     Modal.getOrCreateInstance(modal).hide();

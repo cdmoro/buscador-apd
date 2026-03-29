@@ -8,8 +8,9 @@ import {
   dateFormatter,
   dateTimeFormatter,
   getCourseVariant,
+  numberFormatter,
 } from "./utils";
-import Tooltip from "bootstrap/js/dist/tooltip";
+// import Tooltip from "bootstrap/js/dist/tooltip";
 
 const cardResults = document.querySelector<HTMLDivElement>("#results")!;
 const turnos = {
@@ -42,12 +43,12 @@ function renderDesignada(d: DesignadaCourse) {
   return `
   <div class="alert-designada position-absolute start-0 end-0 bottom-0 text-center text-light justify-content-center mb-0 d-flex flex-column p-3 z-1" role="alert">
     <div>Adjudicado a</div>
-    <h5 class="mb-0 mt-1">${d.nombreganador}</h5>
+    <h5 class="mb-0 mt-1">${d.nombreganador.toLocaleUpperCase()}</h5>
     <div class="text-muted">${cuitFormatter(d.cuilganador)}</div>
     <div class="mt-3">
       <div>Toma posesión: ${d.tomaposesion ? dateFormatter.format(new Date(d.tomaposesion)) : "—"}</div>
       <div>Listado: ${decodeURIComponent(d.listadoorigenganador)}</div>
-      <div>Puntaje: ${d.puntajeganador}</div>
+      <div>Puntaje: ${d.puntajeganador ? `<span class="badge text-bg-info">${numberFormatter.format(parseFloat(d.puntajeganador))}</span>` : "—"}</div>
       <div>Vuelta: ${d.vuelta}</div>
     </div>
   </div>`;
@@ -338,12 +339,12 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     container.appendChild(fragment);
   });
 
-  [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(
-    (tooltipTriggerEl) =>
-      new Tooltip(tooltipTriggerEl, {
-        html: true,
-      }),
-  );
+  // [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(
+  //   (tooltipTriggerEl) =>
+  //     new Tooltip(tooltipTriggerEl, {
+  //       html: true,
+  //     }),
+  // );
 }
 
 export function renderPagination(
