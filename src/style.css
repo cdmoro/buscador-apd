@@ -133,13 +133,6 @@ fieldset {
   border-top: none;
 }
 
-body.loading {
-  #results .pagination,
-  #results #count {
-    display: none !important;
-  }
-}
-
 body.preview {
   #results nav,
   #active-filters,
@@ -156,6 +149,16 @@ body.preview {
 
   .card-details-rows div:has(> hr) {
     display: none;
+  }
+}
+
+.card-placeholder {
+  .card-header {
+    min-height: 41px;
+  }
+
+  .card-body {
+    min-height: 120px;
   }
 }
 

@@ -99,14 +99,10 @@ function updateURL() {
     }
   }
 
-  if (params.size > 0) {
-    const { start } = store.getState();
+  const { start } = store.getState();
 
-    params.set("start", start.toString());
-    history.replaceState(null, "", "?" + params.toString());
-  } else {
-    history.replaceState(null, "", location.pathname);
-  }
+  params.set("start", start.toString());
+  history.replaceState(null, "", "?" + params.toString());
 }
 
 export async function search() {
@@ -115,6 +111,7 @@ export async function search() {
   saveFiltersToLocalStorage();
 
   document.body.classList.add("loading");
+  store.setState({ loading: true });
 
   const { start, rows } = store.getState();
 
@@ -130,24 +127,24 @@ export async function search() {
   };
 
   const createPlaceholderCard = () => `
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center" style="min-height: 41px;">
+      <div class="card card-placeholder border-success">
+        <div class="card-header d-flex justify-content-between align-items-center text-bg-success">
           <span class="placeholder rounded-1 col-4"></span>
           <span class="placeholder rounded-1 col-2"></span>
         </div>
-        <div class="card-body d-flex flex-column gap-2" style="min-height: 120px;">
-          <div class="placeholder rounded-1 col-4"></div>
+        <div class="card-body d-flex flex-column gap-2">
+          <div class="placeholder rounded-1 mb-2 col-3"></div>
+          <div class="placeholder rounded-1 col-9 bg-info"></div>
+          <div class="placeholder rounded-1 col-8 bg-info mb-2"></div>
+          <div class="placeholder rounded-1 col-5"></div>
           <div class="placeholder rounded-1 col-7"></div>
-          <div class="placeholder rounded-1 col-5 mb-2"></div>
-          <div class="placeholder rounded-1 col-9"></div>
-          <div class="placeholder rounded-1 col-9"></div>
           <div class="placeholder rounded-1 col-6"></div>
           <div class="placeholder rounded-1 col-4"></div>
-          <div class="placeholder rounded-1 col-6 mb-2"></div>
+          <div class="placeholder rounded-1 col-5 mb-2"></div>
           <div class="placeholder rounded-1 col-3"></div>
         </div>
         <div class="card-footer d-flex align-items-center" style="min-height: 41px;">
-          <span class="placeholder rounded-1 col-8"></span>
+          <span class="placeholder bg-secondary rounded-1 col-8"></span>
         </div>
       </div>`;
 
@@ -171,6 +168,7 @@ export async function search() {
   const data = JSON.parse(text) as ApacheResponse<Course>;
 
   document.body.classList.remove("loading");
+  store.setState({ loading: false });
 
   if (data.error) {
     console.error("Error:", data.error.msg);
@@ -187,7 +185,7 @@ export async function search() {
   const docs = data.response.docs;
   const total = data.response.numFound;
 
-  countResults.innerText = `Mostrando ${start + 1} a ${start + docs.length} de ${numberFormatter.format(total)} ofertas`;
+  countResults.innerText = `Mostrando ${numberFormatter.format(start + 1)} a ${numberFormatter.format(start + docs.length)} de ${numberFormatter.format(total)} ofertas`;
 
   cardResults.classList.remove("card-results-empty");
   cardResultsGrid.innerHTML = "";

@@ -4,6 +4,7 @@ export type State = {
   sort: string;
   isSingleCourse: boolean;
   isPreview: boolean;
+  loading: boolean;
 };
 
 export type Listener = (state: State) => void;

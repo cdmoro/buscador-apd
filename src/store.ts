@@ -34,4 +34,5 @@ export const store = createStore({
   sort: "ult_movimiento desc",
   isSingleCourse: false,
   isPreview: false,
+  loading: false,
 });

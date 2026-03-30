@@ -1,8 +1,27 @@
 import Modal from "bootstrap/js/dist/modal";
 import { showToast } from "./toastService";
-import type { ApacheResponse, Postulacion, CourseStatus } from "./types";
+import type { CourseStatus, PostulacionResponse } from "./types";
 import { POSTULANTES_SERVICE_URL } from "./contstans";
 import { cuitFormatter, dateFormatter, numberFormatter } from "./utils";
+
+async function getPostulaciones(ige: string, id: string): Promise<PostulacionResponse> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await fetch(
+        `${POSTULANTES_SERVICE_URL}?q=*%3A*&fq=ige%3A${ige}+AND+id%3A${id}&wt=json&rows=1000`,
+      );
+      const data = await res.json() as PostulacionResponse;
+
+      resolve(data);
+    } catch (error) {
+      reject(
+        error instanceof Error
+          ? error
+          : new Error("Error al cargar el listado de postulantes."),
+      );
+    }
+  });
+}
 
 export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
   const trigger = (event as MouseEvent).relatedTarget as HTMLElement;
@@ -24,22 +43,7 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
   if (!ige || !id) return;
 
   try {
-    const url = new URL(POSTULANTES_SERVICE_URL);
-    url.searchParams.set("q", `idoferta:${ige} OR iddetalle:${id}`);
-    url.searchParams.set("rows", "20");
-    url.searchParams.set(
-      "sort",
-      "designado desc, estadopostulacion asc, orden asc, puntaje desc",
-    );
-    url.searchParams.set("wt", "json");
-
-    const res = await fetch(url.toString());
-    const buffer = await res.arrayBuffer();
-
-    const decoder = new TextDecoder("iso-8859-1");
-    const text = decoder.decode(buffer);
-
-    const data = JSON.parse(text) as ApacheResponse<Postulacion>;
+    const data = await getPostulaciones(ige, id);
 
     modalBody.innerHTML = `
         <div><strong>IGE:</strong> ${ige}</div>

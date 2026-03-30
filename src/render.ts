@@ -1,4 +1,5 @@
 import { clearAllFilters } from "./filters";
+import { getSchoolById } from "./school";
 import { search } from "./search";
 import { store } from "./store";
 import { showToast } from "./toastService";
@@ -56,8 +57,7 @@ function renderDesignada(d: DesignadaCourse) {
 
 function renderDetails(d: Course, daysFiltered: string) {
   return `
-      ${d.id && `<div><strong>ID</strong>: ${d.id}</div>`}
-      ${d.descnivelmodalidad && `<div><strong>Nivel</strong>: ${d.descnivelmodalidad}</div>`}
+      ${d.descnivelmodalidad && `<div class="mt-2"><strong>Nivel</strong>: ${d.descnivelmodalidad}</div>`}
       ${d.descdistrito && `<div><strong>Distrito</strong>: ${d.descdistrito}</div>`}
       ${d.domiciliodesempeno && `<div><strong>Domicilio</strong>: ${d.domiciliodesempeno}</div>`}
       <div><hr></div>
@@ -197,7 +197,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     card.className = `card card-course ${courseStatus} border-${courseStatus} h-100 overflow-hidden`;
 
     const cardHeader = document.createElement("div");
-    cardHeader.className = `card-header bg-${courseStatus} text-bg-${courseStatus} d-flex justify-content-between gap-2`;
+    cardHeader.className = `card-header text-bg-${courseStatus} d-flex justify-content-between gap-2`;
     cardHeader.innerHTML = `<span class="flex-grow-1">${d.estado || ""}</span>`;
 
     const copyCourseLink = document.createElement("a");
@@ -224,11 +224,20 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       shareCourseLink.href = "#";
       shareCourseLink.onclick = async (e) => {
         e.preventDefault();
+        let escuela;
+
+        try {
+          const datosEscuela = await getSchoolById(d.escuela);
+          escuela = datosEscuela.NOMBRE;
+        } catch (err) {
+          console.error("Error obteniendo datos de la escuela para compartir la oferta:", err);
+          escuela = d.escuela;
+        }
 
         try {
           await navigator.share({
-            title: `Oferta ${d.cargo} en ${d.escuela}`,
-            text: `Oferta de ${d.cargo} en ${d.escuela} (${d.descdistrito}) \nModalidad: ${d.descnivelmodalidad} ${
+            title: `Oferta ${d.cargo} en ${escuela}`,
+            text: `Oferta de ${d.cargo} en ${escuela} (${d.descdistrito}) \nModalidad: ${d.descnivelmodalidad} ${
               d.finoferta
                 ? `\nCierre de oferta: ${dateTimeFormatter.format(new Date(d.finoferta))}`
                 : ""
@@ -290,7 +299,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
           ${d.finoferta && d.estado !== "DESIGNADA" ? `<div>Cierre de Oferta: <span class="text-info">${dateTimeFormatter.format(new Date(d.finoferta))}</span></div>` : ""}
           ${d.tomaposesion && d.estado !== "DESIGNADA" ? `<div>Toma de posesión: ${resolveTomaDePosesion(d.tomaposesion)}</div>` : ""}
           ${duration && `<div>Duración: ${duration}</div>`}
-          <div class="mt-1 d-flex gap-2 align-items-center">
+          <div class="mt-2 d-flex gap-2 align-items-center">
             ${daysCard ? daysCard : ""}
             ${renderTurnoCard(d.turno)}
             ${
@@ -328,7 +337,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
 
     const cardFooter = document.createElement("div");
     cardFooter.className = "card-footer text-muted";
-    cardFooter.innerHTML = `<small>Última actualización: ${d.ult_movimiento ? dateTimeFormatter.format(new Date(d.ult_movimiento)) : ""}</small>`;
+    cardFooter.innerHTML = `<small>Últ. act.: ${d.ult_movimiento ? dateTimeFormatter.format(new Date(d.ult_movimiento)) : ""}</small>`;
 
     card.appendChild(cardHeader);
     card.appendChild(cardBody);
@@ -372,7 +381,7 @@ export function renderPagination(
     const a = document.createElement("a");
     a.className = "page-link";
     a.href = "#";
-    a.textContent = label ?? page.toString();
+    a.textContent = label ?? numberFormatter.format(page);
 
     if (disabled) li.classList.add("disabled");
     else if (active) {
@@ -384,6 +393,11 @@ export function renderPagination(
 
     a.onclick = (e) => {
       e.preventDefault();
+
+      const loading = store.getKey("loading");
+      
+      if (loading) return;
+
       scrollTo({ top: 0, behavior: "smooth" });
       goToPage(page);
     };

@@ -1,7 +1,30 @@
 import { SCHOOL_SERVICE_URL } from "./contstans";
 import { showToast } from "./toastService";
-import type { ApacheResponse, School } from "./types";
+import type { School, SchoolResponse } from "./types";
 import Modal from "bootstrap/js/dist/modal";
+
+export async function getSchoolById(escuela: string): Promise<School> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await fetch(
+        `${SCHOOL_SERVICE_URL}?q=*%3A*&fq=CLAVEESTAB%3A${escuela}&wt=json`,
+      );
+      const data = await res.json() as SchoolResponse;
+
+      if (data.response.numFound === 0) {
+        reject(new Error(`No se encontraron datos para la escuela ${escuela}.`));
+      }
+
+      resolve(data.response.docs[0]);
+    } catch (error) {
+      reject(
+        error instanceof Error
+          ? error
+          : new Error("Error al cargar los detalles de la escuela."),
+      );
+    }
+  });
+}
 
 export async function handleSchoolClick(modal: HTMLElement, event: Event) {
   const trigger = (event as MouseEvent).relatedTarget as HTMLElement;
@@ -43,16 +66,7 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
   if (!escuela) return;
 
   try {
-    const res = await fetch(
-      `${SCHOOL_SERVICE_URL}?q=*%3A*&fq=CLAVEESTAB%3A${escuela}&wt=json`,
-    );
-    const data = await res.json() as ApacheResponse<School>;
-
-    if (data.response.numFound === 0) {
-      throw new Error(`No se encontraron datos para la escuela ${escuela}.`);
-    }
-
-    const details = data.response.docs[0];
+    const details = await getSchoolById(escuela);
 
     modalTitle.innerHTML = `
       <h6>${details.RAMA} ${details.CLAVEESTAB.slice(-4)}</h6>
