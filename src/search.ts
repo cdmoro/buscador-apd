@@ -118,13 +118,42 @@ export async function search() {
 
   const { start, rows } = store.getState();
 
+  const createPlaceholderCardLayout = (cards: number) => {
+    let layout = "";
+    for (let i = 0; i < cards; i++) {
+      layout += `
+        <div class="col placeholder-wave">
+          ${createPlaceholderCard()}
+        </div>`;
+    }
+    return layout;
+  };
+
+  const createPlaceholderCard = () => `
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center" style="min-height: 41px;">
+          <span class="placeholder rounded-1 col-4"></span>
+          <span class="placeholder rounded-1 col-2"></span>
+        </div>
+        <div class="card-body d-flex flex-column gap-2" style="min-height: 120px;">
+          <div class="placeholder rounded-1 col-4"></div>
+          <div class="placeholder rounded-1 col-7"></div>
+          <div class="placeholder rounded-1 col-5 mb-2"></div>
+          <div class="placeholder rounded-1 col-9"></div>
+          <div class="placeholder rounded-1 col-9"></div>
+          <div class="placeholder rounded-1 col-6"></div>
+          <div class="placeholder rounded-1 col-4"></div>
+          <div class="placeholder rounded-1 col-6 mb-2"></div>
+          <div class="placeholder rounded-1 col-3"></div>
+        </div>
+        <div class="card-footer d-flex align-items-center" style="min-height: 41px;">
+          <span class="placeholder rounded-1 col-8"></span>
+        </div>
+      </div>`;
+
   filtersFormCard.style.display = "none";
   cardResults.style.display = "block";
-  cardResultsGrid.innerHTML = `<div class="d-flex justify-content-center mt-5 mb-4 w-100">
-    <div class="spinner-border text-info" role="status">
-      <span class="visually-hidden">Cargando resultados...</span>
-    </div>
-  </div>`;
+  cardResultsGrid.innerHTML = createPlaceholderCardLayout(6);
 
   document
     .querySelectorAll(".card button")

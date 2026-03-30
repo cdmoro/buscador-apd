@@ -80,6 +80,10 @@ fieldset {
   display: none !important;
 }
 
+.results-detail {
+  min-height: 38px;
+}
+
 .card-results-empty {
   .results-detail {
     display: none !important;

@@ -109,6 +109,7 @@ function getDurationLegend(start: string, end: string) {
 
 export function renderCards(docs: Course[], container: HTMLElement) {
   if (docs.length === 0) {
+    container.innerHTML = "";
     cardResults.classList.add("card-results-empty");
     const alertWrapper = document.createElement("div");
     alertWrapper.className = "w-100";
