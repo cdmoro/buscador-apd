@@ -6,9 +6,13 @@ import Modal from "bootstrap/js/dist/modal";
 export async function getSchoolById(escuela: string): Promise<School> {
   return new Promise(async (resolve, reject) => {
     try {
-      const res = await fetch(
-        `${SCHOOL_SERVICE_URL}?q=*%3A*&fq=CLAVEESTAB%3A${escuela}&wt=json`,
-      );
+      const url = new URL(SCHOOL_SERVICE_URL);
+      url.searchParams.set("q", `*:*`);
+      url.searchParams.append("fq", `CLAVEESTAB:${escuela}`);
+      url.searchParams.set("wt", "json");
+      url.searchParams.set("rows", "1");
+      
+      const res = await fetch(url.toString());
       const data = await res.json() as SchoolResponse;
 
       if (data.response.numFound === 0) {
