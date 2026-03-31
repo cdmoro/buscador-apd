@@ -4,13 +4,30 @@ import type { CourseStatus, PostulacionResponse } from "./types";
 import { POSTULANTES_SERVICE_URL } from "./contstans";
 import { cuitFormatter, dateFormatter, numberFormatter } from "./utils";
 
-async function getPostulaciones(ige: string, id: string): Promise<PostulacionResponse> {
+async function getPostulaciones(
+  ige: string,
+  id: string,
+): Promise<PostulacionResponse> {
   return new Promise(async (resolve, reject) => {
+    const url = new URL(POSTULANTES_SERVICE_URL);
+    url.searchParams.set("q", `idoferta:${ige} OR iddetalle:${id}`);
+    url.searchParams.append("fq", `idoferta:${ige}`);
+    url.searchParams.append("fq", `iddetalle:${id}`);
+    url.searchParams.set(
+      "sort",
+      "designado desc, estadopostulacion asc, orden asc, puntaje desc",
+    );
+    url.searchParams.set("wt", "json");
+    url.searchParams.set("rows", "1000");
+
     try {
-      const res = await fetch(
-        `${POSTULANTES_SERVICE_URL}?q=*%3A*&fq=ige%3A${ige}+AND+id%3A${id}&wt=json&rows=1000`,
-      );
-      const data = await res.json() as PostulacionResponse;
+      const res = await fetch(url.toString());
+      const buffer = await res.arrayBuffer();
+
+      const decoder = new TextDecoder("iso-8859-1");
+      const text = decoder.decode(buffer);
+
+      const data = JSON.parse(text) as PostulacionResponse;
 
       resolve(data);
     } catch (error) {

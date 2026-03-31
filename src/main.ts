@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal";
 import Tooltip from "bootstrap/js/dist/tooltip";
 import 'bootstrap/js/dist/dropdown';
+import Collapse from 'bootstrap/js/dist/collapse';
 import "./style.css";
 import type { FilterForm } from "./types";
 import {

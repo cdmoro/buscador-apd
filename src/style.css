@@ -72,11 +72,11 @@ fieldset {
   );
 }
 
-.card-course {
+.card-suplencia {
   min-height: 250px;
 }
 
-.card-course .card-body:hover .alert-designada {
+.card-suplencia .card-body:hover .alert-designada {
   display: none !important;
 }
 

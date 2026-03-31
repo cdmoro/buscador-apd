@@ -194,7 +194,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     col.className = "col";
 
     const card = document.createElement("div");
-    card.className = `card card-course ${courseStatus} border-${courseStatus} h-100 overflow-hidden`;
+    card.className = `card card-suplencia ${courseStatus} border-${courseStatus} h-100 overflow-hidden`;
 
     const cardHeader = document.createElement("div");
     cardHeader.className = `card-header text-bg-${courseStatus} d-flex justify-content-between gap-2`;
@@ -292,7 +292,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
         <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-escuela="${d.escuela}" title="Ver detalles de la institución">${d.escuela}</a>
       </div>`
       }
-      <h5 class="card-title text-info">${d.cargo || ""}</h5>
+      <h5 class="card-title text-info"><span class="cargo-label">${d.cargo || ""}</span>${observaciones ? `<span class="observaciones-star">*</span>` : ""}</h5>
       <h6 class="card-subtitle mb-2 text-muted">${d.descdistrito || ""} | ${d.descnivelmodalidad || ""}</h6>
       <div class="card-text mb-1">
           <div>IGE: <span class="text-info">${d.ige || ""}</span> — Área: <span class="text-info">${d.areaincumbencia || ""}</span></div>
@@ -327,11 +327,13 @@ export function renderCards(docs: Course[], container: HTMLElement) {
             </div>
             ${observaciones}`
           : `
-            <details>
-              <summary>Detalles</summary>
-              ${renderDetails(d, daysFiltered)}
-              ${observaciones}
-            </details>`
+            <div>
+              <a href="#" class="link-body-emphasis" data-bs-toggle="collapse" data-bs-target="#details-${d.id}" aria-expanded="false" aria-controls="details-${d.id}"><small>Ver detalles</small></a>
+              <div class="collapse" id="details-${d.id}">
+                ${renderDetails(d, daysFiltered)}
+                ${observaciones}
+              </div>
+            </div>`
       }
       </div>`;
 
