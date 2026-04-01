@@ -236,7 +236,7 @@ function getActiveSelectFiltersText(filter: string) {
     ).selectedOptions,
   ].map(
     (o) =>
-      `<span class="badge text-bg-${filter === "estado" ? getCourseVariant(o.dataset.label as CourseStatus) : "info"}" title="${o.dataset.label!}">${truncateActiveFilterLabel(o.dataset.label!)}</span>`,
+      `<span class="badge badge-${o.dataset.label?.toLocaleLowerCase()} text-bg-${filter === "estado" ? getCourseVariant(o.dataset.label as CourseStatus) : "info"}" title="${o.dataset.label!}">${truncateActiveFilterLabel(o.dataset.label!)}</span>`,
   );
   let text = `<span class="badge text-bg-info badge-no-filter">Todos</span>`;
 

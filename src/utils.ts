@@ -8,6 +8,8 @@ export function getCourseVariant(status: CourseStatus) {
       return "warning";
     case "renunciada":
       return "danger";
+    case "finalizada":
+      return "body";
     default:
       return "secondary";
   }

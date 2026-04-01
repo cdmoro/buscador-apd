@@ -19,10 +19,15 @@ const turnos = {
   T: "Tarde",
   V: "Vespertino",
   A: "Alternado",
+  MT: "Mañana y Tarde",
 } as const;
 const jornadas = {
   JS: "Jornada Simple",
   JC: "Jornada Completa",
+} as const;
+const revista = {
+  S: "Suplencia",
+  P: "Provisionalidad",
 } as const;
 
 function resolveTomaDePosesion(tomaPosesion: string) {
@@ -42,7 +47,7 @@ function resolveTomaDePosesion(tomaPosesion: string) {
 
 function renderDesignada(d: DesignadaCourse) {
   return `
-  <div class="alert-designada position-absolute start-0 end-0 bottom-0 text-center text-light justify-content-center mb-0 d-flex flex-column p-3 z-1" role="alert">
+  <div class="alert-designada position-absolute start-0 end-0 bottom-0 top-0 text-center text-light justify-content-center mb-0 d-flex flex-column p-3 z-1 text-body" role="alert">
     <div>Adjudicado a</div>
     <h5 class="mb-0 mt-1">${d.nombreganador.toLocaleUpperCase()}</h5>
     <div class="text-muted">${cuitFormatter(d.cuilganador)}</div>
@@ -64,9 +69,9 @@ function renderDetails(d: Course, daysFiltered: string) {
       ${d.areaincumbencia && `<div><strong>Área</strong>: ${d.areaincumbencia}</div>`}
       ${d.acargodireccion && `<div><strong>Dirección a cargo</strong>: ${d.acargodireccion}</div>`}
       ${d.cursodivision && `<div><strong>Curso/División</strong>: ${d.cursodivision}</div>`}
-      ${d.turno && `<div><strong>Turno</strong>: ${d.turno}</div>`}
-      ${d.jornada && `<div><strong>Jornada</strong>: ${d.jornada}</div>`}
-      ${d.supl_revista && `<div><strong>Revista</strong>: ${d.supl_revista}</div>`}
+      ${d.turno && `<div><strong>Turno</strong>: ${turnos[d.turno as keyof typeof turnos] || d.turno}</div>`}
+      ${d.jornada && `<div><strong>Jornada</strong>: ${jornadas[d.jornada as keyof typeof jornadas] || d.jornada}</div>`}
+      ${d.supl_revista && `<div><strong>Revista</strong>: ${revista[d.supl_revista as keyof typeof revista] || d.supl_revista}</div>`}
       ${d.infectocontagiosa !== undefined && `<div><strong>Infectocontagiosa en el establecimiento</strong>: ${d.infectocontagiosa ? "Sí" : "No"}</div>`}
       <div><hr></div>
       ${d.iniciooferta && `<div><strong>Inicio oferta</strong>: ${dateTimeFormatter.format(new Date(d.iniciooferta))}</div>`}
@@ -284,7 +289,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       : "";
 
     const cardBody = document.createElement("div");
-    cardBody.className = "card-body";
+    cardBody.className = "card-body position-relative";
     cardBody.innerHTML = `${d.estado === "DESIGNADA" ? renderDesignada(d) : ""}
       ${
         d.escuela &&

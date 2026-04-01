@@ -53,6 +53,15 @@ fieldset {
   max-width: 100px;
 } */
 
+.badge-finalizada {
+  background: var(--bs-card-cap-bg);
+  color: var(--bs-card-cap-color);
+}
+
+.card-header a {
+  color: var(--bs-card-cap-color);
+}
+
 .hint {
   margin-top: 5px;
   color: var(--text);
@@ -64,7 +73,7 @@ fieldset {
 }
 
 .alert-designada {
-  top: 41px;
+  /* top: 41px; */
   background-color: color-mix(
     in srgb,
     var(--bs-secondary-bg-subtle) 95%,
@@ -116,7 +125,8 @@ fieldset {
 
 .card-turnos {
   .pill-turno-a,
-  .pill-turno-v {
+  .pill-turno-v,
+  .pill-turno-mt {
     display: none;
   }
 
