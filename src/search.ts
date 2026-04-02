@@ -129,19 +129,19 @@ export async function search() {
   const createPlaceholderCard = () => `
       <div class="card card-placeholder border-success">
         <div class="card-header d-flex justify-content-between align-items-center text-bg-success">
-          <span class="placeholder rounded-1 col-4"></span>
-          <span class="placeholder rounded-1 col-2"></span>
+          <span class="placeholder col-4"></span>
+          <span class="placeholder col-2"></span>
         </div>
         <div class="card-body d-flex flex-column gap-2">
-          <div class="placeholder rounded-1 mb-2 col-3"></div>
-          <div class="placeholder rounded-1 col-9 bg-info"></div>
-          <div class="placeholder rounded-1 col-8 bg-info mb-2"></div>
-          <div class="placeholder rounded-1 col-5"></div>
-          <div class="placeholder rounded-1 col-7"></div>
-          <div class="placeholder rounded-1 col-6"></div>
-          <div class="placeholder rounded-1 col-4"></div>
-          <div class="placeholder rounded-1 col-5 mb-2"></div>
-          <div class="placeholder rounded-1 col-3"></div>
+          <div class="placeholder mb-2 col-3"></div>
+          <div class="placeholder col-9 bg-info"></div>
+          <div class="placeholder col-8 bg-info mb-2"></div>
+          <div class="placeholder col-5"></div>
+          <div class="placeholder col-7"></div>
+          <div class="placeholder col-6"></div>
+          <div class="placeholder col-4"></div>
+          <div class="placeholder col-5 mb-2"></div>
+          <div class="placeholder col-3"></div>
         </div>
         <div class="card-footer d-flex align-items-center" style="min-height: 41px;">
           <span class="placeholder bg-secondary rounded-1 col-8"></span>

@@ -38,13 +38,41 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
   const cargo = trigger.getAttribute("data-bs-cargo");
   const estado = trigger.getAttribute("data-bs-estado");
   const modalTitle = modal.querySelector(".modal-title")!;
-  modalTitle.innerHTML = 'Cargando detalles de la escuela...';
+  modalTitle.innerHTML = `
+    <div class="placeholder placeholder-sm col-4"></div>
+    <div class="placeholder bg-info col-8"></div>
+    <div class="placeholder bg-info col-6"></div>
+  `;
   const modalBody = modal.querySelector(".modal-body")!;
-  modalBody.innerHTML = `<div class="d-flex justify-content-center mt-3 mb-3 w-100">
-      <div class="spinner-border text-info" role="status">
-        <span class="visually-hidden">Cargando detalles de la escuela...</span>
-      </div>
-    </div>`;
+  modalBody.innerHTML = `
+      <div class="placeholder-glow">
+        <div class="placeholder col-4"></div>
+        <div class="placeholder col-3"></div>
+        <div class="placeholder col-5"></div>
+        <div>
+          <div class="placeholder col-4"></div>
+        </div>
+        <div class="placeholder mt-2 col-12 placeholder-school-map"></div>
+        <div class="text-end">
+          <div class="placeholder col-2 bg-info"></div>
+        </div>
+        <hr>
+        <div>
+          <div class="placeholder col-5"></div>
+        </div>
+        <div>
+          <div class="placeholder col-4"></div>
+        </div>
+        <div>
+          <div class="placeholder col-6"></div>
+        </div>
+        <div>
+          <div class="placeholder col-6"></div>
+        </div>
+        <div>
+          <div class="placeholder col-4"></div>
+        </div>
+      </div>`;
   const modalFooter = modal.querySelector(".modal-footer")!;
   modalFooter.innerHTML = `
     <button
@@ -86,7 +114,7 @@ export async function handleSchoolClick(modal: HTMLElement, event: Event) {
       ${
         details.LATITUD && details.LONGITUD
           ? `
-          <div class="mt-2 card overflow-hidden"><iframe width="100%" height="200" frameborder="0" style="border:0" src="https://maps.google.com/maps?q=${details.LATITUD},${details.LONGITUD}&hl=es;z=14&output=embed" allowfullscreen></iframe></div>
+          <div class="mt-2 card overflow-hidden"><iframe width="100%" height="150" frameborder="0" style="border:0" src="https://maps.google.com/maps?q=${details.LATITUD},${details.LONGITUD}&hl=es;z=14&output=embed" allowfullscreen></iframe></div>
           <div class="text-end"><a class="link-info" href="https://maps.google.com/?q=${details.LATITUD},${details.LONGITUD}" target="_blank"><small>Abrir en Google Maps</small></a></div>`
           : ""
       }

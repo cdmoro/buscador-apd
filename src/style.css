@@ -143,6 +143,10 @@ fieldset {
   border-top: none;
 }
 
+.placeholder-school-map {
+  height: 150px;
+}
+
 body.preview {
   #results nav,
   #active-filters,

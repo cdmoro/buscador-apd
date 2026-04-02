@@ -2,7 +2,8 @@ import Modal from "bootstrap/js/dist/modal";
 import { showToast } from "./toastService";
 import type { CourseStatus, PostulacionResponse } from "./types";
 import { POSTULANTES_SERVICE_URL } from "./contstans";
-import { cuitFormatter, dateFormatter, numberFormatter } from "./utils";
+import { cuitFormatter, dateTimeFormatter, numberFormatter } from "./utils";
+import classNames from "classnames";
 
 async function getPostulaciones(
   ige: string,
@@ -66,7 +67,7 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
         <div><strong>IGE:</strong> ${ige}</div>
         <div><strong>Escuela:</strong> <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-escuela="${escuela}" data-bs-id="${id}" data-bs-ige="${ige}" data-bs-estado="${estado}" data-bs-cargo="${cargo}">${escuela}</a></div>
         <div><strong>Postulantes:</strong> ${data.response.numFound}${data.response.numFound > data.response.docs.length ? ` (${data.response.docs.length} mostrados)` : ""}</div>
-        <div><a href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${ige}&detalle=${id}" target="_blank">Ver listado en el sitio oficial</a></div>
+        <div><a href="http://servicios.abc.gov.ar/actos.publicos.digitales/postulantes/?oferta=${ige}&detalle=${id}" class="link-info" target="_blank">Ver listado en el sitio oficial</a></div>
         <div class="mt-2 row row-cols-1 row-cols-md-2 g-3">
             ${
               data.response.docs.length === 0
@@ -83,12 +84,17 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
                       const icon = isDesignado ? "star" : "star-empty";
                       const iconClass = isDesignado
                         ? "text-warning"
-                        : "text-muted";
+                        : "text-muted opacity-75";
 
                       return `
                         <div class="col">
-                            <div class="card h-100 ${variant ? `border-${variant}` : ""} ${p.estadopostulacion === "INACTIVA" ? "text-muted" : ""}">
-                                <div class="card-header d-flex gap-2 align-items-center ${variant ? `border-${variant} text-bg-${variant}` : ""}">
+                            <div class="${classNames('card h-100', {
+                              [`border-${variant}`]: variant,
+                              'text-muted opacity-75': p.estadopostulacion === "INACTIVA"
+                            })}">
+                                <div class="${classNames('card-header d-flex gap-2 align-items-center', {
+                                  [`border-${variant} text-bg-${variant}`]: variant
+                                })}">
                                   <svg class="icon ${iconClass}" aria-hidden="true">
                                     <use href="/icons.svg#${icon}-icon"></use>
                                   </svg>
@@ -97,12 +103,16 @@ export async function handlePostulacionClick(modal: HTMLElement, event: Event) {
                                 <div class="card-body">
                                     <h5 class="card-title mb-1">${p.nombres.toLocaleUpperCase()}</h5>
                                     <div class="card-subtitle text-muted mb-2">${cuitFormatter(p.cuil)}</div>
-                                    <div><strong>Fecha postulación:</strong> ${dateFormatter.format(new Date(p.postulacionfechacarga))}</div>
-                                    ${estado === "DESIGNADA" ? "" : `<div><strong>Estado:</strong> ${p.estadopostulacion}</div>`}
+                                    <div><strong>Estado:</strong> ${p.estadopostulacion}</div>
                                     <div><strong>Listado:</strong> ${p.listadoorigen}</div>
                                     <div class="d-flex gap-2 flex-nowrap align-items-center"><strong>Puntaje:</strong> ${p.puntaje ? `<span class="badge text-bg-info">${numberFormatter.format(p.puntaje)}</span>` : "—"}</div>
-                                    <div><strong>Vuelta:</strong> ${p.vuelta || "—"}</div>
-                                    <div><strong>Prioridad:</strong> ${p.prioridad}</div>
+                                    <div class="d-flex gap-4 flex-nowrap align-items-center">
+                                      <div><strong>Prioridad:</strong> ${p.prioridad}</div>
+                                      ${p.vuelta ? `<div><strong>Vuelta:</strong> ${p.vuelta}</div>` : ""}
+                                    </div>
+                                </div>
+                                <div class="card-footer text-muted">
+                                  <small>Fecha de postulación: ${dateTimeFormatter.format(new Date(p.postulacionfechacarga))}</small>
                                 </div>
                             </div>
                         </div>`;

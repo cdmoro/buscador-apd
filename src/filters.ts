@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { search } from "./search";
 import { store } from "./store";
 import type { CourseStatus, FilterForm, FilterFormElements } from "./types";
@@ -123,19 +124,28 @@ export function buildFiltersParams() {
 
   const escuelaValue = escuela.value;
   if (escuelaValue) {
-    const escuelaFq = escuelaValue.split(",").filter((e) => e.trim() !== "").map((e) => `"${e.trim()}"`);
+    const escuelaFq = escuelaValue
+      .split(",")
+      .filter((e) => e.trim() !== "")
+      .map((e) => `"${e.trim()}"`);
     fq.push(`escuela:(${escuelaFq.join(" OR ")})`);
   }
 
   const igeValue = ige.value;
   if (igeValue) {
-    const igeFq = igeValue.split(",").filter((e) => e.trim() !== "").map((e) => `"${e.trim()}"`);
+    const igeFq = igeValue
+      .split(",")
+      .filter((e) => e.trim() !== "")
+      .map((e) => `"${e.trim()}"`);
     fq.push(`ige:(${igeFq.join(" OR ")})`);
   }
 
   const idValue = id.value;
   if (idValue) {
-    const idFq = idValue.split(",").filter((e) => e.trim() !== "").map((e) => `"${e.trim()}"`);
+    const idFq = idValue
+      .split(",")
+      .filter((e) => e.trim() !== "")
+      .map((e) => `"${e.trim()}"`);
     fq.push(`id:(${idFq.join(" OR ")})`);
   }
 
@@ -236,7 +246,14 @@ function getActiveSelectFiltersText(filter: string) {
     ).selectedOptions,
   ].map(
     (o) =>
-      `<span class="badge badge-${o.dataset.label?.toLocaleLowerCase()} text-bg-${filter === "estado" ? getCourseVariant(o.dataset.label as CourseStatus) : "info"}" title="${o.dataset.label!}">${truncateActiveFilterLabel(o.dataset.label!)}</span>`,
+      `<span class="${classNames(
+        `badge badge-${o.dataset.label?.toLocaleLowerCase()}`,
+        {
+          [`text-bg-${getCourseVariant(o.dataset.label as CourseStatus)}`]:
+            filter === "estado",
+          "text-bg-info": filter !== "estado",
+        },
+      )}" title="${o.dataset.label!}">${truncateActiveFilterLabel(o.dataset.label!)}</span>`,
   );
   let text = `<span class="badge text-bg-info badge-no-filter">Todos</span>`;
 
@@ -263,7 +280,10 @@ function getActiveInputFilterText(value: string) {
   if (value.startsWith('"') && value.endsWith('"')) {
     return `<span class="badge text-bg-info">${value}</span>`;
   }
-  return value.split(",").map((v) => `<span class="badge text-bg-info">${v.trim()}</span>`).join("");
+  return value
+    .split(",")
+    .map((v) => `<span class="badge text-bg-info">${v.trim()}</span>`)
+    .join("");
 }
 
 export function updateActiveFilters(filter: string) {
