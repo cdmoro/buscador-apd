@@ -109,7 +109,8 @@ fieldset {
 
 .card-days,
 .card-turnos,
-.card-jornada {
+.card-jornada,
+.card-revista {
   font-size: 0.7rem;
   line-height: 1;
 

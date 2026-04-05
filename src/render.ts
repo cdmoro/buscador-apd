@@ -20,6 +20,7 @@ const turnos = {
   V: "Vespertino",
   A: "Alternado",
   MT: "Mañana y Tarde",
+  N: "Noche",
 } as const;
 const jornadas = {
   JS: "Jornada Simple",
@@ -235,7 +236,10 @@ export function renderCards(docs: Course[], container: HTMLElement) {
           const datosEscuela = await getSchoolById(d.escuela);
           escuela = datosEscuela.NOMBRE;
         } catch (err) {
-          console.error("Error obteniendo datos de la escuela para compartir la oferta:", err);
+          console.error(
+            "Error obteniendo datos de la escuela para compartir la oferta:",
+            err,
+          );
           escuela = d.escuela;
         }
 
@@ -300,30 +304,47 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       <h5 class="card-title text-info"><span class="cargo-label">${d.cargo || ""}</span>${observaciones ? `<span class="observaciones-star">*</span>` : ""}</h5>
       <h6 class="card-subtitle mb-2 text-muted">${d.descdistrito || ""} | ${d.descnivelmodalidad || ""}</h6>
       <div class="card-text mb-1">
-          <div>IGE: <span class="text-info">${d.ige || ""}</span> — Área: <span class="text-info">${d.areaincumbencia || ""}</span></div>
-          ${d.finoferta && d.estado !== "DESIGNADA" ? `<div>Cierre de Oferta: <span class="text-info">${dateTimeFormatter.format(new Date(d.finoferta))}</span></div>` : ""}
-          ${d.tomaposesion && d.estado !== "DESIGNADA" ? `<div>Toma de posesión: ${resolveTomaDePosesion(d.tomaposesion)}</div>` : ""}
-          ${duration && `<div>Duración: ${duration}</div>`}
+          <div class="mb-2">IGE: <span class="text-info">${d.ige || ""}</span> — Área: <span class="text-info">${d.areaincumbencia || ""}</span></div>
+          ${d.finoferta && d.estado !== "DESIGNADA" ? `<div class="d-flex justify-content-between small">Cierre oferta <span class="text-info">${dateTimeFormatter.format(new Date(d.finoferta))}</span></div>` : ""}
+          ${d.tomaposesion && d.estado !== "DESIGNADA" ? `<div class="d-flex justify-content-between small">Toma posesión <span>${resolveTomaDePosesion(d.tomaposesion)}</span></div>` : ""}
+          ${duration && `<div class="d-flex justify-content-between small">Duración <span>${duration}</span></div>`}
           <div class="mt-2 d-flex gap-2 align-items-center">
             ${daysCard ? daysCard : ""}
             ${renderTurnoCard(d.turno)}
             ${
               d.jornada
                 ? `
-              <div 
-                class="card card-jornada text-center w-auto d-flex flex-row d-inline-flex rounded-1 overflow-hidden border-secondary"
+              <!--div 
+                class="card card-jornada text-center w-auto flex-row d-inline-flex rounded-1 overflow-hidden border-secondary"
                 data-bs-toggle="tooltip"
                 data-bs-placement="top"
                 data-bs-title="${jornada}"
               >
                 <div class="bg-info text-bg-info">${d.jornada}</div>
+              </div-->`
+                : ""
+            }
+            ${
+              d.supl_revista
+                ? `
+              <div 
+                class="card card-revista text-center w-auto flex-row d-inline-flex rounded-1 overflow-hidden border-secondary"
+                ${
+                  revista[d.supl_revista as keyof typeof revista]
+                    ? ` data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        data-bs-title="${revista[d.supl_revista as keyof typeof revista]}"`
+                    : ""
+                }
+              >
+                <div class="bg-info text-bg-info">${d.supl_revista}</div>
               </div>`
                 : ""
             }
           </div>
       </div>
       
-      <div class="card-details mt-3">
+      <div class="card-details mt-2">
       ${
         isPreview
           ? `
@@ -402,7 +423,7 @@ export function renderPagination(
       e.preventDefault();
 
       const loading = store.getKey("loading");
-      
+
       if (loading) return;
 
       scrollTo({ top: 0, behavior: "smooth" });
