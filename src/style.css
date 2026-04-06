@@ -28,6 +28,16 @@ h1 span {
   height: 16px;
 }
 
+.icon.icon-md {
+  width: 20px;
+  height: 20px;
+}
+
+.icon.icon-lg {
+  width: 24px;
+  height: 24px;
+}
+
 body > nav .icon {
   width: 24px;
   height: 24px;

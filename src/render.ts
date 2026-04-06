@@ -194,6 +194,11 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       </div>`;
     }
 
+    const observaciones =
+      d.observaciones.trim() !== ""
+        ? `<hr><div><strong>Observaciones</strong></div><div>${d.observaciones}</div>`
+        : "";
+
     const fragment = document.createDocumentFragment();
 
     const col = document.createElement("div");
@@ -283,10 +288,6 @@ export function renderCards(docs: Course[], container: HTMLElement) {
 
     cardHeader.appendChild(listLink);
 
-    const observaciones =
-      d.observaciones.trim() !== ""
-        ? `<hr><div><strong>Observaciones</strong></div><div>${d.observaciones}</div>`
-        : "";
     const duration = getDurationLegend(d.supl_desde, d.supl_hasta);
     const jornada = jornadas[d.jornada as keyof typeof jornadas]
       ? jornadas[d.jornada as keyof typeof jornadas]
@@ -295,20 +296,36 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     const cardBody = document.createElement("div");
     cardBody.className = "card-body position-relative";
     cardBody.innerHTML = `${d.estado === "DESIGNADA" ? renderDesignada(d) : ""}
-      ${
-        d.escuela &&
-        `<div class="card-subtitle mb-2 text-muted">
-        <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-escuela="${d.escuela}" title="Ver detalles de la institución">${d.escuela}</a>
-      </div>`
-      }
-      <h5 class="card-title text-info"><span class="cargo-label">${d.cargo || ""}</span>${observaciones ? `<span class="observaciones-star">*</span>` : ""}</h5>
+      <div class="d-flex gap-2 align-items-center justify-content-between mb-2">
+        ${
+          d.escuela &&
+          `<div class="card-subtitle text-muted">
+            <a href="#" class="link-body-emphasis" data-bs-toggle="modal" data-bs-target="#school-modal" data-bs-escuela="${d.escuela}" title="Ver detalles de la institución">${d.escuela}</a>
+           </div>`
+        }
+        ${
+          observaciones
+            ? `
+          <svg
+            class="icon icon-md text-warning"
+            aria-hidden="true"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            data-bs-title="<strong>Observaciones</strong><br>${d.observaciones.replace(/"/g, "&quot;")}"
+          >
+          <use href="/icons.svg#warning-icon"></use>
+        </svg>`
+            : ""
+        }
+      </div>
+      <h5 class="card-title text-info">${d.cargo || ""}</h5>
       <h6 class="card-subtitle mb-2 text-muted">${d.descdistrito || ""} | ${d.descnivelmodalidad || ""}</h6>
       <div class="card-text mb-1">
           <div class="mb-2">IGE: <span class="text-info">${d.ige || ""}</span> — Área: <span class="text-info">${d.areaincumbencia || ""}</span></div>
           ${d.finoferta && d.estado !== "DESIGNADA" ? `<div class="d-flex justify-content-between small">Cierre oferta <span class="text-info">${dateTimeFormatter.format(new Date(d.finoferta))}</span></div>` : ""}
           ${d.tomaposesion && d.estado !== "DESIGNADA" ? `<div class="d-flex justify-content-between small">Toma posesión <span>${resolveTomaDePosesion(d.tomaposesion)}</span></div>` : ""}
           ${duration && `<div class="d-flex justify-content-between small">Duración <span>${duration}</span></div>`}
-          <div class="mt-2 d-flex gap-2 align-items-center">
+          <div class="mt-2 d-flex flex-wrap gap-2 align-items-center">
             ${daysCard ? daysCard : ""}
             ${renderTurnoCard(d.turno)}
             ${
@@ -328,16 +345,9 @@ export function renderCards(docs: Course[], container: HTMLElement) {
               d.supl_revista
                 ? `
               <div 
-                class="card card-revista text-center w-auto flex-row d-inline-flex rounded-1 overflow-hidden border-secondary"
-                ${
-                  revista[d.supl_revista as keyof typeof revista]
-                    ? ` data-bs-toggle="tooltip"
-                        data-bs-placement="top"
-                        data-bs-title="${revista[d.supl_revista as keyof typeof revista]}"`
-                    : ""
-                }
+                class="card card-revista text-center w-auto flex-row d-inline-flex rounded-1 overflow-hidden border-secondary px-2 bg-info"
               >
-                <div class="bg-info text-bg-info">${d.supl_revista}</div>
+                <div class="bg-info text-bg-info w-auto">${revista[d.supl_revista as keyof typeof revista].toLocaleUpperCase() || d.supl_revista}</div>
               </div>`
                 : ""
             }
