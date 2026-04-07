@@ -137,12 +137,14 @@ fieldset {
 .card-turnos {
   .pill-turno-a,
   .pill-turno-v,
-  .pill-turno-mt {
+  .pill-turno-mt,
+  .pill-turno-n {
     display: none;
   }
 
   &.card-turnos-a .pill-turno-a,
-  &.card-turnos-v .pill-turno-v {
+  &.card-turnos-v .pill-turno-v,
+  &.card-turnos-n .pill-turno-n {
     display: inline-flex;
   }
 }

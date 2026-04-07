@@ -1,6 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal";
 import Tooltip from "bootstrap/js/dist/tooltip";
+import Popover from "bootstrap/js/dist/popover";
 import 'bootstrap/js/dist/dropdown';
 import 'bootstrap/js/dist/collapse';
 import "./style.css";
@@ -141,6 +142,12 @@ function main() {
   new Tooltip(document.body, {
     selector: '[data-bs-toggle="tooltip"]',
     html: true,
+  });
+
+  new Popover(cardResults, {
+    selector: '[data-bs-toggle="popover"]',
+    html: true,
+    trigger: "hover focus",
   });
 
   document.getElementById("new-search")?.addEventListener("click", () => {

@@ -9,6 +9,25 @@ export const POSTULANTES_SERVICE_URL =
   "https://servicios3.abc.gob.ar/valoracion.docente/api/apd.oferta.postulante/select";
 // ?fq=idoferta%3A3915102&q=idoferta%3A3915102&rows=10&sort=estadopostulacion%20asc%2C%20orden%20asc%2C%20puntaje%20desc&wt=json
 
+export const TURNOS = {
+  M: "Mañana",
+  T: "Tarde",
+  V: "Vespertino",
+  A: "Alternado",
+  MT: "Mañana y Tarde",
+  N: "Noche",
+} as const;
+
+export const JORNADAS = {
+  JS: "Jornada Simple",
+  JC: "Jornada Completa",
+} as const;
+
+export const REVISTA = {
+  S: "Suplencia",
+  P: "Provisionalidad",
+} as const;
+
 export const CARGO_KEYS = [
   " derecho económico y del trabajo (cta)",
   " fines educación artística: danza (wdz)",

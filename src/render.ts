@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { clearAllFilters } from "./filters";
 import { getSchoolById } from "./school";
 import { search } from "./search";
@@ -11,25 +12,9 @@ import {
   getCourseVariant,
   numberFormatter,
 } from "./utils";
-// import Tooltip from "bootstrap/js/dist/tooltip";
+import { JORNADAS, REVISTA, TURNOS } from "./contstans";
 
 const cardResults = document.querySelector<HTMLDivElement>("#results")!;
-const turnos = {
-  M: "Mañana",
-  T: "Tarde",
-  V: "Vespertino",
-  A: "Alternado",
-  MT: "Mañana y Tarde",
-  N: "Noche",
-} as const;
-const jornadas = {
-  JS: "Jornada Simple",
-  JC: "Jornada Completa",
-} as const;
-const revista = {
-  S: "Suplencia",
-  P: "Provisionalidad",
-} as const;
 
 function resolveTomaDePosesion(tomaPosesion: string) {
   if (!tomaPosesion) return "No especificada";
@@ -70,9 +55,9 @@ function renderDetails(d: Course, daysFiltered: string) {
       ${d.areaincumbencia && `<div><strong>Área</strong>: ${d.areaincumbencia}</div>`}
       ${d.acargodireccion && `<div><strong>Dirección a cargo</strong>: ${d.acargodireccion}</div>`}
       ${d.cursodivision && `<div><strong>Curso/División</strong>: ${d.cursodivision}</div>`}
-      ${d.turno && `<div><strong>Turno</strong>: ${turnos[d.turno as keyof typeof turnos] || d.turno}</div>`}
-      ${d.jornada && `<div><strong>Jornada</strong>: ${jornadas[d.jornada as keyof typeof jornadas] || d.jornada}</div>`}
-      ${d.supl_revista && `<div><strong>Revista</strong>: ${revista[d.supl_revista as keyof typeof revista] || d.supl_revista}</div>`}
+      ${d.turno && `<div><strong>Turno</strong>: ${TURNOS[d.turno as keyof typeof TURNOS] || d.turno}</div>`}
+      ${d.jornada && `<div><strong>Jornada</strong>: ${JORNADAS[d.jornada as keyof typeof JORNADAS] || d.jornada}</div>`}
+      ${d.supl_revista && `<div><strong>Revista</strong>: ${REVISTA[d.supl_revista as keyof typeof REVISTA] || d.supl_revista}</div>`}
       ${d.infectocontagiosa !== undefined && `<div><strong>Infectocontagiosa en el establecimiento</strong>: ${d.infectocontagiosa ? "Sí" : "No"}</div>`}
       <div><hr></div>
       ${d.iniciooferta && `<div><strong>Inicio oferta</strong>: ${dateTimeFormatter.format(new Date(d.iniciooferta))}</div>`}
@@ -163,7 +148,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
       .join("");
 
     const daysCard = `<div 
-      class="card card-days text-center w-auto d-flex flex-row d-inline-flex overflow-hidden rounded-1 border-secondary"
+      class="card card-days text-center w-auto d-flex flex-row d-inline-flex overflow-hidden rounded-1 border-info"
       data-bs-toggle="tooltip"
       data-bs-placement="top"
       data-bs-title="${daysFiltered}"
@@ -177,15 +162,15 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     function renderTurnoCard(turno: string) {
       const turnoArr = turno.split("");
 
-      if (!Object.keys(turnos).some((t) => turnoArr.includes(t))) return "";
+      if (!Object.keys(TURNOS).some((t) => turnoArr.includes(t))) return "";
 
       return `<div 
-          class="card card-turnos text-center w-auto d-flex flex-row d-inline-flex rounded-1 overflow-hidden border-secondary ${turnoArr.map((t) => `card-turnos-${t.toLowerCase()}`).join(" ")}"
+          class="card card-turnos text-center w-auto d-flex flex-row d-inline-flex rounded-1 overflow-hidden border-info ${turnoArr.map((t) => `card-turnos-${t.toLowerCase()}`).join(" ")}"
           data-bs-toggle="tooltip"
           data-bs-placement="top"
-          data-bs-title="${turnoArr.map((t) => `<div>${turnos[t as keyof typeof turnos]}</div>`).join("")}"
+          data-bs-title="${turnoArr.map((t) => `<div>${TURNOS[t as keyof typeof TURNOS]}</div>`).join("")}"
         >
-        ${Object.keys(turnos)
+        ${Object.keys(TURNOS)
           .map(
             (key) =>
               `<div class="${turnoArr.includes(key) ? "bg-info text-bg-info" : "text-muted"} pill-turno-${key.toLowerCase()}">${key}</div>`,
@@ -289,8 +274,8 @@ export function renderCards(docs: Course[], container: HTMLElement) {
     cardHeader.appendChild(listLink);
 
     const duration = getDurationLegend(d.supl_desde, d.supl_hasta);
-    const jornada = jornadas[d.jornada as keyof typeof jornadas]
-      ? jornadas[d.jornada as keyof typeof jornadas]
+    const jornada = JORNADAS[d.jornada as keyof typeof JORNADAS]
+      ? JORNADAS[d.jornada as keyof typeof JORNADAS]
       : "";
 
     const cardBody = document.createElement("div");
@@ -306,15 +291,22 @@ export function renderCards(docs: Course[], container: HTMLElement) {
         ${
           observaciones
             ? `
-          <svg
-            class="icon icon-md text-warning"
-            aria-hidden="true"
-            data-bs-toggle="tooltip"
-            data-bs-placement="bottom"
-            data-bs-title="<strong>Observaciones</strong><br>${d.observaciones.replace(/"/g, "&quot;")}"
-          >
-          <use href="/icons.svg#warning-icon"></use>
-        </svg>`
+            <span
+              data-bs-placement="right"
+              data-bs-toggle="popover"
+              data-bs-title="Observaciones"
+              data-bs-content="${d.observaciones.replace(/"/g, "&quot;").replace(/\n/g, "<br>")}"
+
+            >
+              <svg
+                class="${classNames("icon icon-md", {
+                  "text-warning": d.estado === "Publicada",
+                })}"
+                aria-hidden="true"
+              >
+                <use href="/icons.svg#warning-icon"></use>
+              </svg>
+            </span>`
             : ""
         }
       </div>
@@ -332,7 +324,7 @@ export function renderCards(docs: Course[], container: HTMLElement) {
               d.jornada
                 ? `
               <!--div 
-                class="card card-jornada text-center w-auto flex-row d-inline-flex rounded-1 overflow-hidden border-secondary"
+                class="card card-jornada text-center w-auto flex-row d-inline-flex rounded-1 overflow-hidden border-info"
                 data-bs-toggle="tooltip"
                 data-bs-placement="top"
                 data-bs-title="${jornada}"
@@ -345,9 +337,9 @@ export function renderCards(docs: Course[], container: HTMLElement) {
               d.supl_revista
                 ? `
               <div 
-                class="card card-revista text-center w-auto flex-row d-inline-flex rounded-1 overflow-hidden border-secondary px-2 bg-info"
+                class="card card-revista text-center w-auto flex-row d-inline-flex rounded-1 overflow-hidden border-info px-2 bg-info"
               >
-                <div class="bg-info text-bg-info w-auto">${revista[d.supl_revista as keyof typeof revista].toLocaleUpperCase() || d.supl_revista}</div>
+                <div class="bg-info text-bg-info w-auto">${REVISTA[d.supl_revista as keyof typeof REVISTA].toLocaleUpperCase() || d.supl_revista}</div>
               </div>`
                 : ""
             }
